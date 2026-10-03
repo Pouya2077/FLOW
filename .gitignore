@@ -6,3 +6,5 @@ db.sqlite3
 .DS_Store
 .ruff_cache/
 staticfiles/
+data/masks/
+cache/
