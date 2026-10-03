@@ -1,0 +1,92 @@
+/* Theme colours. --map-bg matches each OpenFreeMap basemap's background
+   (Positron for light, Dark for dark) so the map drops into the square seamlessly. */
+:root,
+[data-theme="light"] {
+  --page-bg: #ffffff;
+  --text: #1f2328;
+  --muted: #5c636b;
+  --border: #d3d6d2;
+  --map-bg: rgb(242 243 240);
+  --toggle-hover: #eceeea;
+  --flood: #1f6feb; /* water detected */
+}
+
+[data-theme="dark"] {
+  --page-bg: #1b1b1d;
+  --text: #e6e6e6;
+  --muted: #9a9a9f;
+  --border: #38383c;
+  --map-bg: rgb(12 12 12);
+  --toggle-hover: #2a2a2e;
+  --flood: #4c9aff; /* lighter blue keeps contrast on the dark basemap */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--page-bg);
+  color: var(--text);
+  font: 15px/1.4 system-ui, sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 16px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: var(--text); /* lucide icons stroke with currentColor */
+}
+
+.theme-toggle:hover {
+  background: var(--toggle-hover);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.map-square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(560px, 100%);
+  aspect-ratio: 1;
+  background: var(--map-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+}
+
+.map-square p {
+  margin: 0;
+  font-size: 18px;
+}

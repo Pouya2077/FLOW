@@ -1,11 +1,21 @@
-<!doctype html>
-<html lang="en">
+{% load static lucide %}<!doctype html>
+<html lang="en" data-theme="{{ theme }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FLOW</title>
+  <title>FLOW · Flooded Roads</title>
+  <link rel="stylesheet" href="{% static 'flood/app.css' %}">
 </head>
 <body>
-  <p>FLOW placeholder page. The map UI goes here. API docs: <a href="/api/docs">/api/docs</a></p>
+  <header>
+    <a class="theme-toggle" href="?theme={{ other_theme }}" aria-label="Switch to {{ other_theme }} mode" title="Switch to {{ other_theme }} mode">
+      {% if theme == "light" %}{% lucide "moon" class="icon-moon" aria_hidden="true" %}{% else %}{% lucide "sun" class="icon-sun" aria_hidden="true" %}{% endif %}
+    </a>
+  </header>
+  <main>
+    <div id="map" class="map-square" data-basemap-style="{{ basemap_style }}">
+      <p>Coming soon</p>
+    </div>
+  </main>
 </body>
 </html>
