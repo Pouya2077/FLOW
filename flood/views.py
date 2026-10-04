@@ -42,7 +42,7 @@ def index(request):
             # other searches just move the map.
             if safe_slug in REGIONS:
                 print(f"Triggering pipeline for {safe_slug}...")
-                radar_file = fetch_sentinel_radar(region_slug=safe_slug)
+                radar_file = fetch_sentinel_radar(safe_slug)
     other_theme = "dark" if theme == "light" else "light"
 
     locations = data.locations()

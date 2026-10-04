@@ -17,6 +17,7 @@ dependencies = [
     "requests>=2.34.2",
     "geopy>=2.5.0",
     "scipy>=1.18.1",
+    "timezonefinder>=9.0.0",
 ]
 
 [dependency-groups]
