@@ -91,14 +91,52 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* Search box: pill top-left with the search button on its right (Google Maps). */
+/* 1. Let the .overlay class handle the background/shadows, just control the layout */
+.brand-header {
+    position: fixed;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Ensures content stays centered */
+    gap: 8px;
+    width: auto; 
+    padding: 0 20px;
+    text-decoration: none; /* Removes the link underline */
+    color: inherit;
+  }
+  
+  .brand-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .brand-name {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    position: relative;
+    top: 2px;
+  }
+  
+  /* 2. Push the search bar to the right to make room for the brand header */
+  .search {
+    left: 140px; /* Increased from 16px to clear the brand logo */
+    display: flex;
+    align-items: center;
+    /* Updated calculation so it doesn't overflow off the right side of mobile screens */
+    width: min(392px, calc(100% - 140px - 16px - 48px - 12px)); 
+    padding-left: 20px;
+  }
+
+/* Search box: pill top-left with the search button on its right (Google Maps).
 .search {
   left: 16px;
   display: flex;
   align-items: center;
   width: min(392px, calc(100% - 16px - 16px - 48px - 12px));
   padding-left: 20px;
-}
+} */
 
 .search input {
   flex: 1;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FLOW · Flooded Roads</title>
+  <title>flow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
@@ -14,6 +14,12 @@
 </head>
 <body>
   <div id="map" class="map" data-basemap-style="{{ basemap_style }}" data-location="{{ location|default:"" }}"></div>
+
+  {# Brand Header #}
+  <a href="/" class="brand-header overlay">
+    <img src="{% static 'flood/favicon-32x32.png' %}" alt="FLOW logo" class="brand-icon">
+    <span class="brand-name">flow</span>
+  </a>
 
   {# Search box (Google Maps style). Focusing it while empty opens "Recent": a listbox of past searches. #}
   <form class="search overlay" role="search" autocomplete="off">
