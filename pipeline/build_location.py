@@ -112,6 +112,7 @@ def score_segments(segments, mask, transform, water) -> gpd.GeoDataFrame:
         grid[permanent == 1] = PERMANENT
 
     corridors = segments.geometry.buffer(BUFFER_M, cap_style="flat")
+
     counts = zonal_stats(
         corridors, grid, affine=transform, categorical=True, all_touched=True, nodata=-1
     )

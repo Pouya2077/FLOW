@@ -5,7 +5,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.utils.http import urlencode
 
-from pipeline.fetch_data import fetch_sentinel_radar
+from pipeline.detect_flood import fetch_sentinel_radar
 
 from . import data
 from .utils import get_10km_range
@@ -34,9 +34,16 @@ def index(request):
     if search_query:
         result = get_10km_range(search_query)
         if isinstance(result, list):
-            bbox = result
-            # should change bbox in fetch_sentinel_data
-            radar_file = fetch_sentinel_radar(bbox=bbox)
+            coordinates = tuple(result)
+            safe_slug = search_query.strip().lower().replace(", ", "-").replace(" ", "-")
+            
+            print(f"Triggering pipeline for {safe_slug} at {coordinates}...")
+            
+            # 3. Trigger the pipeline with both arguments
+            radar_file = fetch_sentinel_radar(
+                bbox=coordinates,
+                region_slug=safe_slug
+            )
     other_theme = "dark" if theme == "light" else "light"
 
     locations = data.locations()
