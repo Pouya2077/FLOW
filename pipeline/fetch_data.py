@@ -1,4 +1,11 @@
+"""Download a raw Sentinel-1 VV radar image from the Copernicus Data Space (CDSE).
+
+Needs a free CDSE account in .env (CDSE_USERNAME, CDSE_PASSWORD). The output is the raw
+radar backscatter, not a flood mask; turning it into one is the data team's step.
+"""
+
 import os
+from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
@@ -6,6 +13,9 @@ from tqdm import tqdm
 
 # Load environment variables once when the module is imported
 load_dotenv()
+
+ROOT = Path(__file__).resolve().parent.parent
+RADAR_DIR = ROOT / "data" / "radar"  # gitignored; scenes are large
 
 
 def fetch_sentinel_radar(
@@ -67,14 +77,16 @@ def fetch_sentinel_radar(
     # 4. Download the .tiff File
     headers = {"Authorization": f"Bearer {access_token}"}
 
-    print(f"Starting download: {output_filename}")
+    RADAR_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = RADAR_DIR / output_filename
+    print(f"Starting download: {output_path}")
 
     with requests.get(download_url, headers=headers, stream=True, timeout=30) as r:
         r.raise_for_status()
         total_size = int(r.headers.get("content-length", 0))
 
         with (
-            open(output_filename, "wb") as f,
+            open(output_path, "wb") as f,
             tqdm(
                 desc="Downloading",
                 total=total_size,
@@ -88,7 +100,11 @@ def fetch_sentinel_radar(
                     f.write(chunk)
                     bar.update(len(chunk))
 
-    print(f"\nSuccess! File saved as {output_filename}")
+    print(f"\nSuccess! File saved as {output_path}")
 
     # Return the file path so the API endpoint can pass it to the next processing step
-    return output_filename
+    return str(output_path)
+
+
+if __name__ == "__main__":
+    fetch_sentinel_radar()
