@@ -4,18 +4,25 @@ Break roads into x meter chunks, so that flood locations can be more specific.
 """
 
 import argparse
+import json
+import math
 from pathlib import Path
 
 import geopandas as gpd
 import osmnx as ox
 import rasterio
+import shapely
 from osmnx._errors import InsufficientResponseError
-from shapely.ops import substring
+from rasterio.features import rasterize, shapes
+from rasterstats import zonal_stats
+from shapely.geometry import mapping, shape
+from shapely.ops import linemerge, substring, unary_union
 
 from pipeline.regions import Region, get_region
 
 ROOT = Path(__file__).resolve().parent.parent
 MASK_DIR = ROOT / "data" / "masks"
+OUT_DIR = ROOT / "data" / "locations"
 
 SEGMENT_M = 20  # target chunk length in meters; ~2 radar pixels
 PERMANENT_WATER_TAGS = {
@@ -24,9 +31,24 @@ PERMANENT_WATER_TAGS = {
     "landuse": ["reservoir", "basin"],
 }
 
+BUFFER_M = 5  # road half-width: ~10 m strip, about one road width plus OSM/imagery offset
+FLOODED_AT = 0.5  # minimum threshold of pixels covered to be considered flooded
+DRY, WATER, NO_DATA = 0, 1, 255  # mask values
+PERMANENT = 254  # value we give permanent-water pixels so they count as neither wet nor dry
+
 
 def first(value):
     return value[0] if isinstance(value, list) else value
+
+
+# Turn pandas NaN values into null for JSON
+def clean(value):
+    return None if isinstance(value, float) and math.isnan(value) else value
+
+
+def rounded(value, digits=2):
+    value = clean(value)
+    return None if value is None else round(value, digits)
 
 
 # Returns all roads cars can drive on in the region, one row per road stretch
@@ -72,11 +94,139 @@ def split_roads(roads: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
                     "seq": i,
                     "name": road.name,
                     "highway": road.highway,
-                    "osm_way_ids": ids,
+                    "osm_way_ids": [int(x) for x in ids],
                     "geometry": substring(line, i * step, (i + 1) * step),
                 }
             )
     return gpd.GeoDataFrame(rows, crs=roads.crs)
+
+
+# Label each chunk as flooded/clear/no_data based on the mask pixels
+def score_segments(segments, mask, transform, water) -> gpd.GeoDataFrame:
+    grid = mask.astype("int16")  # allows no_data = -1
+    if len(water):
+        permanent = rasterize(water.geometry, out_shape=mask.shape, transform=transform)
+        grid[permanent == 1] = PERMANENT
+
+    corridors = segments.geometry.buffer(BUFFER_M, cap_style="flat")
+    counts = zonal_stats(
+        corridors, grid, affine=transform, categorical=True, all_touched=True, nodata=-1
+    )
+
+    status, fraction, confidence = [], [], []
+    for c in counts:
+        wet, dry, unseen = c.get(WATER, 0), c.get(DRY, 0), c.get(NO_DATA, 0)
+        seen = wet + dry
+        if seen == 0 or unseen > seen:  # do not assume 'clear'
+            status.append("no_data")
+            fraction.append(None)
+            confidence.append(None)
+            continue
+        f = wet / seen
+        flooded = f >= FLOODED_AT
+        status.append("flooded" if flooded else "clear")
+        fraction.append(f)
+        confidence.append(f if flooded else 1 - f)  # how strongly the pixels agree with status
+
+    return segments.assign(status=status, flooded_fraction=fraction, confidence=confidence)
+
+
+# Join consecutive chunks of a road with the same status into one line
+def merge_runs(segments: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    rows = []
+    for _, road in segments.groupby("road_id", sort=False):
+        road = road.sort_values("seq")
+        run_ids = (road["status"] != road["status"].shift()).cumsum()
+        for _, run in road.groupby(run_ids):
+            head = run.iloc[0]
+            lengths = run.length
+            row = {
+                "name": head["name"],
+                "highway": head["highway"],
+                "osm_way_ids": head["osm_way_ids"],
+                "status": head["status"],
+                "flooded_fraction": None,
+                "confidence": None,
+                "length_m": lengths.sum(),
+                "geometry": linemerge(list(run.geometry)),
+            }
+            if head["status"] != "no_data":  # length-weighted average over the run
+                for col in ["flooded_fraction", "confidence"]:
+                    row[col] = float((run[col] * lengths).sum() / lengths.sum())
+            rows.append(row)
+    return gpd.GeoDataFrame(rows, crs=segments.crs)
+
+
+# Outline of the area the satellite actually observed (mask pixels that aren't no-data)
+def observed_area(mask, transform, crs):
+    seen = (mask != NO_DATA).astype("uint8")
+    polygons = [shape(g) for g, v in shapes(seen, mask=seen == 1, transform=transform) if v == 1]
+    outline = unary_union(polygons).simplify(transform.a)  # tolerance: one pixel
+    return gpd.GeoSeries([outline], crs=crs).to_crs(4326).iloc[0]
+
+
+# Summary of flooded streets, from most to least flooded
+def street_summaries(runs: gpd.GeoDataFrame, observed_utc) -> list[dict]:
+    lonlat = runs.to_crs(4326)
+    out = []
+    for name, street in lonlat[lonlat["name"].notna()].groupby("name"):
+        by_status = street.groupby("status")["length_m"].sum()
+        total = street["length_m"].sum()
+        flooded = by_status.get("flooded", 0.0)
+        out.append(
+            {
+                "name": name,
+                "total_m": round(total),
+                "flooded_m": round(flooded),
+                "no_data_m": round(by_status.get("no_data", 0.0)),
+                "pct": round(100 * flooded / total, 1),
+                "observed_utc": observed_utc,
+                "bbox": [round(v, 6) for v in street.total_bounds],
+            }
+        )
+    return sorted(out, key=lambda s: s["flooded_m"], reverse=True)
+
+
+# Convert regions to lon/lat and write to JSON for rendering
+def write_location(region, runs, tags, footprint) -> Path:
+    out = OUT_DIR / region.slug
+    out.mkdir(parents=True, exist_ok=True)
+    observed_utc = tags.get("observed_utc")
+
+    lonlat = runs.to_crs(4326)
+    lonlat["geometry"] = shapely.set_precision(lonlat.geometry.values, 1e-6)  # ~0.1 m
+    features = [
+        {
+            "type": "Feature",
+            "geometry": mapping(r.geometry),
+            "properties": {
+                "name": clean(r.name),
+                "highway": clean(r.highway),
+                "osm_way_ids": r.osm_way_ids,
+                "status": r.status,
+                "flooded_fraction": rounded(r.flooded_fraction),
+                "confidence": rounded(r.confidence),
+                "observed_utc": observed_utc,
+            },
+        }
+        for r in lonlat.itertuples()
+    ]
+    segments = {"type": "FeatureCollection", "features": features}
+    (out / "segments.geojson").write_text(json.dumps(segments, separators=(",", ":")))
+
+    streets = street_summaries(runs, observed_utc)
+    (out / "streets.json").write_text(json.dumps(streets, indent=2))
+
+    meta = {
+        "name": region.name,
+        "bbox": list(region.bbox),
+        "observed_utc": observed_utc,
+        "sensor": tags.get("sensor"),
+        "synthetic": tags.get("synthetic") == "true",
+        "footprint": mapping(shapely.set_precision(footprint, 1e-6)),
+    }
+    (out / "meta.json").write_text(json.dumps(meta, indent=2))
+    return out
 
 
 def main() -> None:
@@ -88,7 +238,8 @@ def main() -> None:
     region = get_region(args.region)
     mask_path = args.mask or MASK_DIR / f"{region.slug}_synthetic.tif"
     with rasterio.open(mask_path) as src:
-        crs = src.crs
+        crs, transform, tags = src.crs, src.transform, src.tags()
+        mask = src.read(1)
 
     roads = fetch_roads(region, crs)
     print(f"{len(roads)} road stretches, {roads.length.sum() / 1000:.1f} km total")
@@ -101,7 +252,15 @@ def main() -> None:
 
     segments = split_roads(roads)
     print(f"{len(segments)} segments, mean length {segments.length.mean():.1f} m")
-    print(segments.head())
+
+    segments = score_segments(segments, mask, transform, water)
+    km = segments.assign(m=segments.length).groupby("status")["m"].sum() / 1000
+    print("km by status:", ", ".join(f"{s} {v:.1f}" for s, v in km.items()))
+
+    runs = merge_runs(segments)
+    footprint = observed_area(mask, transform, crs)
+    out = write_location(region, runs, tags, footprint)
+    print(f"wrote {len(runs)} road stretches to {out}")
 
 
 if __name__ == "__main__":
