@@ -29,8 +29,6 @@ def index(request):
 
     # A ?q= search is handled in the browser: map.js geocodes it and starts a background analysis
     # (/api/analyze), so the page never waits on the pipeline.
-    other_theme = "dark" if theme == "light" else "light"
-
     locations = data.locations()
     location = request.GET.get("location")
     if location not in locations:
