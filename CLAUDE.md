@@ -98,6 +98,10 @@ data" notice when true), `footprint` (GeoJSON Polygon of observed pixels, for sh
 ### Pipeline (`pipeline/`, plain Python, run as modules from the repo root)
 - `regions.py` — `REGIONS` (slug, name, lon/lat bbox) and `get_region(slug)`. The only place a city is
   hardcoded; may later move to a data file or DB, so scripts must only go through `get_region`.
+- `fetch_data.py` — downloads one raw Sentinel-1 VV scene from the Copernicus Data Space (free account;
+  `CDSE_USERNAME`/`CDSE_PASSWORD` in `.env`) into `data/radar/` (gitignored). Raw backscatter, not a
+  mask; not yet wired to the steps below. Bbox/dates are hardcoded to Abbotsford, Nov 2021.
+  Run: `uv run python -m pipeline.fetch_data`.
 - `map_mask.py <slug>` — rasterizes `test_floods/<slug>.geojson` (hand-drawn test water) into
   `data/masks/<slug>_synthetic.tif` (gitignored), with an unobserved strip and `synthetic=true` tag.
 - `build_location.py <slug> [--mask path] [--out dir]` — the overlay below; writes
