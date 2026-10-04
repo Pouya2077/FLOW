@@ -19,8 +19,10 @@
   <form class="search overlay" role="search" autocomplete="off">
     <label class="visually-hidden" for="q">Search a street or area</label>
     <input id="q" name="q" type="search" placeholder="Search a street or area" value="{{ query }}" role="combobox" aria-autocomplete="none" aria-expanded="false" aria-controls="recent-list">
+    {# A magnifying glass while empty; a green Enter button once there's text to search. #}
     <button class="search-button" type="submit" aria-label="Search">
-      {% lucide "search" size=20 aria_hidden="true" %}
+      {% lucide "search" size=20 class="icon-search" aria_hidden="true" %}
+      {% lucide "corner-down-left" size=20 class="icon-enter" aria_hidden="true" %}
     </button>
     {% if recent %}
     <div id="recent" class="recent" hidden>

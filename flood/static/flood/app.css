@@ -16,6 +16,7 @@
   --unobserved: rgb(102 102 102 / 0.22); /* hatch over the area outside the satellite footprint */
   --shadow: 0 1px 2px rgb(60 64 67 / 0.3), 0 2px 6px 2px rgb(60 64 67 / 0.15);
   --toggle-on: #000000; /* outline of a switched-on setting: black on light, white on dark */
+  --go: #188038; /* the search box's Enter button; white glyph on it passes contrast in both themes */
 }
 
 [data-theme="dark"] {
@@ -121,23 +122,45 @@ body {
   appearance: none;
 }
 
+/* 40 px inside the 48 px pill, so it can turn into a filled circle without moving anything. */
 .search-button {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
+  margin: 0 4px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
   color: var(--text-muted); /* lucide icons stroke with currentColor */
   cursor: pointer;
+  transition: background-color 150ms ease;
 }
 
 .search-button:hover {
   color: var(--accent);
+}
+
+.search-button .icon-enter,
+.search.has-text .search-button .icon-search {
+  display: none;
+}
+
+/* Text in the box: a green Enter button, for people who'd rather click than press Enter. */
+.search.has-text .search-button {
+  background: var(--go);
+  color: #ffffff;
+}
+
+.search.has-text .search-button .icon-enter {
+  display: block;
+}
+
+.search.has-text .search-button:hover {
+  filter: brightness(1.1);
 }
 
 /* "Recent" panel under the search box, shown while it's focused and empty. */
@@ -434,4 +457,76 @@ body {
 
 .facility-source a {
   color: inherit;
+}
+
+/* "Loading..." in the middle of a window whose satellite analysis is running. */
+.window-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  max-width: 260px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: rgb(var(--surface) / 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  text-align: center;
+  pointer-events: none; /* never blocks dragging the map */
+}
+
+.window-loading p {
+  margin: 0;
+}
+
+.window-loading-title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.window-loading-detail {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
+  border: 3px solid rgb(var(--surface-hover));
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Window size, shown when its outline is clicked. */
+.window-popup .maplibregl-popup-tip {
+  display: none;
+}
+
+.window-popup .maplibregl-popup-content {
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgb(var(--surface) / 1);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s; /* slower, but still shows the page is working */
+  }
+
+  .search-button {
+    transition: none;
+  }
 }

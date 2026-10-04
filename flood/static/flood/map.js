@@ -156,6 +156,14 @@ map.on("load", () => {
     paint: { "line-color": token("--accent"), "line-width": 3, "line-dasharray": [2, 2] },
   });
 
+  // Invisible, wider copies of both outlines, so a click near the 3 px line shows the window's size.
+  for (const [id, source] of [["window-hit", "windows"], ["window-pending-hit", "pending"]]) {
+    add({ id, type: "line", source, paint: { "line-width": 16, "line-opacity": 0 } });
+  }
+  map.on("click", ["window-hit", "window-pending-hit"], showWindowSize);
+  map.on("mouseenter", ["window-hit", "window-pending-hit"], () => (map.getCanvas().style.cursor = "pointer"));
+  map.on("mouseleave", ["window-hit", "window-pending-hit"], () => (map.getCanvas().style.cursor = ""));
+
   addFacilityLayers();
   addRoadLabels(style);
   // Listen before framing: an unanimated fit fires "moveend" immediately.
@@ -650,8 +658,14 @@ async function search(query) {
     return;
   }
   keepInUrl({ q: query });
-  map.fitBounds(results[0].bbox, { padding: PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 800 });
   analyze(results[0]);
+}
+
+// Fit the map to a whole window, so its outline stays in view rather than zooming to the address.
+// Extra room at the sides and bottom keeps the outline clear of the gear, zoom buttons and credits.
+const WINDOW_PADDING = { top: 80, right: 72, bottom: 48, left: 24 };
+function fitWindow(bbox) {
+  map.fitBounds(bbox, { padding: WINDOW_PADDING, duration: reduceMotion ? 0 : 800 });
 }
 
 // --- Analysing a searched place: a background job on the newest satellite pass ---
@@ -668,19 +682,25 @@ async function analyze(place) {
     job = await getJSON(`/api/analyze?${params}`, { method: "POST" });
   } catch {
     showSearchMessage("Satellite analysis isn't available right now. Try again in a moment.");
+    map.fitBounds(place.bbox, { padding: PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 800 });
     return;
   }
   // The window moves to the searched area straight away; the old one is no longer drawn.
   showWindow(null);
   showPending(job.bbox);
+  fitWindow(job.bbox);
   while (run === analysisRun) {
-    if (job.status === "done") return finishAnalysis(job);
+    if (job.status === "done") {
+      hideLoading();
+      return finishAnalysis(job);
+    }
     if (job.status === "failed") {
+      hideLoading();
       showPending(null);
       showSearchMessage(`No satellite result for ${job.name}: ${job.message}`);
       return;
     }
-    showSearchMessage(`Analysing the latest satellite pass for ${job.name}. This may take a minute.`);
+    showLoading(job.bbox, `Analysing the latest satellite pass for ${job.name}. This may take a minute.`);
     await new Promise((resolve) => setTimeout(resolve, POLL_MS));
     try {
       job = await getJSON(`/api/analyze/${encodeURIComponent(job.slug)}`);
@@ -701,7 +721,50 @@ async function finishAnalysis(job) {
   showSearchMessage(when ? `Satellite pass of ${when}. Blue = water detected.` : "");
 }
 
+// "Loading..." with a spinner in the middle of the window being analysed; the detail goes under it,
+// so the search box stays clear.
+let loadingMarker;
+function showLoading(bbox, detail) {
+  if (!loadingMarker) {
+    const card = el("div", "window-loading");
+    card.setAttribute("role", "status");
+    card.appendChild(el("div", "spinner"));
+    card.appendChild(el("p", "window-loading-title", "Loading..."));
+    card.appendChild(el("p", "window-loading-detail"));
+    loadingMarker = new maplibregl.Marker({ element: card });
+  }
+  const [w, s, e, n] = bbox;
+  loadingMarker.getElement().querySelector(".window-loading-detail").textContent = detail;
+  loadingMarker.setLngLat([(w + e) / 2, (s + n) / 2]).addTo(map);
+}
+
+function hideLoading() {
+  loadingMarker?.remove();
+}
+
+// Clicking a window's outline says how big it is (searches analyse a 10 km square).
+let windowPopup;
+function showWindowSize(event) {
+  if (map.queryRenderedFeatures(event.point, { layers: ["facilities"] }).length) return; // icon wins
+  // Not the clicked feature's geometry: that's cut to the map tile it was drawn in.
+  const pending = event.features[0].layer.id === "window-pending-hit";
+  const bbox = pending ? pendingBbox : metas[current]?.bbox;
+  if (!bbox) return;
+  const [w, s, e, n] = bbox;
+  const lat = (s + n) / 2;
+  const wide = metres([w, lat], [e, lat]) / 1000;
+  const tall = metres([w, s], [w, n]) / 1000;
+  const km = (v) => (v >= 5 ? Math.round(v) : v.toFixed(1));
+  windowPopup?.remove();
+  windowPopup = new maplibregl.Popup({ className: "window-popup", closeButton: false })
+    .setLngLat(event.lngLat)
+    .setText(`${pending ? "Analysing" : "Satellite window"}: ${km(wide)} km × ${km(tall)} km`)
+    .addTo(map);
+}
+
+let pendingBbox = null;
 function showPending(bbox) {
+  pendingBbox = bbox;
   map.getSource("pending").setData(bbox ? bboxOutline(bbox) : emptyCollection());
 }
 
@@ -731,6 +794,7 @@ function chooseRecent(index) {
   closeRecent();
   showSearchMessage("");
   analysisRun++; // stop following a search that's still being analysed
+  hideLoading();
   showPending(null);
   showWindow(option.dataset.slug);
   keepInUrl({ location: current });
@@ -809,7 +873,14 @@ const autocompleteList = autocompleteContainer.querySelector('ul');
 let currentSuggestions = []; 
 let debounceTimer;
 
+// The search button turns into a green Enter button while there's text to search.
+function updateSearchButton() {
+  form.classList.toggle("has-text", Boolean(input.value.trim()));
+}
+updateSearchButton(); // a reload with ?q= starts with text in the box
+
 input.addEventListener("input", (e) => {
+  updateSearchButton();
   const query = e.target.value.trim();
   clearTimeout(debounceTimer);
 

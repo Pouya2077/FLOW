@@ -161,8 +161,11 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - **Floating controls are translucent at rest** (frosted, map shows through) and turn **solid with a
   Maps-style shadow** on hover, focus or while typing. Applies to every overlay control (`.overlay`).
 - **Search:** pill (48 px, ~392 px) in the **top-left**, magnifying-glass button on its right.
-  Submitting fits the map to the first `/api/geocode` result (max zoom 16); the query is kept in
-  `?q=`. Errors / "no places found" show in a solid message under the box.
+  With text in the box the button becomes a green Enter button (`--go`). Submitting fits the map to
+  the whole 10 km analysis window (not the address), so its outline stays in view; the query is
+  kept in `?q=`. While the window is analysed a "Loading..." card with a spinner sits in its middle,
+  with the detail under it. Errors / "no places found" show in a solid message under the box.
+  Clicking a window's outline shows its size.
 - **Recent searches:** focusing the empty search box opens a "Recent" panel (WAI-ARIA combobox +
   listbox; ↑/↓, Enter, Escape). Each entry: clock icon, address, observation time in the location's
   time zone (`views.observed_local`). Choosing one flies back to that observation window
