@@ -39,13 +39,20 @@ def meta(request, location: str):
         raise HttpError(404, f"unknown location {location!r}") from None
 
 
+# Locations intersecting the view; only `location` if given (the map shows one window at a time)
+def _slugs_in(view: data.BBox, location: str | None) -> list[str]:
+    slugs = data.locations_in(view)
+    return [s for s in slugs if s == location] if location else slugs
+
+
 @api.get("/flood")
-def flood(request, bbox: str):
-    """Road segments (flooded, clear and no_data) intersecting the view, as a FeatureCollection."""
+def flood(request, bbox: str, location: str | None = None):
+    """Road segments (flooded, clear and no_data) intersecting the view, as a FeatureCollection.
+    With location=, only that location's segments."""
     view = _parse_bbox(bbox)
     features = [
         f
-        for slug in data.locations_in(view)
+        for slug in _slugs_in(view, location)
         for f in data.segments(slug)
         if data.intersects(view, f["bbox"])
     ]
@@ -53,12 +60,12 @@ def flood(request, bbox: str):
 
 
 @api.get("/streets")
-def streets(request, bbox: str):
-    """Per-street summaries in view, most flooded first."""
+def streets(request, bbox: str, location: str | None = None):
+    """Per-street summaries in view, most flooded first. With location=, only that location's."""
     view = _parse_bbox(bbox)
     rows = [
         s
-        for slug in data.locations_in(view)
+        for slug in _slugs_in(view, location)
         for s in data.streets(slug)
         if data.intersects(view, s["bbox"])
     ]

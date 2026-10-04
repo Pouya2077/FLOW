@@ -173,6 +173,8 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   grey = observed clear, dashed grey = not observed / no data. A road outside the satellite footprint
   must never look safe: everything outside `meta.footprint` is covered by a diagonal hatch.
 - **Window outline:** the footprint is outlined 3 px in `--accent`, matching the selected Recent entry.
+- **One window at a time:** only the current location's window, hatch hole and road traces are drawn.
+  A new search (or choosing a Recent entry) moves the window there; the previous one is not rendered.
 - **Approach dots:** basemap roads crossing the window edge get a dotted stub outside it (~70 screen
   px, fading out in 5 steps), computed in `map.js` from the basemap's `transportation` tiles.
 - **Road labels by importance:** the basemap's road-name layers are hidden and replaced by tiers —
