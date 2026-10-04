@@ -21,10 +21,10 @@ load_dotenv()
 
 def fetch_sentinel_radar(
     # 10km x 10km bounding box around Sumas Prairie
-    bbox: tuple[float, float, float, float] = (-122.319, 49.055, -122.181, 49.145),
+    bbox: tuple[float, float, float, float],
     date_range: str = "2021-11-14T00:00:00Z/2021-11-30T23:59:59Z",
-    output_filename: str = "abbotsford_vv_radar.tiff",
-    region_slug: str = "abbostford_area",  # Required for the handoff to build_location.py
+    output_filename: str = "example.tiff",
+    region_slug: str = "example_area",  # Required for the handoff to build_location.py
 ) -> str | None:
     """
     Fetches a subset of Sentinel-1 VV radar data for a given bounding box.
