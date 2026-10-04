@@ -18,6 +18,7 @@
   --toggle-on: #000000; /* outline of a switched-on setting: black on light, white on dark */
   --go: #188038; /* the search box's Enter button; white glyph on it passes contrast in both themes */
   --danger: #c5221f; /* cautionary routes (team-approved); white glyph on it passes contrast */
+  --danger-text: #c5221f; /* red text on a control ("Remove route"); 5.6:1 on white */
   --path-button-w: 132px; /* Find Path, left of the gear; the search box leaves room for it */
   --logo: #55acee; /* the wave in the logo; "flow" on the About page (team-approved) */
   /* About page highlights (team-approved), from the Okabe–Ito colour-blind-safe palette and
@@ -29,6 +30,7 @@
 
 [data-theme="dark"] {
   --danger: #e8453c; /* lifted so the red route reads on the near-black map */
+  --danger-text: #ff7b72; /* lifted further for text on the dark surface (~5.5:1) */
   --map-bg: #0c0c0c; /* Dark background, shown while tiles load */
   --surface: 44 44 47; /* lifted above the map so solid controls read on near-black */
   --surface-hover: 58 58 62;
@@ -532,6 +534,23 @@ body {
   animation: spin 800ms linear infinite;
 }
 
+/* Zoomed out past the window's size: just a small spinner badge. */
+.window-loading.compact {
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.window-loading.compact .window-loading-detail {
+  display: none;
+}
+
+.window-loading.compact .spinner {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border-width: 3px;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -540,22 +559,36 @@ body {
 
 /* Errors: a solid bar bottom-centre, like Google Maps'. It stays until dismissed or the next
    search, so a failure is never missed. */
-.notice {
+/* Holds the pathfinding card and the error bar, bottom-centre, stacked. */
+.bottom-stack {
   position: fixed;
   bottom: 32px;
   left: 50%;
   z-index: 2;
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  width: min(520px, calc(100% - 32px));
+  transform: translateX(-50%);
+  pointer-events: none; /* the map stays draggable around the cards */
+}
+
+.bottom-stack > * {
+  pointer-events: auto;
+}
+
+.notice {
+  display: flex;
   gap: 8px;
   align-items: center;
   width: max-content;
-  max-width: min(520px, calc(100% - 32px));
+  max-width: 100%;
   padding: 6px 6px 6px 14px;
   border-radius: 8px;
   background: rgb(var(--surface) / 1);
   box-shadow: var(--shadow);
   color: var(--text);
-  transform: translateX(-50%);
 }
 
 .notice[hidden] {
@@ -609,7 +642,7 @@ body {
 
 /* Phones: above the zoom buttons and credits. */
 @media (max-width: 600px) {
-  .notice {
+  .bottom-stack {
     bottom: 112px;
   }
 }
@@ -683,19 +716,38 @@ body {
   box-shadow: 0 0 0 7px var(--accent);
 }
 
-/* Step-by-step instructions and errors, under the button. */
+/* Pathfinding steps and errors, bottom-centre above any error bar; the X hides them. */
 .path-card {
-  position: fixed;
-  top: 72px;
-  right: 72px;
-  z-index: 1;
-  width: min(300px, calc(100% - 88px));
-  padding: 12px 16px;
-  border-radius: 12px;
+  position: relative;
+  width: min(420px, 100%);
+  padding: 12px 44px 12px 16px;
+  border-radius: 8px;
   background: rgb(var(--surface) / 1);
   box-shadow: var(--shadow);
   color: var(--text);
   font-size: 14px;
+}
+
+.path-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: inline-flex;
+  padding: 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.path-close:hover {
+  background: rgb(var(--surface-hover));
+}
+
+.path-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .path-card[hidden] {
@@ -711,7 +763,7 @@ body {
   font-weight: 500;
 }
 
-.path-card button {
+.path-retry {
   margin-top: 8px;
   padding: 6px 12px;
   border: 1px solid rgb(var(--surface-hover));
@@ -720,6 +772,32 @@ body {
   color: var(--accent);
   font: inherit;
   cursor: pointer;
+}
+
+/* The route popup's "Remove route": bold red text with a bin icon, so it reads in both themes. */
+.route-remove {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin: 10px 0 0 -8px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--danger-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.route-remove:hover {
+  background: rgb(var(--surface-hover));
+  text-decoration: underline;
+}
+
+.route-remove:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* Start (A) and destination (B) of a route. */

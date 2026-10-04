@@ -58,10 +58,8 @@
     {% lucide "route" size=20 aria_hidden="true" %}
     <span class="path-label">Find Path</span>
   </button>
-  <div id="path-card" class="path-card" role="status" aria-live="polite" hidden>
-    <p class="path-text"></p>
-  </div>
   <template id="route-icons">{% lucide "triangle-alert" size=20 aria_hidden="true" %}</template>
+  <template id="remove-icon">{% lucide "trash-2" size=18 aria_hidden="true" %}</template>
 
   {# Settings: a gear top-right that unrolls the theme toggle and the critical-buildings toggle. #}
   <div class="settings">
@@ -83,6 +81,14 @@
   <a class="about-link overlay" href="{% url 'about' %}">About</a>
 
   {# Errors (search, analysis, loading roads): a bar bottom-centre, like Google Maps'. #}
+  {# Bottom-centre, stacked: the pathfinding steps, then any error under them. #}
+  <div class="bottom-stack">
+  <div id="path-card" class="path-card" role="status" aria-live="polite" hidden>
+    <div class="path-body"></div>
+    <button class="path-close" type="button" aria-label="Hide instructions">
+      {% lucide "x" size=20 aria_hidden="true" %}
+    </button>
+  </div>
   <div class="notice" role="alert" hidden>
     {% lucide "circle-alert" size=20 class="notice-icon" aria_hidden="true" %}
     <p class="notice-text"></p>
@@ -90,6 +96,7 @@
     <button class="notice-close" type="button" aria-label="Dismiss">
       {% lucide "x" size=20 aria_hidden="true" %}
     </button>
+  </div>
   </div>
 
   {# One lucide glyph per kind of critical building; map.js draws them onto map icons and popups. #}
