@@ -252,6 +252,7 @@ def write_location(region, runs, tags, footprint, out_dir: Path = OUT_DIR) -> Pa
         "name": region.name,
         "bbox": list(region.bbox),
         "observed_utc": observed_utc,
+        "timezone": region.timezone,
         "sensor": tags.get("sensor"),
         "synthetic": tags.get("synthetic") == "true",
         "footprint": mapping(shapely.set_precision(footprint, 1e-6)),

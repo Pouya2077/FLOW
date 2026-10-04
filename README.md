@@ -129,19 +129,20 @@ The offline pipeline writes one folder per demo location (for example
 
 Until a location folder exists, the API returns empty results.
 
-## What happens when someone searches
+## What happens when someone picks an observation
 
 The backend never does heavy maths per request. The data team's pipeline does the hard part once
 and saves files; Django just filters those files and passes them along.
 
-1. The user types "Abbotsford" into the search box. The frontend calls
-   `/api/geocode?q=Abbotsford` and gets back a bounding box.
-2. The map zooms to that box (MapLibre's `fitBounds`).
+1. The user picks an observation from the dropdown, e.g.
+   "Sumas Prairie, Abbotsford | Nov 16, 2021, 6:25 AM PST".
+2. The map fits to that location's window (MapLibre's `fitBounds`) and locks there: users can zoom
+   in for detail but not out or away.
 3. The frontend calls `/api/flood?bbox=...` with the visible area and draws the returned roads:
-   blue for water detected, solid grey for observed clear, dashed grey for not observed. Everything
-   outside the satellite's coverage is hatched.
-4. It calls `/api/streets?bbox=...` to fill the sidebar with the most-flooded streets.
-5. It calls `/api/meta` to show the "Satellite observation: <time>" banner.
+   blue for water detected, solid grey for observed clear, dashed grey for not observed. The window
+   is outlined, everything outside it is hatched, and roads leading in get short dotted stubs.
+4. Later: `/api/streets?bbox=...` for a sidebar of the most-flooded streets, and `/api/meta` for an
+   observation-time banner.
 
 ## Who works where
 
