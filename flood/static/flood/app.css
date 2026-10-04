@@ -532,6 +532,23 @@ body {
   animation: spin 800ms linear infinite;
 }
 
+/* Zoomed out past the window's size: just a small spinner badge. */
+.window-loading.compact {
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.window-loading.compact .window-loading-detail {
+  display: none;
+}
+
+.window-loading.compact .spinner {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border-width: 3px;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -711,7 +728,8 @@ body {
   font-weight: 500;
 }
 
-.path-card button {
+.path-card button,
+.route-remove {
   margin-top: 8px;
   padding: 6px 12px;
   border: 1px solid rgb(var(--surface-hover));

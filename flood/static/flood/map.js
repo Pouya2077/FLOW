@@ -180,6 +180,7 @@ map.on("load", () => {
   map.on("moveend", loadView);
   map.on("idle", updateApproaches);
   frame(current, false);
+  restoreRoute();
   if (input.value.trim()) search(input.value); // a reload with ?q= repeats the search
 });
 
@@ -198,7 +199,8 @@ function shownMetas() {
 // Move the window to another location; the previous one stops being drawn.
 function showWindow(slug) {
   current = slug;
-  clearPath(); // a route belongs to one window
+  clearPath({ forget: false }); // a route belongs to one window; it comes back with its window
+  restoreRoute();
   map.getSource("windows").setData(footprints(shownMetas()));
   map.getSource("unobserved").setData(unobservedArea(shownMetas()));
   map.getSource("approaches").setData(emptyCollection());
@@ -904,10 +906,27 @@ function showLoading(bbox, place) {
       ". This may take a minute.",
     );
   loadingMarker.setLngLat([(w + e) / 2, (s + n) / 2]).addTo(map);
+  loadingBbox = bbox;
+  sizeLoading();
+  map.off("zoom", sizeLoading); // called on every poll: keep a single listener
+  map.on("zoom", sizeLoading);
 }
 
 function hideLoading() {
   loadingMarker?.remove();
+  map.off("zoom", sizeLoading);
+}
+
+// Zoomed out, the window gets smaller than the card: shrink the card to a spinner badge so it doesn't
+// cover the region around the window, but stays visible at country or continent zoom.
+const LOADING_FULL_PX = 280; // the full card's width, plus a little room
+let loadingBbox = null;
+function sizeLoading() {
+  if (!loadingBbox || !loadingMarker) return;
+  const [w, s, e, n] = loadingBbox;
+  const mid = (s + n) / 2;
+  const shownWidth = map.project([e, mid]).x - map.project([w, mid]).x;
+  loadingMarker.getElement().classList.toggle("compact", shownWidth < LOADING_FULL_PX);
 }
 
 // Clicking a window's outline says how big it is (searches analyse a 10 km square).
@@ -1244,6 +1263,7 @@ function trackHover(source, layers) {
 
 function setPathMode(on) {
   pathMode = on;
+  if (!on && picks.length === 1) clearPath(); // a lone start is dropped; a drawn route stays
   pathToggle.setAttribute("aria-pressed", String(on));
   const iconsShown = facilitiesToggle?.getAttribute("aria-pressed") !== "false"; // unless hidden in settings
   map.setLayoutProperty("pick-streets", "visibility", on ? "visible" : "none");
@@ -1261,7 +1281,7 @@ pathToggle?.addEventListener("click", () => setPathMode(!pathMode));
 
 // In pathfinding mode a click picks a building icon or a street; the route keeps its popup.
 function onPathClick(event) {
-  if (!pathMode) return;
+  if (!pathMode || event.originalEvent?.target?.closest?.(".path-marker")) return; // markers handle their own
   const { x, y } = event.point;
   const box = [[x - CLICK_PX, y - CLICK_PX], [x + CLICK_PX, y + CLICK_PX]];
   const route = map.queryRenderedFeatures(box, { layers: ["route-line"] });
@@ -1277,19 +1297,26 @@ function onPathClick(event) {
 
 function pick(point, label) {
   if (picks.length === 2) clearPath(); // a third pick starts a new route
-  if (picks.length === 1 && metres(picks[0].point, point) < SAME_POINT_M) {
-    showPathStep("That's the start. Choose a different destination.", true);
-    return;
-  }
-  const marker = new maplibregl.Marker({ element: el("div", "path-marker", picks.length ? "B" : "A") })
-    .setLngLat(point)
-    .addTo(map);
-  picks.push({ point, label, marker });
+  if (picks.length === 1 && metres(picks[0].point, point) < SAME_POINT_M) return clearPath(); // picked again: de-select
+  addPick(point, label);
   if (picks.length === 1) showPathStep(`From ${label}. Choose a destination: a building or a street.`);
   else findRoute();
 }
 
-async function findRoute() {
+function addPick(point, label) {
+  const element = el("div", "path-marker", picks.length ? "B" : "A");
+  // Clicking the start again de-selects it; once a route is drawn, "Remove route" in its popup clears it.
+  element.addEventListener("click", (event) => {
+    if (!pathMode) return;
+    event.stopPropagation();
+    if (picks.length === 1) clearPath();
+  });
+  const marker = new maplibregl.Marker({ element }).setLngLat(point).addTo(map);
+  picks.push({ point, label, marker });
+}
+
+// `restoring`: redrawing a route saved before a reload, so no camera move, and a failure just forgets it.
+async function findRoute({ restoring = false } = {}) {
   const [a, b] = picks;
   const request = ++pathRequest;
   showPathStep(`Finding a route from ${a.label} to ${b.label}…`);
@@ -1300,22 +1327,28 @@ async function findRoute() {
   try {
     response = await fetch(`/api/route?${params}`, { signal: controller.signal });
   } catch {
-    if (request === pathRequest) showPathStep("Couldn't reach the routing service. Try again.", true, findRoute);
+    if (request !== pathRequest) return;
+    if (restoring) clearPath();
+    else showPathStep("Couldn't reach the routing service. Try again.", true, findRoute);
     return;
   } finally {
     clearTimeout(timer);
   }
   if (request !== pathRequest) return; // cleared or replaced meanwhile
   const body = await response.json().catch(() => ({}));
+  if (!response.ok && restoring) return clearPath();
   if (!response.ok) {
     const message = typeof body.detail === "string" ? body.detail : "Couldn't find a route. Try again.";
     showPathStep(`${message} Choose a new start to try again.`, true);
     return;
   }
   map.getSource("route").setData(body);
-  const coords = body.geometry.coordinates;
-  const bounds = coords.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(coords[0], coords[0]));
-  map.fitBounds(bounds, { padding: WINDOW_PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 600 });
+  saveRoute();
+  if (!restoring) {
+    const coords = body.geometry.coordinates;
+    const bounds = coords.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(coords[0], coords[0]));
+    map.fitBounds(bounds, { padding: WINDOW_PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 600 });
+  }
   const p = body.properties;
   const caution = p.kind === "clear" ? "" : " Cautionary route: click it to see why.";
   showPathStep(`Route found: about ${duration(p.duration_s)} (estimated).${caution} Click a building or street to start a new route.`);
@@ -1332,14 +1365,46 @@ function showPathStep(text, isError = false, retry = null) {
   }
 }
 
-// Remove the route and both markers, e.g. when the window changes.
-function clearPath() {
+// Remove the route and both markers. `forget: false` keeps the saved copy (the window changed).
+function clearPath({ forget = true } = {}) {
   pathRequest++;
   for (const p of picks) p.marker.remove();
   picks = [];
   routePopup?.remove();
   map.getSource("route")?.setData(emptyCollection());
+  if (forget) storage("removeItem", ROUTE_KEY);
   if (pathMode) showPathStep("Choose a start: a building or a street.");
+}
+
+// The last route survives a reload: its two picks are kept in this browser and the route is asked
+// for again, so it reflects the window's current data. Storage can throw (private windows).
+const ROUTE_KEY = "flow.route";
+
+function storage(method, ...args) {
+  try {
+    return localStorage[method](...args);
+  } catch {
+    return null;
+  }
+}
+
+function saveRoute() {
+  const saved = { location: current, picks: picks.map(({ point, label }) => ({ point, label })) };
+  storage("setItem", ROUTE_KEY, JSON.stringify(saved));
+}
+
+function restoreRoute() {
+  let saved;
+  try {
+    saved = JSON.parse(storage("getItem", ROUTE_KEY));
+  } catch {
+    saved = null;
+  }
+  if (!saved || !current || saved.location !== current) return;
+  const valid = (p) => Array.isArray(p?.point) && p.point.length === 2 && p.point.every(Number.isFinite);
+  if (saved.picks?.length !== 2 || !saved.picks.every(valid)) return storage("removeItem", ROUTE_KEY);
+  for (const { point, label } of saved.picks) addPick(point, String(label ?? "Unnamed road"));
+  findRoute({ restoring: true });
 }
 
 // Travel time is an estimate from speed limits, never a promise: said in the popup.
@@ -1377,6 +1442,9 @@ function routeCard(p) {
   }
   card.appendChild(el("p", "route-note", "Time estimated from speed limits only: no traffic or road closures. Radar sees water, not depth."));
   card.appendChild(el("p", "facility-source", `Satellite: ${localTime(p.observed_utc)}`));
+  const remove = card.appendChild(el("button", "route-remove", "Remove route"));
+  remove.type = "button";
+  remove.addEventListener("click", () => clearPath());
   return card;
 }
 

@@ -185,7 +185,8 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   While typing (box focused, not empty) the button becomes a green Enter button (`--go`).
   Submitting fits the map to the whole 10 km analysis window (not the address), so its outline
   stays in view; the query is kept in `?q=`. While the window is analysed a card with a large
-  spinner sits in its middle, with the detail under it. No message box under the search bar (team
+  spinner sits in its middle, with the detail under it; once the window is narrower on screen than
+  the card, it shrinks to a small spinner badge. No message box under the search bar (team
   decision, Oct 4). Clicking a window's outline shows its size.
 - **Errors are never silent:** a solid bar bottom-centre (`.notice`, `showNotice()` in `map.js`)
   with "Try again" where retrying helps; it stays until dismissed or the next search. Failed jobs
@@ -230,14 +231,17 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   Escape leaves; icon only on phones). In the mode, window streets get an `--accent` casing and icons
   a ring (stronger on hover); streets are only pickable in this mode, and icons pick instead of
   opening their popup. Pick A, then B (icon or street, any mix) → `/api/route` → the map fits the
-  route. A card under the button gives each step and any error; a third pick starts over. Leaving
-  the mode keeps the route; switching window clears it.
+  route. A card under the button gives each step and any error; a third pick starts over. Clicking
+  A again (marker or spot) de-selects it. Leaving the mode drops a lone A but keeps a drawn route.
+  The route popup's "Remove route" clears the route and both picks. The last route's picks are kept
+  in `localStorage` (`flow.route`, never the URL) and re-routed on reload or when its window is
+  shown again; switching window hides it.
 - **Routes:** green (`--go`) only if every road was observed clear. Otherwise red (`--danger`) with
   lucide `triangle-alert` badges along it: cautionary because it crosses flooded roads (fallback:
   least-flooded fast route), uses unobserved roads (allowed, no penalty, but always red with a
   "no satellite data" message), or starts/ends in water. Clicking a route: "Estimated travel time",
   distance, one line per reason, a note that times come from speed limits only, the observation
-  time. Never "safe".
+  time, and a "Remove route" button. Never "safe".
 - Optional faint flood-extent raster under the traces.
 
 ## Radar (SAR) pitfalls — always account for these
