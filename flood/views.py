@@ -30,7 +30,6 @@ def index(request):
     search_query = request.GET.get("q")
     bbox = None
     radar_file = None
-    print("here")
 
     if search_query:
         result = get_10km_range(search_query)
