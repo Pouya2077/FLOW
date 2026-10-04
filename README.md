@@ -1,4 +1,4 @@
-# FLOW: Flood-Obstructed Roads
+# FLOW: First-Responder Logistics Over Water
 
 A website for first responders that shows which streets are flooded, and how much of each, using
 radar satellite data. It also marks critical buildings (hospitals, fire and police stations,
