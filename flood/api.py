@@ -9,7 +9,7 @@ from ninja.errors import HttpError
 
 from pipeline.regions import region_around
 
-from . import data, jobs
+from . import data, jobs, routing
 
 api = NinjaAPI(title="FLOW API", version="0.1.0")
 
@@ -72,6 +72,37 @@ def facilities(request, bbox: str, location: str | None = None):
         if data.intersects(view, f["bbox"])
     ]
     return {"type": "FeatureCollection", "features": features}
+
+
+def _parse_point(value: str, name: str) -> tuple[float, float]:
+    try:
+        lon, lat = (float(v) for v in value.split(","))
+    except ValueError:
+        raise HttpError(400, f"{name} must be lon,lat") from None
+    return lon, lat
+
+
+@api.get("/route")
+def route(request, location: str, start: str, end: str):
+    """Fastest route between two points (start=lon,lat, end=lon,lat) in one window that avoids
+    roads where water was detected; if none exists, the least-flooded fast route. A GeoJSON
+    Feature whose properties say whether it's "clear" or "cautionary" and why. Errors carry a
+    message for the user in `detail`."""
+    points = [_parse_point(start, "start"), _parse_point(end, "end")]
+    meta = data.locations().get(location)
+    if meta is None:
+        raise HttpError(404, f"unknown location {location!r}")
+    if not all(data.intersects((lon, lat, lon, lat), meta["bbox"]) for lon, lat in points):
+        raise HttpError(400, "Routing only works inside the satellite window.")
+    road_graph = data.graph(location)
+    if road_graph is None:
+        raise HttpError(404, "Routing isn't available for this area yet.")
+    try:
+        feature = routing.route(road_graph, *points)
+    except routing.RouteError as e:
+        raise HttpError(422, str(e)) from None
+    feature["properties"]["observed_utc"] = meta.get("observed_utc")
+    return feature
 
 
 @api.get("/streets")

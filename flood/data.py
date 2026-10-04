@@ -5,6 +5,7 @@ Each location is a folder:
     <dir>/<slug>/segments.geojson  road segments (see CLAUDE.md "Road segment")
     <dir>/<slug>/streets.json      per-street summaries (see CLAUDE.md "Street summary")
     <dir>/<slug>/facilities.geojson critical buildings (see CLAUDE.md "Critical building"); optional
+    <dir>/<slug>/graph.json        road graph for routing (see CLAUDE.md "Road graph"); optional
 
 Files are read once per process; reload() picks up a finished search. Restart runserver after
 regenerating the committed demo data.
@@ -15,6 +16,8 @@ from functools import cache
 from pathlib import Path
 
 from django.conf import settings
+
+from .routing import RoadGraph
 
 BBox = tuple[float, float, float, float]  # minx, miny, maxx, maxy (lon/lat)
 
@@ -72,9 +75,17 @@ def facilities(slug: str) -> list[dict]:
     return features
 
 
+@cache
+def graph(slug: str) -> RoadGraph | None:
+    path = _folders()[slug] / "graph.json"
+    if not path.exists():  # built before routing existed, or the graph step failed
+        return None
+    return RoadGraph(json.loads(path.read_text()))
+
+
 # Forget cached files, e.g. after a search wrote a new folder
 def reload() -> None:
-    for cached in (_folders, locations, segments, streets, facilities):
+    for cached in (_folders, locations, segments, streets, facilities, graph):
         cached.cache_clear()
 
 

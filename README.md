@@ -45,6 +45,7 @@ everything with `uv run` so it runs inside the project's environment.
 | Pre-commit on all files | `uv run pre-commit run --all-files` |
 | Add a dependency | `uv add <pkg>` (dev-only: `uv add --dev <pkg>`) |
 | Rebuild the Abbotsford demo from real radar (~3–4 min) | `uv run python -m pipeline.detect_flood` |
+| Rebuild only its road graph (routing) | `uv run python -m pipeline.build_graph sumas-prairie --mask data/masks/sumas-prairie_s1.tif` |
 | Rebuild only its critical buildings | `uv run python -m pipeline.build_facilities sumas-prairie --mask data/masks/sumas-prairie_s1.tif` |
 | Make a hand-drawn test flood mask | `uv run python -m pipeline.map_mask sumas-prairie` |
 
@@ -82,6 +83,23 @@ three states as roads: a blue ring for water detected at the site, a plain badge
 clear, and a dashed, faded badge for not observed. Click an icon for its name, address, phone,
 email and website (whatever OpenStreetMap has), the share of the site where water was detected,
 and the satellite and map dates.
+
+**Find Path (green button, top right).** Finds the fastest route between two points that avoids
+roads where water was detected.
+- Click **Find Path** to enter pathfinding mode. Streets in the window and building icons are
+  highlighted, and streets can only be picked in this mode.
+- Pick a start (a building icon or a street), then a destination. The route appears as soon as
+  the second point is picked, and a card under the button guides each step.
+- **Green route:** every road on it was observed by the satellite and clear.
+- **Red route with caution icons:** cautionary, for one or more reasons, each explained when you
+  click the route:
+  - it crosses flooded roads (no dry route exists, so it picks the least-flooded fast route);
+  - it uses roads the satellite didn't observe;
+  - it starts or ends where water was detected.
+- Click a route for its estimated travel time and distance. Times come from speed limits only,
+  with no traffic or closures, and the popup says so.
+- A third pick starts a new route. Click the button again, or press Escape, to leave the mode;
+  the route stays on the map. If no route can be found, the card says why.
 
 **Settings (gear, top right).** Hovering turns the gear; clicking it unrolls two options. One
 circle switches between light and dark mode; its icon shows the current mode, and the choice is
@@ -128,7 +146,7 @@ Django splits a project into "apps", meaning feature modules. This project has j
 **`data.py`: reads the files.** It's the only code that reads location data from disk.
 - `locations()` lists every location (demo and searched) with its name, bounding box and footprint.
 - `segments(slug)`, `streets(slug)` and `facilities(slug)` load one location's road segments,
-  street totals and critical buildings.
+  street totals and critical buildings; `graph(slug)` loads its road graph for routing.
 - `searched()` lists searched areas, newest first; it feeds the Recent list.
 - `locations_in()` finds which locations overlap the current map view.
 - Files are read once and kept in memory. `reload()` forgets them when a search finishes; after
@@ -146,6 +164,7 @@ Ninja.
 | `GET /api/streets?bbox=...&location=<slug>` | Per-street totals ("640 m of 800 m flooded"), most flooded first |
 | `POST /api/analyze?name=&lon=&lat=` | Starts analysing the 10 km square around a searched place, or reuses an area that already covers it |
 | `GET /api/analyze/<slug>` | That analysis's status: `queued`, `running`, `done` or `failed` |
+| `GET /api/route?location=<slug>&start=lon,lat&end=lon,lat` | The fastest route between two points in a window that avoids flooded roads (or the least-flooded one), as a GeoJSON line: `clear` or `cautionary` with reasons, estimated time and distance. Errors explain themselves in `detail` |
 | `GET /api/geocode?q=<text>` | Turns typed text into places using Photon, cached for a day |
 
 The `bbox` ("bounding box") parameter is the visible map rectangle in longitude/latitude, so the
@@ -155,6 +174,11 @@ shows one window at a time.
 **`jobs.py`: background searches.** An analysis takes 1–2 minutes, far too long for a web request,
 so a search starts a job on a background thread (one at a time) and the page polls its status.
 Results are written to `data/searches/<slug>/` and survive a restart; job status doesn't.
+
+**`routing.py`: finds routes.** Loads a window's `graph.json` and, per request, snaps the two
+picked points onto their roads, then searches: fastest by travel time with flooded roads left out;
+if nothing is left, flooded roads are allowed with a penalty per metre of water. A route is
+`clear` only if every road on it was observed clear. Each search takes a few milliseconds.
 
 **`views.py`: serves the HTML page.** `index` picks the theme, the window to open on and the
 Recent list, then renders the template.
@@ -184,6 +208,9 @@ Plain Python run as modules from the repo root, never during a web request.
 - `build_facilities.py` finds critical buildings in the window, using OpenStreetMap as it was on
   the observation date, scores each site against the same mask, and writes `facilities.geojson`.
   Building types, their OpenStreetMap tags and icons are all in `facility_kinds.py`.
+- `build_graph.py` writes the window's road network for routing (`graph.json`): one-way streets
+  and bridges kept, a travel time per road from speed limits, and where along each road water
+  was detected. Scored against the same mask as the segments.
 - `map_mask.py` turns a hand-drawn test flood (`test_floods/<slug>.geojson`) into a mask, so the
   website can be built without waiting on real radar.
 
@@ -197,6 +224,7 @@ Each location folder holds:
 | `segments.geojson` | Road segments with `name`, `highway`, `osm_way_ids`, `status`, `flooded_fraction`, `confidence`, `observed_utc` |
 | `streets.json` | Per-street summaries: `name`, `total_m`, `flooded_m`, `no_data_m`, `pct`, `observed_utc`, `bbox` |
 | `facilities.geojson` | Critical buildings: `kind`, `name`, `address`, contacts, `flood_status`, `flooded_fraction`, `osm_date`; optional |
+| `graph.json` | Road graph for routing (NetworkX node-link): junctions, and directed roads with travel time, length, status and flood runs; optional |
 
 `data/locations/` is committed so the demo works without running anything. Only the pipeline
 owner regenerates it, in its own commit.

@@ -326,6 +326,14 @@ def build(region: Region, mask_path: Path, out_dir: Path = OUT_DIR) -> Path:
         )
     except Exception as e:
         print(f"critical buildings skipped: {e}")
+
+    # Road graph for routing (/api/route), from the same mask. Also optional: roads still served.
+    from pipeline.build_graph import build_graph  # imports this module
+
+    try:
+        build_graph(region, mask, transform, crs, water, out_dir)
+    except Exception as e:
+        print(f"road graph skipped: {e}")
     return out
 
 
