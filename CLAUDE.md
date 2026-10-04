@@ -6,8 +6,8 @@ put long reference material in separate files and link it.
 ## What we are building
 A website for **first responders** that shows exactly **which streets are flooded and how much of each**.
 The user types a street or area into a search box at the top; the map fits to that area and draws
-**red traces along the road stretches where radar satellite data shows water**. If a 10 km street is
-flooded for 8 km, only those 8 km are red. Clicking a trace shows street name, flooded length / total,
+**blue traces along the road stretches where radar satellite data shows water**. If a 10 km street is
+flooded for 8 km, only those 8 km are blue. Clicking a trace shows street name, flooded length / total,
 percentage, confidence and the satellite observation time.
 
 - **Hazard scope:** flooding only. No wildfires, earthquakes or other disasters.
@@ -50,8 +50,9 @@ Two loosely coupled halves:
 | Sampling | rasterstats (or rasterio.mask) | Flooded fraction of pixels under each buffered segment |
 | Storage | GeoJSON files | No DB needed; MapLibre reads it natively |
 | Backend | Django + Django Ninja | Team knows Django; Ninja gives typed `/api` routes and docs at `/api/docs` |
-| Map | MapLibre GL JS | Free, WebGL, data-driven styling for red traces |
-| Basemap | OpenFreeMap (`https://tiles.openfreemap.org/styles/liberty`) | No API key, no registration, no request limits |
+| Map | MapLibre GL JS | Free, WebGL, data-driven styling for blue flood traces |
+| Basemap | OpenFreeMap **Positron** (light) / **Dark** (dark), URLs in `settings.BASEMAP_STYLES` | No API key or limits; muted, grey water, so blue flood lines stand out |
+| Icons | lucide (`{% lucide "name" %}`, inline SVG) | Bundled in the package: no CDN or icon font; colour follows `currentColor` |
 | Search | Photon (autocomplete) or Nominatim | Nominatim forbids autocomplete and allows ~1 req/s; call geocoders from the backend with an identifying User-Agent and cache results |
 | Stretch | Valhalla, self-hosted | Routing that excludes flooded segments (`exclude_locations` / `exclude_polygons`) |
 
@@ -61,7 +62,8 @@ Two loosely coupled halves:
 One Django project serves both the page and the API. No database: the `flood` app reads the pipeline's
 GeoJSON from `data/locations/<slug>/` (`meta.json`, `segments.geojson`, `streets.json`).
 - `config/` — settings and URLs. `flood/api.py` — Ninja routes. `flood/data.py` — file loading.
-- `flood/templates/flood/index.html` — the page; the map is MapLibre JavaScript.
+- `flood/templates/flood/index.html` — the page; the map is MapLibre JavaScript. `flood/static/flood/app.css`
+  holds the theme colour variables (`--map-bg`, `--flood`, …) for both themes.
 
 ### Tooling conventions
 - **uv** for environments and dependencies (`pyproject.toml` + `uv.lock`; teammates run `uv sync`).
@@ -96,8 +98,26 @@ orbit direction, pre-event reference date.
 All thresholds are tunable constants — tune on the demo event.
 
 ## Interface requirements
-- Search box at top; on select, fit map to the result's bounding box and load that area's layers.
-- **Three road states, never two:** red = water observed, grey = observed clear,
+**Follow Google Maps conventions** — it's what users already know. Deviate only where noted.
+- **Layout:** full-bleed map filling the window; controls float over it. No page chrome, headers or
+  footers.
+- **Map is not draggable:** the search box is the only way to move the map (no pan/zoom gestures;
+  disable MapLibre interaction). This is the one deliberate break from Google Maps.
+- **Floating controls are translucent at rest** (frosted, map shows through) and turn **solid with a
+  Maps-style shadow** on hover, focus or while typing. Applies to every overlay control (`.overlay`).
+- **Search:** pill (48 px tall, ~392 px wide) in the **top-left**, magnifying-glass button on its right.
+  On select, fit the map to the result's bounding box and load that area's layers.
+- **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
+  Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
+  right theme), then the cookie, then light. Toggling reloads the page.
+- **Colours come from the basemap:** every UI colour is a token in `flood/static/flood/app.css` derived
+  from Positron (light) / Dark (dark) — Positron's greys for text and borders, its slate water-label
+  blue `#495E91` as the UI accent. Don't introduce colours that aren't in the map's palette, except
+  `--flood`.
+- **Type:** Roboto (the Google Maps face) with a system-font fallback. Icons: lucide, 20 px, stroke in
+  `currentColor`.
+- Quality floor: works at phone width, visible keyboard focus, honours `prefers-reduced-motion`.
+- **Three road states, never two:** blue = water observed, grey = observed clear,
   hatched = not observed / no data. A road outside the satellite footprint must never look safe.
 - Persistent data-age banner: "Satellite observation: <date time UTC> (N hours ago)".
 - Click popup with street stats; sidebar listing affected streets sorted by flooded length.
