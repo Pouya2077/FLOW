@@ -18,6 +18,7 @@ from rasterstats import zonal_stats
 from shapely.geometry import mapping, shape
 from shapely.ops import linemerge, substring, unary_union
 
+from pipeline.overpass import use_reachable_server
 from pipeline.regions import Region, get_region
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -290,6 +291,7 @@ def build(region: Region, mask_path: Path, out_dir: Path = OUT_DIR) -> Path:
         crs, transform, tags = src.crs, src.transform, src.tags()
         mask = src.read(1)
 
+    use_reachable_server()
     roads = fetch_roads(region, crs)
     print(f"{len(roads)} road stretches, {roads.length.sum() / 1000:.1f} km total")
 

@@ -32,6 +32,7 @@ from pipeline.build_location import (
     score_areas,
 )
 from pipeline.facility_kinds import KINDS, classify, query_tags
+from pipeline.overpass import use_reachable_server
 from pipeline.regions import Region, get_region
 
 POINT_RADIUS_M = 25  # site scored around a facility mapped only as a point
@@ -253,6 +254,7 @@ def main() -> None:
         crs, transform = src.crs, src.transform
         mask = src.read(1)
 
+    use_reachable_server()
     water = fetch_permanent_water(region, crs)
     footprint = shape(meta["footprint"])
     out = build_facilities(

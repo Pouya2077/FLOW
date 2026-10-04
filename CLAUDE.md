@@ -128,6 +128,8 @@ the line (`shape: "line"`) for dykes. Properties: `osm_id` (`way/123`), `kind`, 
 - Run e.g. `uv run python -m pipeline.build_location sumas-prairie` (~40 s). OSMnx caches to `cache/`.
 - `build_facilities.py <slug> [--mask] [--out]` — critical buildings; runs at the end of `build_location`
   (same mask), or alone. The dated Overpass query takes ~2 min uncached.
+- `overpass.py` — `use_reachable_server()` before OSMnx downloads: overpass-api.de is two machines
+  (lambert, gall) and OSMnx pins one IP, so an unreachable machine made searches fail at random.
 - **Output in `data/locations/` is committed** so the UI and demo work without running the pipeline.
   Only the pipeline owner regenerates it, in its own commit; on a conflict, rerun rather than merge.
   Restart runserver after regenerating (files are cached per process).
