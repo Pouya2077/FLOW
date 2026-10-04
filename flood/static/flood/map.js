@@ -213,9 +213,14 @@ async function loadView() {
       getJSON(`/api/facilities?${params}`),
     ]);
   } catch {
-    return; // keep what's drawn; the next move retries
+    // Keep what's drawn, but say so: missing roads must never read as "no flooding".
+    if (request === latestRequest) {
+      showNotice("Couldn't load the roads here, so flooding may be missing from the map.", loadView, "view");
+    }
+    return;
   }
   if (request !== latestRequest) return; // a newer move or window change already started
+  hideNotice("view");
   map.getSource("segments").setData(segments);
   map.getSource("facilities").setData(facilities);
 }
@@ -726,18 +731,54 @@ function hatchPattern(color) {
   return ctx.getImageData(0, 0, size, size);
 }
 
+// --- Errors: a bar at the bottom, so no failure goes unnoticed ---
+
+const notice = document.querySelector(".notice");
+const noticeText = notice.querySelector(".notice-text");
+const noticeRetry = notice.querySelector(".notice-retry");
+let noticeKind = null;
+let noticeRetryFn = null;
+
+// Show an error; `retry` adds a "Try again" button. `kind` lets hideNotice(kind) clear only its own.
+function showNotice(text, retry = null, kind = "error") {
+  notice.hidden = false;
+  noticeText.textContent = text;
+  noticeRetry.hidden = !retry;
+  noticeRetryFn = retry;
+  noticeKind = kind;
+}
+
+function hideNotice(kind) {
+  if (kind && kind !== noticeKind) return;
+  notice.hidden = true;
+  noticeRetryFn = null;
+  noticeKind = null;
+}
+
+noticeRetry.addEventListener("click", () => {
+  const retry = noticeRetryFn;
+  hideNotice();
+  retry?.();
+});
+notice.querySelector(".notice-close").addEventListener("click", () => hideNotice());
+
 // --- Search box, "Recent", and Autocomplete ---
 
 async function search(query) {
   query = query.trim();
   if (!query) return;
+  hideNotice();
   let results;
   try {
     results = await geocode(query);
   } catch {
-    return; // geocoder unavailable
+    showNotice("Search isn't available right now.", () => search(query));
+    return;
   }
-  if (results.length === 0) return;
+  if (results.length === 0) {
+    showNotice(`No places found for “${query}”.`);
+    return;
+  }
   keepInUrl({ q: query });
   analyze(results[0]);
 }
@@ -758,10 +799,14 @@ function fitWindow(bbox) {
 // --- Analysing a searched place: a background job on the newest satellite pass ---
 
 const POLL_MS = 3000;
+const MAX_FAILED_POLLS = 5; // ~15 s without an answer: tell the user rather than spin forever
 let analysisRun = 0; // a newer search abandons the older one's polling
 
+// "Try again" re-posts the place: the server reruns a failed job, or rejoins one still running.
 async function analyze(place) {
   const run = ++analysisRun;
+  const retry = () => analyze(place);
+  hideNotice();
   const [lon, lat] = place.center;
   const params = new URLSearchParams({ name: place.name, lon, lat });
   let job;
@@ -769,34 +814,49 @@ async function analyze(place) {
     job = await getJSON(`/api/analyze?${params}`, { method: "POST" });
   } catch {
     map.fitBounds(place.bbox, { padding: PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 800 });
+    showNotice(`Couldn't start the analysis of ${place.name}.`, retry);
     return;
   }
   // The window moves to the searched area straight away; the old one is no longer drawn.
   showWindow(null);
   showPending(job.bbox);
   fitWindow(job.bbox);
+  let failedPolls = 0;
   while (run === analysisRun) {
     if (job.status === "done") {
       hideLoading();
-      return finishAnalysis(job);
+      return finishAnalysis(job, retry);
     }
     if (job.status === "failed") {
       hideLoading();
       showPending(null);
+      showNotice(job.message || `The analysis of ${job.name} failed.`, retry);
       return;
     }
     showLoading(job.bbox, job.name);
     await new Promise((resolve) => setTimeout(resolve, POLL_MS));
     try {
       job = await getJSON(`/api/analyze/${encodeURIComponent(job.slug)}`);
+      failedPolls = 0;
     } catch {
-      // A failed poll is retried on the next tick.
+      if (++failedPolls < MAX_FAILED_POLLS || run !== analysisRun) continue; // retried next tick
+      hideLoading();
+      showPending(null);
+      showNotice(`Lost contact with the server while analysing ${job.name}.`, retry);
+      return;
     }
   }
 }
 
-async function finishAnalysis(job) {
-  const meta = await getJSON(`/api/meta?location=${encodeURIComponent(job.slug)}`);
+async function finishAnalysis(job, retry) {
+  let meta;
+  try {
+    meta = await getJSON(`/api/meta?location=${encodeURIComponent(job.slug)}`);
+  } catch {
+    showPending(null);
+    showNotice(`Couldn't load the results for ${job.name}.`, retry);
+    return;
+  }
   metas[job.slug] = meta;
   showPending(null);
   showWindow(job.slug);
@@ -870,6 +930,7 @@ function chooseRecent(index) {
   input.value = option.querySelector(".recent-place").textContent;
   closeRecent();
   analysisRun++; // stop following a search that's still being analysed
+  hideNotice();
   hideLoading();
   showPending(null);
   showWindow(option.dataset.slug);

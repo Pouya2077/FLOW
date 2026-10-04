@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 
 import geopandas as gpd
 import numpy as np
+import requests
 from django.core.cache import cache
 from django.test import SimpleTestCase, override_settings
 from rasterio.transform import from_origin
@@ -231,6 +232,27 @@ class AnalysisJobTest(SimpleTestCase):
             self.analyze()
         status = self.client.get("/api/analyze/chilliwack-bc").json()
         self.assertEqual((status["status"], status["message"]), ("failed", jobs.FAILED_MESSAGE))
+
+    def test_service_down_named(self, _submit):
+        request = requests.Request("POST", "https://overpass-api.de/api/interpreter").prepare()
+        down = requests.ConnectTimeout("timed out", request=request)
+        with (
+            patch("flood.jobs.fetch_sentinel_radar", side_effect=down),
+            self.assertLogs("flood.jobs", "WARNING"),
+        ):
+            self.analyze()
+        status = self.client.get("/api/analyze/chilliwack-bc").json()
+        self.assertEqual(status["status"], "failed")
+        self.assertIn("OpenStreetMap's road server isn't responding", status["message"])
+
+    def test_unknown_service_down(self, _submit):
+        with (
+            patch("flood.jobs.fetch_sentinel_radar", side_effect=requests.ConnectionError()),
+            self.assertLogs("flood.jobs", "WARNING"),
+        ):
+            self.analyze()
+        message = self.client.get("/api/analyze/chilliwack-bc").json()["message"]
+        self.assertTrue(message.startswith("A data service isn't responding"))
 
     def test_already_analysed_area_not_rerun(self, _submit):
         with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline) as run:

@@ -11,7 +11,9 @@ SEARCH_DATA_DIR and survive it.
 import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from urllib.parse import urlparse
 
+import requests
 from django.conf import settings
 
 from pipeline.detect_flood import NoImagery, fetch_sentinel_radar
@@ -26,6 +28,24 @@ _lock = threading.Lock()
 _jobs: dict[str, dict] = {}  # slug -> {slug, name, bbox, status, message}
 
 FAILED_MESSAGE = "The satellite analysis failed. Try again in a few minutes."
+
+# The free services a run depends on, by a word in their host name. They are sometimes slow or
+# down for a while, which is worth telling the user apart from a bug.
+SERVICES = {
+    "copernicus": "The Copernicus satellite data service",
+    "overpass": "OpenStreetMap's road server",
+}
+
+
+# What to tell the user when a service didn't respond or answered with an error
+def service_message(error: requests.RequestException) -> str:
+    url = error.request.url if error.request else None
+    host = (urlparse(url).hostname if url else None) or ""
+    service = next((name for key, name in SERVICES.items() if key in host), "A data service")
+    return (
+        f"{service} isn't responding, so this area couldn't be analysed. "
+        "Try again in a few minutes."
+    )
 
 
 # Start analysing a region unless it's already queued, running or done. Returns the job status.
@@ -98,6 +118,10 @@ def _run(region: Region, job: dict) -> None:
         fetch_sentinel_radar(region, date_range=None, out_dir=settings.SEARCH_DATA_DIR)
     except NoImagery as e:  # nothing to compare: tell the user why
         _update(job, status="failed", message=str(e))
+        return
+    except requests.RequestException as e:  # a service was down: say which
+        log.warning("analysis of %s failed: %s", region.slug, e)
+        _update(job, status="failed", message=service_message(e))
         return
     except Exception:
         log.exception("analysis of %s failed", region.slug)
