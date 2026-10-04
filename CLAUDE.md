@@ -88,8 +88,9 @@ flooded, 1 − fraction if clear); both `null` for `no_data`. Missing OSM tags a
 `bbox`. Named streets only, sorted by `flooded_m`. `no_data_m` exists so an unobserved street never
 reads as "0% flooded". Divided highways count both carriageways (OSM maps each direction).
 
-**Location meta (output):** `name`, `bbox`, `observed_utc`, `sensor`, `synthetic` (show a "simulated
-data" notice when true), `footprint` (GeoJSON Polygon of observed pixels, for shading the unseen area).
+**Location meta (output):** `name`, `bbox`, `observed_utc`, `timezone` (IANA, from `regions.py`; the UI
+shows the observation in local time), `sensor`, `synthetic` (not shown in the UI — team decision,
+Oct 4), `footprint` (GeoJSON Polygon of observed pixels: the outlined window; outside it is hatched).
 
 **API** (also `GET /api/locations` — demo locations with data):
 - `GET /api/geocode?q=` — proxy to Photon/Nominatim, cached
@@ -98,7 +99,7 @@ data" notice when true), `footprint` (GeoJSON Polygon of observed pixels, for sh
 - `GET /api/meta` — pass time, coverage
 
 ### Pipeline (`pipeline/`, plain Python, run as modules from the repo root)
-- `regions.py` — `REGIONS` (slug, name, lon/lat bbox) and `get_region(slug)`. The only place a city is
+- `regions.py` — `REGIONS` (slug, name, lon/lat bbox, timezone) and `get_region(slug)`. The only place a city is
   hardcoded; may later move to a data file or DB, so scripts must only go through `get_region`.
 - `fetch_data.py` — downloads one raw Sentinel-1 VV scene from the Copernicus Data Space (free account;
   `CDSE_USERNAME`/`CDSE_PASSWORD` in `.env`) into `data/radar/` (gitignored). Raw backscatter, not a
@@ -144,14 +145,18 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 **Follow Google Maps conventions** — it's what users already know. Deviate only where noted.
 - **Layout:** full-bleed map filling the window; controls float over it. No page chrome, headers or
   footers.
-- **Map is not draggable:** the search box is the only way to move the map (no pan/zoom gestures;
-  disable MapLibre interaction). This is the one deliberate break from Google Maps.
+- **Map is locked to the observation window:** no dragging, rotating or tilting. Users can **zoom in**
+  (scroll, pinch, double-click, +/− buttons bottom-right) but never out past the fitted window, and
+  the view can't leave it (`minZoom` + `maxBounds` set after each fit). The one deliberate break
+  from Google Maps.
 - **Floating controls are translucent at rest** (frosted, map shows through) and turn **solid with a
   Maps-style shadow** on hover, focus or while typing. Applies to every overlay control (`.overlay`).
-- **Search:** pill (48 px tall, ~392 px wide) in the **top-left**, magnifying-glass button on its right.
-  Submitting fits the map to the first `/api/geocode` result (max zoom 16) and reloads the segments
-  for the new view; the query is kept in the URL (`?q=`) so a reload repeats it. Errors and "no places
-  found" show in a solid message under the search box.
+- **Observation dropdown** (no free-text search): pill (48 px, ~460 px) in the **top-left**, chevron on
+  its right. One option per location: `<name> | <observation time, location's time zone>` (e.g.
+  `Sumas Prairie, Abbotsford | Nov 16, 2021, 6:25 AM PST`, built in `views.location_label`). Custom
+  listbox (WAI-ARIA select-only combobox, full keyboard support), not `<select>`, so the selected
+  option can carry the `--accent` border. Choice is kept in `?location=`; the theme link carries it.
+  `/api/geocode` is currently unused by the UI.
 - **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
   Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
   right theme), then the cookie, then light. Toggling reloads the page.
@@ -164,12 +169,15 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - Quality floor: works at phone width, visible keyboard focus, honours `prefers-reduced-motion`.
 - **Three road states, never two:** blue = water observed (`--flood`, widest, drawn on top), solid
   grey = observed clear, dashed grey = not observed / no data. A road outside the satellite footprint
-  must never look safe: everything outside `meta.footprint` is covered by a diagonal hatch, with the
-  footprint outlined.
+  must never look safe: everything outside `meta.footprint` is covered by a diagonal hatch.
+- **Window outline:** the footprint is outlined 3 px in `--accent`, matching the selected dropdown option.
+- **Approach dots:** basemap roads crossing the window edge get a dotted stub outside it (~70 screen
+  px, fading out in 5 steps), computed in `map.js` from the basemap's `transportation` tiles.
+- **Road labels by importance:** the basemap's road-name layers are hidden and replaced by tiers —
+  motorway/trunk/primary always, secondary/tertiary from zoom 12.5, minor/service from 14.5. Route
+  shields stay.
 - **Flood layers sit above the basemap's roads and below its labels** (inserted before the first label
   layer after the last non-label layer; Dark has a label layer under its roads).
-- **Notice chip** (bottom centre): "Simulated data, not a real satellite observation" while any location
-  in view has `synthetic: true`; "No flood data for this area" when no location is in view.
 - Persistent data-age banner: "Satellite observation: <date time UTC> (N hours ago)".
 - Click popup with street stats; sidebar listing affected streets sorted by flooded length.
 - Optional faint flood-extent raster under the traces.
