@@ -1,34 +1,46 @@
-"""Read the offline pipeline's output from FLOOD_DATA_DIR.
+"""Read the pipeline's output from FLOOD_DATA_DIR (committed demo) and SEARCH_DATA_DIR (searches).
 
-Each demo location is a folder:
-    data/locations/<slug>/meta.json         name, bbox, observed_utc, sensor, footprint
-    data/locations/<slug>/segments.geojson  road segments (see CLAUDE.md "Road segment")
-    data/locations/<slug>/streets.json      per-street summaries (see CLAUDE.md "Street summary")
+Each location is a folder:
+    <dir>/<slug>/meta.json         name, bbox, observed_utc, sensor, footprint
+    <dir>/<slug>/segments.geojson  road segments (see CLAUDE.md "Road segment")
+    <dir>/<slug>/streets.json      per-street summaries (see CLAUDE.md "Street summary")
 
-Files are read once per process; restart runserver after regenerating them.
+Files are read once per process; reload() picks up a finished search. Restart runserver after
+regenerating the committed demo data.
 """
 
 import json
 from functools import cache
+from pathlib import Path
 
 from django.conf import settings
 
 BBox = tuple[float, float, float, float]  # minx, miny, maxx, maxy (lon/lat)
 
 
+# slug -> folder. Searches first, so the committed demo wins if both have the same slug.
+@cache
+def _folders() -> dict[str, Path]:
+    out = {}
+    for root in (settings.SEARCH_DATA_DIR, settings.FLOOD_DATA_DIR):
+        for meta_path in root.glob("*/meta.json"):
+            out[meta_path.parent.name] = meta_path.parent
+    return out
+
+
 @cache
 def locations() -> dict[str, dict]:
     out = {}
-    for meta_path in sorted(settings.FLOOD_DATA_DIR.glob("*/meta.json")):
-        meta = json.loads(meta_path.read_text())
-        meta["slug"] = meta_path.parent.name
-        out[meta["slug"]] = meta
+    for slug, folder in sorted(_folders().items()):
+        meta = json.loads((folder / "meta.json").read_text())
+        meta["slug"] = slug
+        out[slug] = meta
     return out
 
 
 @cache
 def segments(slug: str) -> list[dict]:
-    path = settings.FLOOD_DATA_DIR / slug / "segments.geojson"
+    path = _folders()[slug] / "segments.geojson"
     features = json.loads(path.read_text())["features"]
     for f in features:
         f["bbox"] = _geometry_bbox(f["geometry"])
@@ -37,8 +49,14 @@ def segments(slug: str) -> list[dict]:
 
 @cache
 def streets(slug: str) -> list[dict]:
-    path = settings.FLOOD_DATA_DIR / slug / "streets.json"
+    path = _folders()[slug] / "streets.json"
     return json.loads(path.read_text())
+
+
+# Forget cached files, e.g. after a search wrote a new folder
+def reload() -> None:
+    for cached in (_folders, locations, segments, streets):
+        cached.cache_clear()
 
 
 def intersects(a: BBox, b: BBox) -> bool:

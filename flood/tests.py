@@ -6,7 +6,7 @@ from unittest.mock import patch
 import numpy as np
 from django.test import SimpleTestCase, override_settings
 
-from pipeline.detect_flood import change_mask, pick_pair
+from pipeline.detect_flood import NoImagery, change_mask, pick_pair
 
 from . import data
 from .views import observed_local
@@ -37,12 +37,12 @@ class ApiSmokeTest(SimpleTestCase):
         (loc / "segments.geojson").write_text(json.dumps(FIXTURE_SEGMENTS))
         (loc / "streets.json").write_text(json.dumps(FIXTURE_STREETS))
 
-        override = override_settings(FLOOD_DATA_DIR=Path(tmp.name))
+        searches = Path(tmp.name) / "searches"  # empty: no searches yet
+        override = override_settings(FLOOD_DATA_DIR=Path(tmp.name), SEARCH_DATA_DIR=searches)
         override.enable()
         self.addCleanup(override.disable)
-        for fn in (data.locations, data.segments, data.streets):
-            fn.cache_clear()
-            self.addCleanup(fn.cache_clear)
+        data.reload()
+        self.addCleanup(data.reload)
 
     def test_index(self):
         self.assertEqual(self.client.get("/").status_code, 200)
@@ -81,7 +81,46 @@ class ApiSmokeTest(SimpleTestCase):
     @patch("flood.views.get_10km_range", return_value=[-122.4, 48.9, -122.1, 49.1])
     def test_search_for_region_runs_pipeline_on_region(self, geocode, fetch_radar):
         self.client.get("/", {"q": "Sumas Prairie"})
-        fetch_radar.assert_called_once_with(region_slug="sumas-prairie")
+        fetch_radar.assert_called_once_with("sumas-prairie")
+
+
+class DataFoldersTest(SimpleTestCase):
+    """Committed demo locations and searched areas are read side by side."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.demo, self.searches = Path(tmp.name, "locations"), Path(tmp.name, "searches")
+        override = override_settings(FLOOD_DATA_DIR=self.demo, SEARCH_DATA_DIR=self.searches)
+        override.enable()
+        self.addCleanup(override.disable)
+        data.reload()
+        self.addCleanup(data.reload)
+
+    def write(self, root, slug, name):
+        folder = root / slug
+        folder.mkdir(parents=True)
+        (folder / "meta.json").write_text(json.dumps({**FIXTURE_META, "name": name}))
+        (folder / "segments.geojson").write_text(json.dumps(FIXTURE_SEGMENTS))
+        (folder / "streets.json").write_text(json.dumps(FIXTURE_STREETS))
+
+    def test_searches_listed_with_demo(self):
+        self.write(self.demo, "sumas-prairie", "Demo")
+        self.write(self.searches, "chilliwack", "Searched")
+        self.assertEqual(list(data.locations()), ["chilliwack", "sumas-prairie"])
+        self.assertEqual(data.streets("chilliwack")[0]["name"], "Test Rd")
+
+    def test_demo_wins_on_same_slug(self):
+        self.write(self.demo, "sumas-prairie", "Demo")
+        self.write(self.searches, "sumas-prairie", "Searched")
+        self.assertEqual(data.locations()["sumas-prairie"]["name"], "Demo")
+
+    def test_reload_picks_up_new_search(self):
+        self.assertEqual(data.locations(), {})
+        self.write(self.searches, "chilliwack", "Searched")
+        self.assertEqual(data.locations(), {})  # still cached
+        data.reload()
+        self.assertIn("chilliwack", data.locations())
 
 
 class ChangeDetectionTest(SimpleTestCase):
@@ -155,12 +194,12 @@ class PickPairTest(SimpleTestCase):
         self.assertEqual(post["properties"]["datetime"], "2021-11-16T14:20:31Z")
         self.assertEqual(pre["properties"]["datetime"], "2021-11-04T14:20:31Z")
 
-    @patch("builtins.print")
-    def test_no_reference_on_track(self, _print):
+    def test_no_reference_on_track(self):
         during = [self.item("2021-11-16T14:20:31Z", 13)]
         before = [self.item("2021-11-08T01:54:01Z", 64)]
         with patch("pipeline.detect_flood.search_passes", side_effect=[during, before]):
-            self.assertIsNone(pick_pair((0, 0, 1, 1), self.RANGE))
+            with self.assertRaisesMessage(NoImagery, "same orbit track"):
+                pick_pair((0, 0, 1, 1), self.RANGE)
 
 
 class RecentSearchTest(SimpleTestCase):
