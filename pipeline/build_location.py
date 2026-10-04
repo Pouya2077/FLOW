@@ -275,7 +275,11 @@ def main() -> None:
     args = parser.parse_args()
 
     region = get_region(args.region)
-    mask_path = args.mask or MASK_DIR / f"{region.slug}_synthetic.tif"
+    build(region, args.mask or MASK_DIR / f"{region.slug}_synthetic.tif", args.out)
+
+
+# Overlay one mask on the region's roads and write <out_dir>/<slug>/
+def build(region: Region, mask_path: Path, out_dir: Path = OUT_DIR) -> Path:
     with rasterio.open(mask_path) as src:
         crs, transform, tags = src.crs, src.transform, src.tags()
         mask = src.read(1)
@@ -301,8 +305,9 @@ def main() -> None:
 
     runs = merge_runs(segments)
     footprint = observed_area(mask, transform, crs)
-    out = write_location(region, runs, tags, footprint, args.out)
+    out = write_location(region, runs, tags, footprint, out_dir)
     print(f"wrote {len(runs)} road stretches to {out}")
+    return out
 
 
 if __name__ == "__main__":
