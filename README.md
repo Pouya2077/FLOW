@@ -99,8 +99,9 @@ frontend sends it, and the backend returns only what falls inside it.
 **`views.py`: serves the HTML page.** It has a single function, `index`, which renders the
 template. Pages come from views and JSON comes from `api.py`.
 
-**`templates/flood/index.html`: the page itself.** It has the light/dark theme toggle and a
-"Coming soon" square where the MapLibre map, search box and sidebar will go. The folder is nested (`templates/flood/`) because that's a
+**`templates/flood/index.html`: the page itself.** A Google Maps–style layout: a full-screen
+map (a placeholder sketch until MapLibre lands) with a translucent search box top-left and a theme
+toggle top-right. The folder is nested (`templates/flood/`) because that's a
 Django convention to avoid name clashes between apps. Static files (JS and CSS) go in
 `flood/static/flood/`.
 

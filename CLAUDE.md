@@ -98,10 +98,25 @@ orbit direction, pre-event reference date.
 All thresholds are tunable constants — tune on the demo event.
 
 ## Interface requirements
-- **Theme:** light (default) or dark. Order: `?theme=` URL parameter (also saved to the `theme` cookie,
-  1 year, so the server renders the right theme), then the cookie, then light. Toggling reloads the page.
-  Top-right toggle shows a moon in light mode and a sun in dark mode.
-- Search box at top; on select, fit map to the result's bounding box and load that area's layers.
+**Follow Google Maps conventions** — it's what users already know. Deviate only where noted.
+- **Layout:** full-bleed map filling the window; controls float over it. No page chrome, headers or
+  footers.
+- **Map is not draggable:** the search box is the only way to move the map (no pan/zoom gestures;
+  disable MapLibre interaction). This is the one deliberate break from Google Maps.
+- **Floating controls are translucent at rest** (frosted, map shows through) and turn **solid with a
+  Maps-style shadow** on hover, focus or while typing. Applies to every overlay control (`.overlay`).
+- **Search:** pill (48 px tall, ~392 px wide) in the **top-left**, magnifying-glass button on its right.
+  On select, fit the map to the result's bounding box and load that area's layers.
+- **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
+  Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
+  right theme), then the cookie, then light. Toggling reloads the page.
+- **Colours come from the basemap:** every UI colour is a token in `flood/static/flood/app.css` derived
+  from Positron (light) / Dark (dark) — Positron's greys for text and borders, its slate water-label
+  blue `#495E91` as the UI accent. Don't introduce colours that aren't in the map's palette, except
+  `--flood`.
+- **Type:** Roboto (the Google Maps face) with a system-font fallback. Icons: lucide, 20 px, stroke in
+  `currentColor`.
+- Quality floor: works at phone width, visible keyboard focus, honours `prefers-reduced-motion`.
 - **Three road states, never two:** blue = water observed, grey = observed clear,
   hatched = not observed / no data. A road outside the satellite footprint must never look safe.
 - Persistent data-age banner: "Satellite observation: <date time UTC> (N hours ago)".
