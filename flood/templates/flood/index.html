@@ -7,24 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.12.0/dist/maplibre-gl.css">
   <link rel="stylesheet" href="{% static 'flood/app.css' %}">
+  <script type="module" src="{% static 'flood/map.js' %}"></script>
 </head>
 <body>
-  <div id="map" class="map" data-basemap-style="{{ basemap_style }}">
-    {# Placeholder sketch in the basemap's colours; MapLibre replaces this. #}
-    <svg class="map-sketch" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <path class="park" d="M830 150h210v120H830zM180 520l150-30 40 140-170 20z"/>
-      <g class="minor">
-        <path d="M-50 150L1500 125M-50 455L1500 430M-50 790L1500 770M150-50l30 1000M760-50l30 1000M1260-50l20 1000M560 300l330 160M1100 600l300-90"/>
-      </g>
-      <path class="water" d="M-50 640C250 570 420 720 700 655S1150 530 1500 610"/>
-      <g class="major">
-        <path class="casing" d="M-50 300L1500 255M330-50l230 1000M1060-50C1000 300 1110 600 980 950"/>
-        <path class="inner" d="M-50 300L1500 255M330-50l230 1000M1060-50C1000 300 1110 600 980 950"/>
-      </g>
-    </svg>
-    <p class="map-placeholder">Map coming soon</p>
-  </div>
+  <div id="map" class="map" data-basemap-style="{{ basemap_style }}"></div>
 
   <form class="search overlay" role="search" autocomplete="off">
     <label class="visually-hidden" for="q">Search a street or area</label>
@@ -33,9 +21,12 @@
       {% lucide "search" size=20 aria_hidden="true" %}
     </button>
   </form>
+  <p id="search-message" class="search-message" role="status" hidden></p>
 
   <a class="theme-toggle overlay" href="?theme={{ other_theme }}" aria-label="Switch to {{ other_theme }} mode" title="Switch to {{ other_theme }} mode">
     {% if theme == "light" %}{% lucide "moon" size=20 class="icon-moon" aria_hidden="true" %}{% else %}{% lucide "sun" size=20 class="icon-sun" aria_hidden="true" %}{% endif %}
   </a>
+
+  <p id="map-notice" class="map-notice" role="status" hidden></p>
 </body>
 </html>
