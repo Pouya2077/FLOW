@@ -15,6 +15,7 @@ const settingsMenu = document.getElementById("settings-menu");
 const facilitiesToggle = document.querySelector(".facilities-toggle");
 const pathToggle = document.querySelector(".path-toggle");
 const pathCard = document.getElementById("path-card");
+const pathBody = pathCard?.querySelector(".path-body");
 // One lucide glyph per kind of critical building, rendered by the template.
 const facilityKinds = Object.fromEntries(
   [...(document.getElementById("facility-icons")?.content.children ?? [])].map((el) => [
@@ -1355,15 +1356,19 @@ async function findRoute({ restoring = false } = {}) {
 }
 
 // The instruction card: one step at a time. Errors are red; `retry` adds a "Try again" button.
+// Its X hides it until the next step; it only shows in pathfinding mode.
 function showPathStep(text, isError = false, retry = null) {
   const line = el("p", isError ? "path-error" : "", text);
-  pathCard.replaceChildren(line);
+  pathBody.replaceChildren(line);
   if (retry) {
-    const button = pathCard.appendChild(el("button", "", "Try again"));
+    const button = pathBody.appendChild(el("button", "path-retry", "Try again"));
     button.type = "button";
     button.addEventListener("click", retry);
   }
+  pathCard.hidden = !pathMode;
 }
+
+pathCard?.querySelector(".path-close").addEventListener("click", () => (pathCard.hidden = true));
 
 // Remove the route and both markers. `forget: false` keeps the saved copy (the window changed).
 function clearPath({ forget = true } = {}) {
@@ -1442,8 +1447,11 @@ function routeCard(p) {
   }
   card.appendChild(el("p", "route-note", "Time estimated from speed limits only: no traffic or road closures. Radar sees water, not depth."));
   card.appendChild(el("p", "facility-source", `Satellite: ${localTime(p.observed_utc)}`));
-  const remove = card.appendChild(el("button", "route-remove", "Remove route"));
+  const remove = card.appendChild(el("button", "route-remove"));
   remove.type = "button";
+  const trash = document.getElementById("remove-icon")?.content.querySelector("svg");
+  if (trash) remove.appendChild(trash.cloneNode(true));
+  remove.append("Remove route");
   remove.addEventListener("click", () => clearPath());
   return card;
 }

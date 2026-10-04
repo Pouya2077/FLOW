@@ -205,7 +205,7 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   from Positron (light) / Dark (dark) — Positron's greys for text and borders, its slate water-label
   blue `#495E91` as the UI accent. Don't introduce colours that aren't in the map's palette, except
   `--flood`, and the team-approved `--go` (green: Enter button, Find Path, clear routes) and
-  `--danger` (red: cautionary routes).
+  `--danger` (red: cautionary routes; `--danger-text` is its shade for red text, e.g. "Remove route").
 - **Type:** Roboto (the Google Maps face) with a system-font fallback. Icons: lucide, 20 px, stroke in
   `currentColor`.
 - Quality floor: works at phone width, visible keyboard focus, honours `prefers-reduced-motion`.
@@ -231,7 +231,8 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   Escape leaves; icon only on phones). In the mode, window streets get an `--accent` casing and icons
   a ring (stronger on hover); streets are only pickable in this mode, and icons pick instead of
   opening their popup. Pick A, then B (icon or street, any mix) → `/api/route` → the map fits the
-  route. A card under the button gives each step and any error; a third pick starts over. Clicking
+  route. A card bottom-centre (above the error bar) gives each step and any error, with an X that hides it
+  until the next step; a third pick starts over. Clicking
   A again (marker or spot) de-selects it. Leaving the mode drops a lone A but keeps a drawn route.
   The route popup's "Remove route" clears the route and both picks. The last route's picks are kept
   in `localStorage` (`flow.route`, never the URL) and re-routed on reload or when its window is
@@ -241,7 +242,7 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   least-flooded fast route), uses unobserved roads (allowed, no penalty, but always red with a
   "no satellite data" message), or starts/ends in water. Clicking a route: "Estimated travel time",
   distance, one line per reason, a note that times come from speed limits only, the observation
-  time, and a "Remove route" button. Never "safe".
+  time, and a "Remove route" button (bin icon, bold `--danger-text`). Never "safe".
 - Optional faint flood-extent raster under the traces.
 
 ## Radar (SAR) pitfalls — always account for these
