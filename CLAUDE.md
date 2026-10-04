@@ -76,10 +76,18 @@ GeoJSON from `data/locations/<slug>/` (`meta.json`, `segments.geojson`, `streets
 (or `float32` probability 0–1). CRS stated, ~10 m pixels. Metadata: acquisition time (UTC), sensor,
 orbit direction, pre-event reference date.
 
-**Road segment (output):** GeoJSON LineString with properties `name`, `highway`, `osm_way_ids`,
-`status` (`flooded` | `clear` | `no_data`), `flooded_fraction`, `confidence`, `observed_utc`.
+**Road segment (output):** GeoJSON LineString (lon/lat) with properties `name`, `highway`,
+`osm_way_ids`, `status` (`flooded` | `clear` | `no_data`), `flooded_fraction`, `confidence`,
+`observed_utc`. One feature per run of same-status road, not per 20 m piece. `flooded_fraction` =
+water share of observed corridor pixels; `confidence` = share agreeing with `status` (fraction if
+flooded, 1 − fraction if clear); both `null` for `no_data`. Missing OSM tags are `null`; never write NaN.
 
-**Street summary (output):** `name`, `total_m`, `flooded_m`, `pct`, `observed_utc`, `bbox`.
+**Street summary (output):** `name`, `total_m`, `flooded_m`, `no_data_m`, `pct`, `observed_utc`,
+`bbox`. Named streets only, sorted by `flooded_m`. `no_data_m` exists so an unobserved street never
+reads as "0% flooded". Divided highways count both carriageways (OSM maps each direction).
+
+**Location meta (output):** `name`, `bbox`, `observed_utc`, `sensor`, `synthetic` (show a "simulated
+data" notice when true), `footprint` (GeoJSON Polygon of observed pixels, for shading the unseen area).
 
 **API** (also `GET /api/locations` — demo locations with data):
 - `GET /api/geocode?q=` — proxy to Photon/Nominatim, cached
@@ -94,7 +102,10 @@ orbit direction, pre-event reference date.
   `data/masks/<slug>_synthetic.tif` (gitignored), with an unobserved strip and `synthetic=true` tag.
 - `build_location.py <slug> [--mask path]` — the overlay below; writes `data/locations/<slug>/`.
   Defaults to the synthetic mask; the data team's mask is passed with `--mask`.
-- Run e.g. `uv run python -m pipeline.build_location sumas-prairie`. OSMnx caches to `cache/`.
+- Run e.g. `uv run python -m pipeline.build_location sumas-prairie` (~40 s). OSMnx caches to `cache/`.
+- **Output in `data/locations/` is committed** so the UI and demo work without running the pipeline.
+  Only the pipeline owner regenerates it, in its own commit; on a conflict, rerun rather than merge.
+  Restart runserver after regenerating (files are cached per process).
 
 ## Road–flood overlay algorithm
 1. Fetch drivable roads for the area with OSMnx; reproject to the **mask's CRS**. Masks use the UTM
@@ -105,11 +116,15 @@ orbit direction, pre-event reference date.
    1.8 km, at Sumas). Permanent water = OSM water polygons; their pixels are ignored when scoring.
 3. Split each road into **~20 m** segments (equal pieces per stretch, keeping `road_id` + `seq`
    order); buffer **~5 m** each side (~10 m corridor).
-4. Score each segment by fraction of water pixels; no-data pixels → `status = no_data`.
-5. Flooded if fraction **≥ 0.5**; drop isolated flooded runs shorter than **~40 m** (speckle);
-   keep the fraction as confidence.
-6. Merge adjacent flooded segments into continuous lines; group by street name for totals.
-All thresholds are tunable constants — tune on the demo event.
+4. Score each segment (`score_segments`): count mask pixels touching its corridor (rasterstats,
+   `all_touched`), with permanent-water pixels relabelled so they count as neither wet nor dry.
+   More unobserved than observed pixels → `no_data` (never guess clear).
+5. Flooded if fraction **≥ 0.5**; drop isolated flooded runs shorter than **~40 m** (speckle).
+   **Speckle filter not built yet** — the synthetic mask has no speckle; add it before real data.
+6. Merge consecutive same-status segments of each road into one line (`merge_runs`), total by street
+   name, reproject to lon/lat, write the three files.
+All thresholds (`SEGMENT_M`, `BUFFER_M`, `FLOODED_AT`) are tunable constants — tune on the demo event.
+Too wide a corridor picks up water in fields beside raised roads and marks dry roads flooded.
 
 ## Interface requirements
 **Follow Google Maps conventions** — it's what users already know. Deviate only where noted.
