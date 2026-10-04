@@ -6,7 +6,7 @@ from unittest.mock import patch
 import numpy as np
 from django.test import SimpleTestCase, override_settings
 
-from pipeline.detect_flood import water_mask
+from pipeline.detect_flood import change_mask, pick_pair
 
 from . import data
 from .views import observed_local
@@ -84,23 +84,83 @@ class ApiSmokeTest(SimpleTestCase):
         fetch_radar.assert_called_once_with(region_slug="sumas-prairie")
 
 
-class WaterMaskTest(SimpleTestCase):
-    """Raw Sentinel-1 GRD pixels are uncalibrated amplitudes in the hundreds, not 0-1."""
+class ChangeDetectionTest(SimpleTestCase):
+    """Before/after comparison on raw Sentinel-1 scale (uncalibrated amplitudes, squared)."""
 
-    def test_dark_pixels_are_water_on_raw_scale(self):
+    def scenes(self):
         rng = np.random.default_rng(0)
-        raw = rng.gamma(4.4, 300 / 4.4, (100, 100))  # bright fields, speckled
-        raw[:40, :40] = rng.gamma(4.4, 40 / 4.4, (40, 40))  # dark water patch
-        raw[:, -10:] = 0  # GRD fill: outside the scene
-        mask, threshold = water_mask(raw.astype("uint16"))
-        self.assertGreater((mask[:40, :40] == 1).mean(), 0.9)
-        self.assertLess((mask[50:, :80] == 1).mean(), 0.05)
-        self.assertTrue((mask[:, -10:] == 255).all())
+
+        def speckled(db):  # power with Sentinel-1-like speckle (4.4 looks)
+            return 10 ** (db / 10) * rng.gamma(4.4, 1 / 4.4, db.shape)
+
+        pre = np.full((120, 120), 50.0)  # bright farmland, ~50 dB on the raw scale
+        pre[:, 100:104] = 38  # asphalt road: dark in both images
+        post = pre.copy()
+        post[10:60, 10:60] = 38  # flooded field: dark only in the flood image
+        return speckled(pre), speckled(post)
+
+    def test_new_water_flagged_dry_road_not(self):
+        pre, post = self.scenes()
+        mask, threshold = change_mask(pre, post)
+        self.assertGreater((mask[15:55, 15:55] == 1).mean(), 0.95)  # flood found
+        self.assertFalse((mask[:, 100:104] == 1).any())  # always-dark road is not water
+        self.assertLess((mask[70:, :90] == 1).mean(), 0.01)  # dry field stays dry
         self.assertTrue(np.isfinite(threshold))
 
+    def test_no_change_no_water(self):
+        # A day without a flood: nothing got darker, so nothing is flagged, roads included.
+        _, post = self.scenes()
+        self.assertFalse((change_mask(post, post)[0] == 1).any())
+
+    def test_outside_either_image_is_no_data(self):
+        pre, post = self.scenes()
+        pre[:, :20] = np.nan  # reference image doesn't reach this strip
+        post[-20:, :] = np.nan  # flood image doesn't reach this strip
+        mask, _ = change_mask(pre, post)
+        self.assertTrue((mask[:, :20] == 255).all())
+        self.assertTrue((mask[-20:, :] == 255).all())
+        self.assertFalse((mask[:-20, 20:] == 255).any())
+
     def test_empty_scene_is_all_no_data(self):
-        mask, _ = water_mask(np.zeros((5, 5), dtype="uint16"))
-        self.assertTrue((mask == 255).all())
+        empty = np.full((5, 5), np.nan)
+        self.assertTrue((change_mask(empty, empty)[0] == 255).all())
+
+
+class PickPairTest(SimpleTestCase):
+    """Reference image: newest pass on the same track before the flood date range."""
+
+    RANGE = "2021-11-14T00:00:00Z/2021-11-30T23:59:59Z"
+
+    def item(self, when, track, orbit="descending"):
+        return {
+            "assets": {"vv": {}},
+            "properties": {
+                "datetime": when,
+                "sat:relative_orbit": track,
+                "sat:orbit_state": orbit,
+                "sar:instrument_mode": "IW",
+            },
+        }
+
+    def test_same_track_reference_before_flood(self):
+        during = [self.item("2021-11-16T14:20:31Z", 13), self.item("2021-11-20T01:54:01Z", 64)]
+        before = [
+            self.item("2021-10-23T14:20:32Z", 13),
+            self.item("2021-11-04T14:20:31Z", 13),
+            self.item("2021-11-08T01:54:01Z", 64),  # newer, but a different track
+            self.item("2021-11-11T14:12:40Z", 115),
+        ]
+        with patch("pipeline.detect_flood.search_passes", side_effect=[during, before]):
+            pre, post = pick_pair((0, 0, 1, 1), self.RANGE)
+        self.assertEqual(post["properties"]["datetime"], "2021-11-16T14:20:31Z")
+        self.assertEqual(pre["properties"]["datetime"], "2021-11-04T14:20:31Z")
+
+    @patch("builtins.print")
+    def test_no_reference_on_track(self, _print):
+        during = [self.item("2021-11-16T14:20:31Z", 13)]
+        before = [self.item("2021-11-08T01:54:01Z", 64)]
+        with patch("pipeline.detect_flood.search_passes", side_effect=[during, before]):
+            self.assertIsNone(pick_pair((0, 0, 1, 1), self.RANGE))
 
 
 class RecentSearchTest(SimpleTestCase):
@@ -111,7 +171,7 @@ class RecentSearchTest(SimpleTestCase):
         self.assertContains(response, 'role="combobox"')
         self.assertContains(response, 'id="recent-sumas-prairie"')
         self.assertContains(response, "Sumas Prairie, Abbotsford")
-        self.assertContains(response, "Nov 16, 2021, 6:25 AM PST")
+        self.assertContains(response, "Nov 16, 2021, 6:20 AM PST")  # Sentinel-1B pass
 
     def test_window_on_map_is_marked_selected(self):
         response = self.client.get("/", {"location": "sumas-prairie"})
