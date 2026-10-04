@@ -1,19 +1,22 @@
 // Flood map: draws the pipeline's road segments over the OpenFreeMap basemap with MapLibre.
-// Users pick an observation from the dropdown and the map fits to its window, the area with flood
-// data. From there the map zooms and pans freely, like Google Maps (CLAUDE.md).
+// The map opens fitted to an observation window, the area with flood data, then zooms and pans
+// freely like Google Maps (CLAUDE.md). The search box moves it to any place; "Recent" searches jump
+// back to an observation window.
 import * as maplibregl from "https://cdn.jsdelivr.net/npm/maplibre-gl@6.12.0/dist/maplibre-gl.mjs";
 
 const mapEl = document.getElementById("map");
-const pickerButton = document.getElementById("picker-button");
-const pickerList = document.getElementById("picker-list");
-const pickerOptions = [...pickerList.querySelectorAll('[role="option"]')];
+const form = document.querySelector(".search");
+const input = document.getElementById("q");
+const recentPanel = document.getElementById("recent");
+const recentOptions = [...(recentPanel?.querySelectorAll('[role="option"]') ?? [])];
+const searchMessage = document.getElementById("search-message");
 const themeLink = document.querySelector(".theme-toggle");
 
 const css = getComputedStyle(document.documentElement);
 const token = (name) => css.getPropertyValue(name).trim();
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const PADDING = { top: 80, right: 24, bottom: 24, left: 24 }; // clear of the dropdown
+const PADDING = { top: 80, right: 24, bottom: 24, left: 24 }; // clear of the search box
 const WORLD = [[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]];
 
 // Roads leading into the window get a short dotted stub outside it that fades out. Its length is
@@ -45,7 +48,7 @@ const metas = Object.fromEntries(
     locations.map(async (l) => [l.slug, await getJSON(`/api/meta?location=${encodeURIComponent(l.slug)}`)]),
   ),
 );
-let current = pickerOptions.find((o) => o.getAttribute("aria-selected") === "true")?.dataset.slug;
+let current = mapEl.dataset.location; // the observation window the map opened on
 
 const map = new maplibregl.Map({
   container: mapEl,
@@ -128,6 +131,7 @@ map.on("load", () => {
   map.on("moveend", loadView);
   map.on("idle", updateApproaches);
   frame(current, false);
+  if (input.value.trim()) search(input.value); // a reload with ?q= repeats the search
 });
 
 // Fit the map to a location's window.
@@ -367,70 +371,103 @@ function hatchPattern(color) {
   return ctx.getImageData(0, 0, size, size);
 }
 
-// --- Observation picker: a select-only combobox (WAI-ARIA listbox pattern) ---
+// --- Search box and "Recent" (WAI-ARIA combobox with a listbox popup) ---
 
-function openPicker() {
-  if (!pickerOptions.length) return;
-  pickerList.hidden = false;
-  pickerButton.setAttribute("aria-expanded", "true");
-  setActive(Math.max(0, pickerOptions.findIndex((o) => o.dataset.slug === current)));
-  pickerList.focus();
+async function search(query) {
+  query = query.trim();
+  if (!query) return;
+  showSearchMessage("");
+  let results;
+  try {
+    results = await getJSON(`/api/geocode?q=${encodeURIComponent(query)}`);
+  } catch {
+    showSearchMessage("Search isn't available right now. Try again in a moment.");
+    return;
+  }
+  if (results.length === 0) {
+    showSearchMessage(`No places found for “${query}”.`);
+    return;
+  }
+  keepInUrl({ q: query });
+  map.fitBounds(results[0].bbox, { padding: PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 800 });
 }
 
-function closePicker(returnFocus = true) {
-  pickerList.hidden = true;
-  pickerButton.setAttribute("aria-expanded", "false");
-  pickerList.removeAttribute("aria-activedescendant");
-  if (returnFocus) pickerButton.focus();
-}
-
-let active = 0;
-function setActive(index) {
-  active = (index + pickerOptions.length) % pickerOptions.length;
-  pickerOptions.forEach((o, i) => o.classList.toggle("active", i === active));
-  pickerList.setAttribute("aria-activedescendant", pickerOptions[active].id);
-  pickerOptions[active].scrollIntoView({ block: "nearest" });
-}
-
-function choose(index) {
-  const option = pickerOptions[index];
-  pickerOptions.forEach((o) => o.setAttribute("aria-selected", String(o === option)));
-  pickerButton.querySelector(".picker-value").textContent = option.textContent;
-  closePicker();
-  if (option.dataset.slug === current) return;
+// Jump to an observation window from "Recent".
+function chooseRecent(index) {
+  const option = recentOptions[index];
+  recentOptions.forEach((o) => o.setAttribute("aria-selected", String(o === option)));
+  input.value = option.querySelector(".recent-place").textContent;
+  closeRecent();
+  showSearchMessage("");
   current = option.dataset.slug;
-  history.replaceState(null, "", `?location=${encodeURIComponent(current)}`);
-  const themeUrl = new URL(themeLink.href);
-  themeUrl.searchParams.set("location", current);
-  themeLink.href = themeUrl.search;
+  keepInUrl({ location: current });
   approachKey = "";
   frame(current, true);
 }
 
-pickerButton.addEventListener("click", () => (pickerList.hidden ? openPicker() : closePicker()));
-pickerButton.addEventListener("keydown", (event) => {
-  if (["ArrowDown", "ArrowUp", "Enter", " "].includes(event.key)) {
+// Record the view in the address bar and the theme link, so a reload or theme switch keeps it.
+function keepInUrl(params) {
+  history.replaceState(null, "", `?${new URLSearchParams(params)}`);
+  const themeUrl = new URL(themeLink.href);
+  const theme = themeUrl.searchParams.get("theme");
+  themeLink.href = `?${new URLSearchParams({ theme, ...params })}`;
+}
+
+function showSearchMessage(text) {
+  searchMessage.textContent = text;
+  searchMessage.hidden = !text;
+}
+
+let active = -1;
+function openRecent() {
+  if (!recentPanel || input.value.trim()) return;
+  recentPanel.hidden = false;
+  input.setAttribute("aria-expanded", "true");
+}
+
+function closeRecent() {
+  if (!recentPanel) return;
+  recentPanel.hidden = true;
+  input.setAttribute("aria-expanded", "false");
+  setActive(-1);
+}
+
+function setActive(index) {
+  active = index;
+  recentOptions.forEach((o, i) => o.classList.toggle("active", i === active));
+  if (active >= 0) input.setAttribute("aria-activedescendant", recentOptions[active].id);
+  else input.removeAttribute("aria-activedescendant");
+}
+
+input.addEventListener("focus", openRecent);
+input.addEventListener("click", openRecent);
+input.addEventListener("input", () => (input.value.trim() ? closeRecent() : openRecent()));
+input.addEventListener("keydown", (event) => {
+  const open = recentPanel && !recentPanel.hidden;
+  const count = recentOptions.length;
+  if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+    if (!open) openRecent();
+    if (!count || recentPanel.hidden) return;
     event.preventDefault();
-    openPicker();
+    const step = event.key === "ArrowDown" ? 1 : -1;
+    setActive((active + step + count) % count);
+  } else if (event.key === "Enter" && open && active >= 0) {
+    event.preventDefault();
+    chooseRecent(active);
+  } else if (event.key === "Escape" && open) {
+    closeRecent();
   }
 });
-pickerList.addEventListener("keydown", (event) => {
-  const keys = {
-    ArrowDown: () => setActive(active + 1),
-    ArrowUp: () => setActive(active - 1),
-    Home: () => setActive(0),
-    End: () => setActive(pickerOptions.length - 1),
-    Enter: () => choose(active),
-    " ": () => choose(active),
-    Escape: () => closePicker(),
-  };
-  if (event.key === "Tab") closePicker(false);
-  else if (keys[event.key]) {
-    event.preventDefault();
-    keys[event.key]();
-  }
+recentOptions.forEach((option, i) => {
+  option.addEventListener("mousedown", (event) => event.preventDefault()); // keep focus in the box
+  option.addEventListener("click", () => chooseRecent(i));
 });
-pickerOptions.forEach((option, i) => option.addEventListener("click", () => choose(i)));
 document.addEventListener("click", (event) => {
-  if (!pickerList.hidden && !event.target.closest(".picker")) closePicker(false);
+  if (!event.target.closest(".search")) closeRecent();
+});
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  closeRecent();
+  search(input.value);
 });

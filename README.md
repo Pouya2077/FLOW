@@ -129,15 +129,15 @@ The offline pipeline writes one folder per demo location (for example
 
 Until a location folder exists, the API returns empty results.
 
-## What happens when someone picks an observation
+## What happens when someone searches
 
 The backend never does heavy maths per request. The data team's pipeline does the hard part once
 and saves files; Django just filters those files and passes them along.
 
-1. The user picks an observation from the dropdown, e.g.
-   "Sumas Prairie, Abbotsford | Nov 16, 2021, 6:25 AM PST".
-2. The map fits to that location's window (MapLibre's `fitBounds`) and locks there: users can zoom
-   in for detail but not out or away.
+1. The map opens fitted to the flood-data window. The user can search any place (the frontend calls
+   `/api/geocode?q=...` and fits the map to the result), or pick the Abbotsford flood from the
+   "Recent" list under the search box to fly back to the window. (Recent is hardcoded for now.)
+2. From there the map zooms and pans freely, like Google Maps.
 3. The frontend calls `/api/flood?bbox=...` with the visible area and draws the returned roads:
    blue for water detected, solid grey for observed clear, dashed grey for not observed. The window
    is outlined, everything outside it is hatched, and roads leading in get short dotted stubs.
