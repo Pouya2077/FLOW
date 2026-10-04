@@ -733,13 +733,19 @@ async function search(query) {
   if (!query) return;
   let results;
   try {
-    results = await getJSON(`/api/geocode?q=${encodeURIComponent(query)}`);
+    results = await geocode(query);
   } catch {
     return; // geocoder unavailable
   }
   if (results.length === 0) return;
   keepInUrl({ q: query });
   analyze(results[0]);
+}
+
+// Places matching the text, nearest the map's centre first (geocoded and cached by the backend).
+function geocode(query) {
+  const { lng, lat } = map.getCenter();
+  return getJSON(`/api/geocode?${new URLSearchParams({ q: query, lon: lng.toFixed(1), lat: lat.toFixed(1) })}`);
 }
 
 // Fit the map to a whole window, so its outline stays in view rather than zooming to the address.
@@ -878,10 +884,26 @@ function keepInUrl(params) {
   }
 }
 
+// The search box's list (WAI-ARIA combobox): "Recent" while the box is empty, place suggestions
+// while typing. Both share the keys: ↑/↓ move, Enter picks, Escape closes.
+const suggestPanel = document.getElementById("suggestions");
+const suggestList = document.getElementById("suggestion-list");
+const pinIcon = document.getElementById("suggestion-icon").content.firstElementChild;
+let suggestions = []; // places shown in suggestPanel, from /api/geocode
 let active = -1;
+
+// Options of whichever list is open
+function shownOptions() {
+  if (recentPanel && !recentPanel.hidden) return recentOptions;
+  if (!suggestPanel.hidden) return [...suggestList.children];
+  return [];
+}
+
 function openRecent() {
   if (!recentPanel || input.value.trim()) return;
+  closeSuggestions();
   recentPanel.hidden = false;
+  input.setAttribute("aria-controls", "recent-list");
   input.setAttribute("aria-expanded", "true");
 }
 
@@ -892,10 +914,50 @@ function closeRecent() {
   setActive(-1);
 }
 
+// Place names come from OpenStreetMap: textContent only, never HTML.
+function showSuggestions(places) {
+  suggestions = places;
+  suggestList.replaceChildren(
+    ...places.map((place, i) => {
+      const option = el("li");
+      option.id = `suggestion-${i}`;
+      option.setAttribute("role", "option");
+      option.setAttribute("aria-selected", "false");
+      option.appendChild(pinIcon.cloneNode(true));
+      const text = option.appendChild(el("span", "recent-text"));
+      text.appendChild(el("span", "recent-place", place.place));
+      if (place.detail) text.appendChild(el("span", "recent-when", place.detail));
+      option.addEventListener("mousedown", (event) => event.preventDefault()); // keep focus in the box
+      option.addEventListener("click", () => chooseSuggestion(i));
+      return option;
+    }),
+  );
+  setActive(-1);
+  suggestPanel.hidden = !places.length;
+  input.setAttribute("aria-controls", "suggestion-list");
+  input.setAttribute("aria-expanded", String(places.length > 0));
+}
+
+function closeSuggestions() {
+  suggestPanel.hidden = true;
+  input.setAttribute("aria-expanded", "false");
+  setActive(-1);
+}
+
+function chooseSuggestion(index) {
+  const place = suggestions[index];
+  input.value = place.name;
+  closeSuggestions();
+  updateSearchButton();
+  keepInUrl({ q: place.name });
+  analyze(place); // already geocoded: no second lookup
+}
+
 function setActive(index) {
+  const options = shownOptions();
   active = index;
-  recentOptions.forEach((o, i) => o.classList.toggle("active", i === active));
-  if (active >= 0) input.setAttribute("aria-activedescendant", recentOptions[active].id);
+  for (const o of [...recentOptions, ...suggestList.children]) o.classList.toggle("active", o === options[index]);
+  if (active >= 0) input.setAttribute("aria-activedescendant", options[active].id);
   else input.removeAttribute("aria-activedescendant");
 }
 
@@ -903,40 +965,56 @@ input.addEventListener("focus", openRecent);
 input.addEventListener("click", openRecent);
 
 input.addEventListener("keydown", (event) => {
-  const open = recentPanel && !recentPanel.hidden;
-  const count = recentOptions.length;
   if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-    if (!open) openRecent();
-    if (!count || recentPanel.hidden) return;
+    if (!shownOptions().length) openRecent();
+    const options = shownOptions();
+    if (!options.length) return;
     event.preventDefault();
     const step = event.key === "ArrowDown" ? 1 : -1;
-    setActive((active + step + count) % count);
-  } else if (event.key === "Enter" && open && active >= 0) {
+    setActive((active + step + options.length) % options.length);
+  } else if (event.key === "Enter" && active >= 0) {
     event.preventDefault();
-    chooseRecent(active);
-  } else if (event.key === "Escape" && open) {
+    if (recentPanel && !recentPanel.hidden) chooseRecent(active);
+    else chooseSuggestion(active);
+  } else if (event.key === "Escape" && shownOptions().length) {
     closeRecent();
+    closeSuggestions();
   }
 });
 
 recentOptions.forEach((option, i) => {
-  option.addEventListener("mousedown", (event) => event.preventDefault()); 
+  option.addEventListener("mousedown", (event) => event.preventDefault());
   option.addEventListener("click", () => chooseRecent(i));
 });
 
-// --- NEW Autocomplete Logic ---
-
-const autocompleteContainer = document.createElement('div');
-autocompleteContainer.className = 'recent';
-autocompleteContainer.hidden = true;
-// We removed the ID here so it doesn't conflict with your HTML file
-autocompleteContainer.innerHTML = '<ul role="listbox"></ul>';
-form.appendChild(autocompleteContainer);
-
-// Grab the exact UL we just created, ignoring the rest of the page
-const autocompleteList = autocompleteContainer.querySelector('ul');
-let currentSuggestions = []; 
-let debounceTimer;
+// Suggestions follow the text after a short pause; an answer for older text is dropped.
+const SUGGEST_DELAY_MS = 300;
+let suggestTimer;
+let suggestRequest = 0;
+input.addEventListener("input", () => {
+  updateSearchButton();
+  const query = input.value.trim();
+  clearTimeout(suggestTimer);
+  const request = ++suggestRequest;
+  if (!query) {
+    openRecent();
+    return;
+  }
+  closeRecent();
+  if (query.length < 3) {
+    closeSuggestions();
+    return;
+  }
+  suggestTimer = setTimeout(async () => {
+    let places;
+    try {
+      places = await geocode(query);
+    } catch {
+      return; // geocoder unavailable: keep typing, Enter still searches
+    }
+    if (request === suggestRequest && document.activeElement === input) showSuggestions(places);
+  }, SUGGEST_DELAY_MS);
+});
 
 // The magnifying glass turns into a green Enter button only while someone is typing: the box has
 // focus and text in it.
@@ -948,110 +1026,16 @@ input.addEventListener("blur", updateSearchButton);
 // Pressing the button would blur the box first and turn it back into a magnifying glass mid-click.
 form.querySelector(".search-button").addEventListener("mousedown", (event) => event.preventDefault());
 
-input.addEventListener("input", (e) => {
-  updateSearchButton();
-  const query = e.target.value.trim();
-  clearTimeout(debounceTimer);
-
-  if (!query) {
-    openRecent();
-    autocompleteContainer.hidden = true;
-    currentSuggestions = [];
-    return;
-  }
-
-  closeRecent();
-
-  if (query.length < 3) {
-    autocompleteContainer.hidden = true;
-    currentSuggestions = [];
-    return;
-  }
-
-  debounceTimer = setTimeout(async () => {
-    try {
-      const response = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&lat=49.28&lon=-123.12`);
-      const data = await response.json();
-      currentSuggestions = data.features;
-      renderSuggestions(currentSuggestions);
-    } catch (err) {
-      console.error("Autocomplete fetch failed:", err);
-    }
-  }, 300);
-});
-
-function renderSuggestions(features) {
-  autocompleteList.innerHTML = '';
-  
-  if (features.length === 0) {
-    autocompleteContainer.hidden = true;
-    return;
-  }
-
-  // An SVG map pin icon that perfectly matches your "Recent" clock icon
-  const pinIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
-
-  features.forEach((feature) => {
-    const li = document.createElement('li');
-    li.role = 'option';
-    
-    const props = feature.properties;
-    
-    // Format the address cleanly
-    const streetInfo = [props.housenumber, props.street].filter(Boolean).join(' ');
-    const placeName = props.name || streetInfo || props.city || "Unknown Location";
-    const regionDetails = [props.city, props.state].filter((item) => item && item !== placeName).join(', ');
-
-    // Use your native HTML structure so app.css styles it perfectly
-    li.innerHTML = `
-      ${pinIcon}
-      <span class="recent-text">
-        <span class="recent-place">${placeName}</span>
-        ${regionDetails ? `<span class="recent-when">${regionDetails}</span>` : ''}
-      </span>
-    `;
-
-li.addEventListener('mousedown', (event) => event.preventDefault()); 
-    li.addEventListener('click', () => {
-      const exactAddress = [placeName, regionDetails].filter(Boolean).join(', ');
-      input.value = exactAddress;
-      autocompleteContainer.hidden = true;
-      
-      // SEND TO DJANGO: Force a page reload so Python's index view catches the ?q= parameter
-      window.location.href = `/?q=${encodeURIComponent(exactAddress)}`;
-    });
-
-    autocompleteList.appendChild(li);
-  });
-
-  autocompleteContainer.hidden = false;
-}
-
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+  suggestRequest++; // a suggestion answer arriving now is stale
   closeRecent();
-  autocompleteContainer.hidden = true;
-
-  if (currentSuggestions.length > 0) {
-    const props = currentSuggestions[0].properties;
-    const streetInfo = [props.housenumber, props.street].filter(Boolean).join(' ');
-    const placeName = props.name || streetInfo || props.city || "Unknown Location";
-    const regionDetails = [props.city, props.state].filter(item => item && item !== placeName).join(', ');
-    
-    const exactAddress = [placeName, regionDetails].filter(Boolean).join(', ');
-    input.value = exactAddress;
-    
-    // SEND TO DJANGO
-    window.location.href = `/?q=${encodeURIComponent(exactAddress)}`;
-  } else {
-    // SEND TO DJANGO (Fallback for exactly what they typed)
-    window.location.href = `/?q=${encodeURIComponent(input.value)}`;
-  }
+  closeSuggestions();
+  search(input.value);
 });
 
 document.addEventListener("click", (event) => {
-  if (!event.target.closest(".search")) {
-    closeRecent();
-    autocompleteContainer.hidden = true;
-  }
+  if (event.target.closest(".search")) return;
+  closeRecent();
+  closeSuggestions();
 });

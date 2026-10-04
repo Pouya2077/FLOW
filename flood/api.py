@@ -111,16 +111,21 @@ def analysis(request, slug: str):
 
 
 @api.get("/geocode")
-def geocode(request, q: str):
-    """Proxy to Photon, cached for a day. Returns [{name, bbox, center}]."""
+def geocode(request, q: str, lon: float | None = None, lat: float | None = None):
+    """Proxy to Photon, cached for a day. Returns [{name, place, detail, bbox, center}]: `place`
+    is the street or place, `detail` its city, state and country, `name` both. lon/lat (e.g. the
+    map's centre) rank nearby places first."""
     q = q.strip()
     if len(q) < 3:
         return []
-    key = "geocode:" + q.lower()
+    params = {"q": q, "limit": 5}
+    if lon is not None and lat is not None:  # ~10 km steps, so nearby centres share the cache
+        params.update(lon=round(lon, 1), lat=round(lat, 1))
+    key = "geocode:" + urllib.parse.urlencode(params).lower()
     if (hit := cache.get(key)) is not None:
         return hit
 
-    url = settings.GEOCODER_URL + "?" + urllib.parse.urlencode({"q": q, "limit": 5})
+    url = settings.GEOCODER_URL + "?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={"User-Agent": settings.GEOCODER_USER_AGENT})
     try:
         with urllib.request.urlopen(req, timeout=5) as resp:
@@ -131,16 +136,27 @@ def geocode(request, q: str):
     results = []
     for f in payload.get("features", []):
         p = f["properties"]
-        lon, lat = f["geometry"]["coordinates"]
+        x, y = f["geometry"]["coordinates"]
         # Photon extent is [minx, maxy, maxx, miny]; points have none, so pad ~500 m.
         if ext := p.get("extent"):
             bbox = [ext[0], ext[3], ext[2], ext[1]]
         else:
-            bbox = [lon - 0.007, lat - 0.0045, lon + 0.007, lat + 0.0045]
-        label = ", ".join(
-            v for v in (p.get("name"), p.get("city"), p.get("state"), p.get("country")) if v
+            bbox = [x - 0.007, y - 0.0045, x + 0.007, y + 0.0045]
+        # An address has no name, only a house number and street
+        street = " ".join(v for v in (p.get("housenumber"), p.get("street")) if v)
+        place = p.get("name") or street or p.get("city") or "Unnamed place"
+        detail = ", ".join(
+            v for v in (p.get("city"), p.get("state"), p.get("country")) if v and v != place
         )
-        results.append({"name": label, "bbox": bbox, "center": [lon, lat]})
+        results.append(
+            {
+                "name": ", ".join(v for v in (place, detail) if v),
+                "place": place,
+                "detail": detail,
+                "bbox": bbox,
+                "center": [x, y],
+            }
+        )
 
     cache.set(key, results, 60 * 60 * 24)
     return results

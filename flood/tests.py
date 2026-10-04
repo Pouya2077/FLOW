@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import re
@@ -8,6 +9,7 @@ from urllib.parse import urlencode
 
 import geopandas as gpd
 import numpy as np
+from django.core.cache import cache
 from django.test import SimpleTestCase, override_settings
 from rasterio.transform import from_origin
 from shapely.geometry import LineString, Point, box
@@ -295,6 +297,60 @@ class AnalysisJobTest(SimpleTestCase):
     def test_bad_coordinates_400(self, _submit):
         response = self.client.post("/api/analyze?name=X&lon=-121.95&lat=95")
         self.assertEqual(response.status_code, 400)
+
+
+def photon_response(*features):
+    body = io.BytesIO(json.dumps({"features": list(features)}).encode())
+    return patch("flood.api.urllib.request.urlopen", return_value=body)
+
+
+def photon_feature(**properties):
+    return {"geometry": {"coordinates": [-122.3, 49.05]}, "properties": properties}
+
+
+class GeocodeTest(SimpleTestCase):
+    """/api/geocode proxies Photon for the search box and its suggestions."""
+
+    def setUp(self):
+        cache.clear()
+        self.addCleanup(cache.clear)
+
+    def test_named_place(self):
+        feature = photon_feature(name="Sumas Prairie", city="Abbotsford", country="Canada")
+        with photon_response(feature):
+            (place,) = self.client.get("/api/geocode?q=sumas").json()
+        self.assertEqual(place["name"], "Sumas Prairie, Abbotsford, Canada")
+        self.assertEqual((place["place"], place["detail"]), ("Sumas Prairie", "Abbotsford, Canada"))
+        self.assertEqual(place["center"], [-122.3, 49.05])
+
+    def test_address_keeps_its_street(self):
+        feature = photon_feature(housenumber="1234", street="Main St", city="Vancouver")
+        with photon_response(feature):
+            (place,) = self.client.get("/api/geocode?q=1234 main").json()
+        self.assertEqual(place["name"], "1234 Main St, Vancouver")
+
+    def test_city_not_repeated(self):
+        with photon_response(photon_feature(name="Abbotsford", city="Abbotsford", state="BC")):
+            (place,) = self.client.get("/api/geocode?q=abbotsford").json()
+        self.assertEqual(place["name"], "Abbotsford, BC")
+
+    def test_biased_to_map_centre_and_cached(self):
+        with photon_response(photon_feature(name="Main St")) as urlopen:
+            self.client.get("/api/geocode?q=main st&lon=-122.312&lat=49.049")
+            self.client.get("/api/geocode?q=main st&lon=-122.29&lat=49.03")  # same ~10 km cell
+        urlopen.assert_called_once()
+        url = urlopen.call_args.args[0].full_url
+        self.assertIn("lon=-122.3", url)
+        self.assertIn("lat=49.0", url)
+
+    def test_short_query_not_sent(self):
+        with photon_response() as urlopen:
+            self.assertEqual(self.client.get("/api/geocode?q=ab").json(), [])
+        urlopen.assert_not_called()
+
+    def test_geocoder_down_502(self):
+        with patch("flood.api.urllib.request.urlopen", side_effect=OSError):
+            self.assertEqual(self.client.get("/api/geocode?q=sumas").status_code, 502)
 
 
 class ChangeDetectionTest(SimpleTestCase):
