@@ -9,12 +9,14 @@ from urllib.parse import urlencode
 
 import geopandas as gpd
 import numpy as np
+import osmnx as ox
 import requests
 from django.core.cache import cache
 from django.test import SimpleTestCase, override_settings
 from rasterio.transform import from_origin
 from shapely.geometry import LineString, Point, box
 
+from pipeline import overpass
 from pipeline.build_facilities import address, dedupe, facilities_in_window, is_public, site
 from pipeline.build_location import score_areas
 from pipeline.detect_flood import NoImagery, change_mask, pick_pair
@@ -373,6 +375,36 @@ class GeocodeTest(SimpleTestCase):
     def test_geocoder_down_502(self):
         with patch("flood.api.urllib.request.urlopen", side_effect=OSError):
             self.assertEqual(self.client.get("/api/geocode?q=sumas").status_code, 502)
+
+
+class OverpassServerTest(SimpleTestCase):
+    """overpass-api.de is two machines; a run uses one that accepts connections."""
+
+    def setUp(self):
+        self.addCleanup(setattr, ox.settings, "overpass_url", ox.settings.overpass_url)
+
+    def connect_only_to(self, reachable):
+        def connect(address, timeout):
+            if address[0] != reachable:
+                raise TimeoutError("timed out")
+            return io.BytesIO()  # anything with close()
+
+        return patch("pipeline.overpass.socket.create_connection", side_effect=connect)
+
+    def test_skips_unreachable_machine(self):
+        with self.connect_only_to("gall.openstreetmap.de"), patch("builtins.print"):
+            overpass.use_reachable_server()
+        self.assertEqual(ox.settings.overpass_url, "https://gall.openstreetmap.de/api")
+
+    def test_first_reachable_wins(self):
+        with self.connect_only_to("lambert.openstreetmap.de"):
+            overpass.use_reachable_server()
+        self.assertEqual(ox.settings.overpass_url, "https://lambert.openstreetmap.de/api")
+
+    def test_neither_reachable_uses_shared_name(self):
+        with self.connect_only_to(None), patch("builtins.print"):
+            overpass.use_reachable_server()
+        self.assertEqual(ox.settings.overpass_url, overpass.DEFAULT_URL)
 
 
 class ChangeDetectionTest(SimpleTestCase):
