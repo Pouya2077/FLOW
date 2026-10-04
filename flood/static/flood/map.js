@@ -164,6 +164,7 @@ map.on("load", () => {
   map.on("mouseleave", ["window-hit", "window-pending-hit"], () => (map.getCanvas().style.cursor = ""));
 
   addFacilityLayers();
+  addRoadClicks();
   addRoadLabels(style);
   // Listen before framing: an unanimated fit fires "moveend" immediately.
   map.on("moveend", loadView);
@@ -334,6 +335,87 @@ function facilityCard(p) {
   osm.target = "_blank";
   osm.rel = "noopener";
   return card;
+}
+
+// --- Road popup: what the satellite saw on a stretch, and the street's totals ---
+
+const ROAD_LAYERS = ["road-flooded", "road-no_data", "road-clear"]; // preferred in this order
+const CLICK_PX = 6; // roads are thin; accept clicks this close
+let roadPopup;
+
+function addRoadClicks() {
+  map.on("click", (event) => {
+    const { x, y } = event.point;
+    const box = [[x - CLICK_PX, y - CLICK_PX], [x + CLICK_PX, y + CLICK_PX]];
+    if (map.queryRenderedFeatures(box, { layers: ["facilities"] }).length) return; // its own popup
+    const hits = map.queryRenderedFeatures(box, { layers: ROAD_LAYERS });
+    if (!hits.length) return;
+    hits.sort((a, b) => ROAD_LAYERS.indexOf(a.layer.id) - ROAD_LAYERS.indexOf(b.layer.id));
+    openRoad(hits[0], event.lngLat);
+  });
+  map.on("mouseenter", ROAD_LAYERS, () => (map.getCanvas().style.cursor = "pointer"));
+  map.on("mouseleave", ROAD_LAYERS, () => (map.getCanvas().style.cursor = ""));
+}
+
+async function openRoad(feature, lngLat) {
+  roadPopup?.remove();
+  const p = feature.properties;
+  const popup = new maplibregl.Popup({ className: "facility-popup", maxWidth: "320px" })
+    .setLngLat(lngLat)
+    .setDOMContent(roadCard(p, null))
+    .addTo(map);
+  roadPopup = popup;
+  const street = await streetSummary(p.name);
+  if (street && roadPopup === popup) popup.setDOMContent(roadCard(p, street)); // add the totals
+}
+
+// Per-street totals of the current window, fetched once per window
+const streetTotals = {};
+async function streetSummary(name) {
+  const slug = current;
+  if (!name || !metas[slug]) return null;
+  if (!streetTotals[slug]) {
+    const params = new URLSearchParams({ bbox: metas[slug].bbox.join(","), location: slug });
+    try {
+      const rows = await getJSON(`/api/streets?${params}`);
+      streetTotals[slug] = new Map(rows.map((s) => [s.name, s]));
+    } catch {
+      return null; // the popup still shows the stretch
+    }
+  }
+  return streetTotals[slug].get(name) ?? null;
+}
+
+// Same card style as a critical building. Street names are OSM text: textContent only.
+function roadCard(p, street) {
+  const card = el("div", "facility");
+  card.appendChild(el("p", "facility-kind", roadKind(p.highway)));
+  card.appendChild(el("h2", "facility-name", p.name ?? "Unnamed road"));
+  card.appendChild(el("p", `facility-flood ${p.status}`, stretchText(p)));
+  if (street) card.appendChild(el("p", "", streetText(street)));
+  card.appendChild(el("p", "facility-source", `Satellite: ${localTime(p.observed_utc)}`));
+  return card;
+}
+
+function roadKind(highway) {
+  const kinds = { motorway: "Highway", trunk: "Highway", primary: "Major road", residential: "Residential street", service: "Service road" };
+  return kinds[String(highway).replace("_link", "")] ?? "Road";
+}
+
+// Radar sees water extent, not depth: "water detected", never "impassable".
+function stretchText(p) {
+  const pct = (v) => `${Math.round((v ?? 0) * 100)}%`;
+  if (p.status === "flooded") {
+    return `Water detected on this stretch (${pct(p.flooded_fraction)} of the road corridor, confidence ${pct(p.confidence)})`;
+  }
+  if (p.status === "clear") return `No water detected on this stretch (confidence ${pct(p.confidence)})`;
+  return "This stretch was not observed by the satellite";
+}
+
+function streetText(s) {
+  const km = (m) => `${(m / 1000).toFixed(1)} km`;
+  const unseen = s.no_data_m ? `, ${km(s.no_data_m)} not observed` : "";
+  return `Whole street: water on ${km(s.flooded_m)} of ${km(s.total_m)} (${s.pct}%)${unseen}`;
 }
 
 // Radar sees water extent, not depth: say how much of the site is wet, never "inaccessible".
