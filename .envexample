@@ -1,0 +1,5 @@
+## Copernicus Data Space Ecosystem
+## User credentials for accessing the Copernicus Data Space Ecosystem (CDSE) API.
+
+CDSE_USERNAME=<your_username_here>
+CDSE_PASSWORD=<your_password_here>
