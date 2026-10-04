@@ -100,8 +100,8 @@ frontend sends it, and the backend returns only what falls inside it.
 template. Pages come from views and JSON comes from `api.py`.
 
 **`templates/flood/index.html`: the page itself.** A Google Maps–style layout: a full-screen
-map (a placeholder sketch until MapLibre lands) with a translucent search box top-left and a theme
-toggle top-right. The folder is nested (`templates/flood/`) because that's a
+MapLibre map with a translucent search box top-left and a theme toggle top-right. The map code is
+`flood/static/flood/map.js`. The folder is nested (`templates/flood/`) because that's a
 Django convention to avoid name clashes between apps. Static files (JS and CSS) go in
 `flood/static/flood/`.
 
@@ -138,7 +138,8 @@ and saves files; Django just filters those files and passes them along.
    `/api/geocode?q=Abbotsford` and gets back a bounding box.
 2. The map zooms to that box (MapLibre's `fitBounds`).
 3. The frontend calls `/api/flood?bbox=...` with the visible area and draws the returned roads:
-   blue for water detected, grey for observed clear, hatched for not observed.
+   blue for water detected, solid grey for observed clear, dashed grey for not observed. Everything
+   outside the satellite's coverage is hatched.
 4. It calls `/api/streets?bbox=...` to fill the sidebar with the most-flooded streets.
 5. It calls `/api/meta` to show the "Satellite observation: <time>" banner.
 
