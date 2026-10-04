@@ -79,6 +79,9 @@
     </div>
   </div>
 
+  {# About: a small link bottom-left, where Google Maps keeps its own links. #}
+  <a class="about-link overlay" href="{% url 'about' %}">About</a>
+
   {# Errors (search, analysis, loading roads): a bar bottom-centre, like Google Maps'. #}
   <div class="notice" role="alert" hidden>
     {% lucide "circle-alert" size=20 class="notice-icon" aria_hidden="true" %}

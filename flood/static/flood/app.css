@@ -778,3 +778,127 @@ body {
     white-space: nowrap;
   }
 }
+
+/* --- About: the link bottom-left of the map, and the page it opens --- */
+
+/* A small pill in the accent blue; the map's free corner (zoom and credits are bottom-right). */
+.about-link {
+  top: auto;
+  bottom: 16px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 16px;
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.about-link:focus-visible,
+.about a:focus-visible,
+.brand-header:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* No map here: a plain page that scrolls, below the floating logo and gear. */
+.about-page {
+  overflow: auto;
+}
+
+.about {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 96px 16px 48px;
+  line-height: 1.6;
+}
+
+.about h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.about-lede {
+  margin: 0 0 32px;
+  color: var(--text-muted);
+  font-size: 17px;
+}
+
+.about section {
+  margin-bottom: 32px;
+}
+
+.about h2 {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.about h2 svg {
+  color: var(--accent);
+}
+
+.about p {
+  margin: 0 0 12px;
+}
+
+.about a {
+  color: var(--accent);
+}
+
+.about-list {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.about-list li + li {
+  margin-top: 6px;
+}
+
+.about-note {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgb(var(--surface) / 1);
+  box-shadow: var(--shadow);
+}
+
+.about-note svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--accent);
+}
+
+.about-team {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  font-weight: 500;
+}
+
+.about-footnote {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.about-back {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.about-back:hover {
+  text-decoration: underline;
+}

@@ -18,14 +18,45 @@ RECENT_MAX = 5
 DEMO_LOCATIONS = ["sumas-prairie"]
 
 
-def index(request):
+def resolve_theme(request) -> str:
+    """The page's theme: ?theme=, then the theme cookie, then light."""
     requested = request.GET.get("theme")
     if requested in THEMES:
-        theme = requested
-    elif request.COOKIES.get(settings.THEME_COOKIE) in THEMES:
-        theme = request.COOKIES[settings.THEME_COOKIE]
-    else:
-        theme = "light"
+        return requested
+    if request.COOKIES.get(settings.THEME_COOKIE) in THEMES:
+        return request.COOKIES[settings.THEME_COOKIE]
+    return "light"
+
+
+def theme_toggle_for(theme: str, params: dict) -> dict:
+    """One toggle: its icon shows the current mode, clicking switches to the other. Switching
+    reloads the page, so `params` carries the current view over."""
+    other_theme = "dark" if theme == "light" else "light"
+    icon = "sun" if theme == "light" else "moon"
+    return {
+        "theme": other_theme,
+        "label": f"Switch to {other_theme} mode",
+        "icon": icon,
+        "icon_class": f"icon-{icon}",
+        "href": "?" + urlencode({k: v for k, v in {"theme": other_theme, **params}.items() if v}),
+    }
+
+
+def remember_theme(request, response):
+    """Save a ?theme= choice in the cookie, so the server renders the right theme next time."""
+    requested = request.GET.get("theme")
+    if requested in THEMES:
+        response.set_cookie(
+            settings.THEME_COOKIE,
+            requested,
+            max_age=settings.THEME_COOKIE_MAX_AGE,
+            samesite="Lax",
+        )
+    return response
+
+
+def index(request):
+    theme = resolve_theme(request)
 
     # A ?q= search is handled in the browser: map.js geocodes it and starts a background analysis
     # (/api/analyze), so the page never waits on the pipeline.
@@ -41,20 +72,7 @@ def index(request):
         {"slug": slug, "place": locations[slug]["name"], "when": observed_local(locations[slug])}
         for slug in (searched + demo)[:RECENT_MAX]
     ]
-    # One toggle: its icon shows the current mode, clicking switches to the other. Switching
-    # reloads the page, so carry the current view over.
-    other_theme = "dark" if theme == "light" else "light"
-    icon = "sun" if theme == "light" else "moon"
-    theme_toggle = {
-        "theme": other_theme,
-        "label": f"Switch to {other_theme} mode",
-        "icon": icon,
-        "icon_class": f"icon-{icon}",
-        "href": "?"
-        + urlencode(
-            {k: v for k, v in {"theme": other_theme, "location": location, "q": query}.items() if v}
-        ),
-    }
+    theme_toggle = theme_toggle_for(theme, {"location": location, "q": query})
 
     response = render(
         request,
@@ -69,14 +87,30 @@ def index(request):
             "recent": recent,
         },
     )
-    if requested in THEMES:
-        response.set_cookie(
-            settings.THEME_COOKIE,
-            requested,
-            max_age=settings.THEME_COOKIE_MAX_AGE,
-            samesite="Lax",
-        )
-    return response
+    return remember_theme(request, response)
+
+
+# Credited on the About page, each name linking to their GitHub profile.
+CONTRIBUTORS = [
+    {"name": "Pouya Khoshnavazi", "github": "Pouya2077"},
+    {"name": "Kevin Low", "github": "kevin18low"},
+    {"name": "Iden Huang", "github": "IdenHuang"},
+    {"name": "Serena", "github": "aaneres"},
+]
+
+
+def about(request):
+    theme = resolve_theme(request)
+    response = render(
+        request,
+        "flood/about.html",
+        {
+            "theme": theme,
+            "theme_toggle": theme_toggle_for(theme, {}),
+            "contributors": CONTRIBUTORS,
+        },
+    )
+    return remember_theme(request, response)
 
 
 def observed_local(meta: dict) -> str:
