@@ -79,7 +79,7 @@ map.on("load", () => {
   const beforeLabels = style.layers.slice(lastShape + 1).find((layer) => layer.type === "symbol")?.id;
   const add = (layer) => map.addLayer(layer, beforeLabels);
 
-  map.addSource("unobserved", { type: "geojson", data: unobservedArea(Object.values(metas)) });
+  map.addSource("unobserved", { type: "geojson", data: unobservedArea(shownMetas()) });
   add({ id: "unobserved", type: "fill", source: "unobserved", paint: { "fill-pattern": "hatch" } });
 
   map.addSource("approaches", { type: "geojson", data: emptyCollection() });
@@ -118,7 +118,7 @@ map.on("load", () => {
     });
   }
 
-  map.addSource("windows", { type: "geojson", data: footprints(Object.values(metas)) });
+  map.addSource("windows", { type: "geojson", data: footprints(shownMetas()) });
   add({
     id: "window-edge",
     type: "line",
@@ -141,13 +141,33 @@ function frame(slug, animate) {
   map.fitBounds(bbox, { padding: PADDING, duration: animate && !reduceMotion ? 600 : 0 });
 }
 
-// Fetch the segments for what's on screen.
+// One window at a time: only the current location gets an outline, a hole in the hatch and roads.
+function shownMetas() {
+  return metas[current] ? [metas[current]] : [];
+}
+
+// Move the window to another location; the previous one stops being drawn.
+function showWindow(slug) {
+  current = slug;
+  map.getSource("windows").setData(footprints(shownMetas()));
+  map.getSource("unobserved").setData(unobservedArea(shownMetas()));
+  map.getSource("approaches").setData(emptyCollection());
+  approachKey = "";
+  loadView();
+}
+
+// Fetch the current location's segments for what's on screen.
 let latestRequest = 0;
 async function loadView() {
-  const view = map.getBounds().toArray().flat(); // [west, south, east, north]
   const request = ++latestRequest;
-  const segments = await getJSON(`/api/flood?bbox=${view.join(",")}`);
-  if (request !== latestRequest) return; // a newer move already started
+  if (!metas[current]) {
+    map.getSource("segments").setData(emptyCollection());
+    return;
+  }
+  const view = map.getBounds().toArray().flat(); // [west, south, east, north]
+  const params = new URLSearchParams({ bbox: view.join(","), location: current });
+  const segments = await getJSON(`/api/flood?${params}`);
+  if (request !== latestRequest) return; // a newer move or window change already started
   map.getSource("segments").setData(segments);
 }
 
@@ -398,9 +418,8 @@ function chooseRecent(index) {
   input.value = option.querySelector(".recent-place").textContent;
   closeRecent();
   showSearchMessage("");
-  current = option.dataset.slug;
+  showWindow(option.dataset.slug);
   keepInUrl({ location: current });
-  approachKey = "";
   frame(current, true);
 }
 

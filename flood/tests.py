@@ -59,6 +59,15 @@ class ApiSmokeTest(SimpleTestCase):
         body = self.client.get("/api/flood", {"bbox": "0,0,1,1"}).json()
         self.assertEqual(body["features"], [])
 
+    def test_flood_only_for_current_location(self):
+        view = {"bbox": "-122.25,49.0,-122.15,49.1"}
+        mine = self.client.get("/api/flood", {**view, "location": "test-area"}).json()
+        other = self.client.get("/api/flood", {**view, "location": "elsewhere"}).json()
+        self.assertEqual(len(mine["features"]), 1)
+        self.assertEqual(other["features"], [])
+        streets = self.client.get("/api/streets", {**view, "location": "elsewhere"}).json()
+        self.assertEqual(streets, [])
+
     def test_bad_bbox(self):
         self.assertEqual(self.client.get("/api/flood", {"bbox": "nope"}).status_code, 400)
 
