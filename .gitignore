@@ -7,6 +7,7 @@ db.sqlite3
 .ruff_cache/
 staticfiles/
 data/masks/
+data/searches/
 data/radar/
 cache/
 venv/

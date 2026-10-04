@@ -52,6 +52,8 @@ STATIC_URL = "static/"
 
 # Output of the offline pipeline: one folder per demo location.
 FLOOD_DATA_DIR = BASE_DIR / "data" / "locations"
+# Areas analysed when someone searches (gitignored). Same folder layout as FLOOD_DATA_DIR.
+SEARCH_DATA_DIR = BASE_DIR / "data" / "searches"
 
 # Photon allows autocomplete; Nominatim does not. Identify ourselves either way.
 GEOCODER_URL = "https://photon.komoot.io/api/"
