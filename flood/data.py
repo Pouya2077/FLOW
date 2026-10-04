@@ -28,6 +28,13 @@ def _folders() -> dict[str, Path]:
     return out
 
 
+# Slugs of searched areas, most recently analysed first (by when their files were written)
+def searched() -> list[str]:
+    folders = _folders()
+    slugs = [s for s, folder in folders.items() if folder.parent == settings.SEARCH_DATA_DIR]
+    return sorted(slugs, key=lambda s: (folders[s] / "meta.json").stat().st_mtime, reverse=True)
+
+
 @cache
 def locations() -> dict[str, dict]:
     out = {}

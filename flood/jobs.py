@@ -48,6 +48,24 @@ def start(region: Region) -> dict:
     return dict(job)
 
 
+# An analysed (or in-progress) area containing the point, so searching anywhere inside it reuses
+# it, whatever the geocoder called the place. The one whose centre is nearest if several do.
+def covering(lon: float, lat: float) -> dict | None:
+    with _lock:
+        candidates = [dict(j) for j in _jobs.values() if j["status"] != "failed"]
+    known = {c["slug"] for c in candidates}
+    candidates += [_finished(slug) for slug in data.locations() if slug not in known]
+
+    def inside(bbox) -> bool:
+        return bbox[0] <= lon <= bbox[2] and bbox[1] <= lat <= bbox[3]
+
+    def distance(bbox) -> float:  # to the centre, in degrees; fine for ranking nearby boxes
+        return ((bbox[0] + bbox[2]) / 2 - lon) ** 2 + ((bbox[1] + bbox[3]) / 2 - lat) ** 2
+
+    hits = [c for c in candidates if inside(c["bbox"])]
+    return min(hits, key=lambda c: distance(c["bbox"])) if hits else None
+
+
 # Status of a job, or of an area analysed before this process started; None if unknown
 def status(slug: str) -> dict | None:
     with _lock:

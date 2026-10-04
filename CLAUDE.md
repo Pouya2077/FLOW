@@ -156,9 +156,9 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - **Recent searches:** focusing the empty search box opens a "Recent" panel (WAI-ARIA combobox +
   listbox; ↑/↓, Enter, Escape). Each entry: clock icon, address, observation time in the location's
   time zone (`views.observed_local`). Choosing one flies back to that observation window
-  (`?location=`); the entry for the window on the map has the `--accent` border. **Hardcoded for now**
-  (`views.RECENT_SEARCHES = ["sumas-prairie"]`); real recent searches must come from the user's
-  history, not be predetermined.
+  (`?location=`); the entry for the window on the map has the `--accent` border. Lists areas searched
+  on this server (`data/searches/`, newest first, up to `views.RECENT_MAX`), then the demo
+  (`views.DEMO_LOCATIONS`). Not per-user yet (no accounts): everyone on a server sees the same list.
 - **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
   Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
   right theme), then the cookie, then light. Toggling reloads the page.

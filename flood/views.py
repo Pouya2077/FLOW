@@ -9,10 +9,10 @@ from . import data
 
 THEMES = ("light", "dark")
 
-# Hardcoded for now: the Abbotsford flood (the local-development data set) is always offered as a
-# "recent" search. In the future, recent searches must come from what the user actually searched,
-# not be predetermined here.
-RECENT_SEARCHES = ["sumas-prairie"]
+# The Recent panel lists areas searched on this server, newest first, then the demo flood (always
+# offered). There are no user accounts, so everyone using this server sees the same searches.
+RECENT_MAX = 5
+DEMO_LOCATIONS = ["sumas-prairie"]
 
 
 def index(request):
@@ -34,10 +34,11 @@ def index(request):
         location = next(iter(locations), None)  # the window the map opens on
     query = request.GET.get("q", "").strip()
 
+    searched = data.searched()[:RECENT_MAX]
+    demo = [s for s in DEMO_LOCATIONS if s in locations and s not in searched]
     recent = [
         {"slug": slug, "place": locations[slug]["name"], "when": observed_local(locations[slug])}
-        for slug in RECENT_SEARCHES
-        if slug in locations
+        for slug in searched + demo
     ]
     # Switching theme reloads the page, so carry the current view over.
     theme_params = {"theme": other_theme, "location": location, "q": query}

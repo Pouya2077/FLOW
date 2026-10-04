@@ -1,14 +1,17 @@
 import json
+import os
+import re
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import urlencode
 
 import numpy as np
 from django.test import SimpleTestCase, override_settings
 
 from pipeline.detect_flood import NoImagery, change_mask, pick_pair
 
-from . import data, jobs
+from . import data, jobs, views
 from .views import observed_local
 
 FIXTURE_META = {"name": "Test Area", "bbox": [-122.3, 49.0, -122.1, 49.1]}
@@ -160,8 +163,9 @@ class AnalysisJobTest(SimpleTestCase):
         (folder / "streets.json").write_text(json.dumps(FIXTURE_STREETS))
         return folder
 
-    def analyze(self, name="Chilliwack, BC"):
-        return self.client.post(f"/api/analyze?name={name}&lon=-121.95&lat=49.16")
+    def analyze(self, name="Chilliwack, BC", lon=-121.95, lat=49.16):
+        query = urlencode({"name": name, "lon": lon, "lat": lat})
+        return self.client.post(f"/api/analyze?{query}")
 
     def test_search_runs_pipeline_and_shows_up(self, _submit):
         with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline):
@@ -216,6 +220,36 @@ class AnalysisJobTest(SimpleTestCase):
         with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline):
             self.analyze()
         self.assertEqual(self.client.get("/api/analyze/chilliwack-bc").json()["status"], "done")
+
+    def test_same_place_other_name_reuses_area(self, _submit):
+        with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline) as run:
+            self.analyze("Chilliwack, BC")
+            # The geocoder names it differently and puts the point a little elsewhere in town.
+            body = self.analyze("Chilliwack, British Columbia, Canada", -121.93, 49.17).json()
+        self.assertEqual((body["slug"], body["status"]), ("chilliwack-bc", "done"))
+        run.assert_called_once()
+
+    def test_search_inside_running_analysis_joins_it(self, _submit):
+        _submit.side_effect = None  # leave the first job queued
+        with patch("flood.jobs.fetch_sentinel_radar"):
+            self.analyze("Chilliwack, BC")
+            body = self.analyze("Yale Road, Chilliwack", -121.96, 49.15).json()
+        self.assertEqual((body["slug"], body["status"]), ("chilliwack-bc", "queued"))
+        _submit.assert_called_once()
+
+    def test_search_elsewhere_runs_new_analysis(self, _submit):
+        with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline) as run:
+            self.analyze("Chilliwack, BC")
+            body = self.analyze("Hope, BC", -121.44, 49.38).json()
+        self.assertEqual(body["slug"], "hope-bc")
+        self.assertEqual(run.call_count, 2)
+
+    def test_nearest_of_overlapping_areas(self, _submit):
+        with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline):
+            self.analyze("West", -122.00, 49.16)
+            self.analyze("East", -121.90, 49.16)  # outside West's 10 km box
+            near_east = self.analyze("Between", -121.94, 49.16).json()  # inside both
+        self.assertEqual(near_east["slug"], "east")
 
     def test_unknown_analysis_404(self, _submit):
         self.assertEqual(self.client.get("/api/analyze/nowhere").status_code, 404)
@@ -305,7 +339,16 @@ class PickPairTest(SimpleTestCase):
 
 
 class RecentSearchTest(SimpleTestCase):
-    """Uses the committed Sumas Prairie data, which is the hardcoded recent search."""
+    """Uses the committed Sumas Prairie data (the demo, always offered) and no searches."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        override = override_settings(SEARCH_DATA_DIR=Path(tmp.name))  # no searches here
+        override.enable()
+        self.addCleanup(override.disable)
+        data.reload()
+        self.addCleanup(data.reload)
 
     def test_abbotsford_flood_offered_as_recent(self):
         response = self.client.get("/")
@@ -317,6 +360,44 @@ class RecentSearchTest(SimpleTestCase):
     def test_window_on_map_is_marked_selected(self):
         response = self.client.get("/", {"location": "sumas-prairie"})
         self.assertContains(response, 'data-slug="sumas-prairie" aria-selected="true"')
+
+
+class RecentSavedSearchesTest(SimpleTestCase):
+    """Areas searched before are listed in Recent, newest first, ahead of the demo."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.demo, self.searches = Path(tmp.name, "locations"), Path(tmp.name, "searches")
+        override = override_settings(FLOOD_DATA_DIR=self.demo, SEARCH_DATA_DIR=self.searches)
+        override.enable()
+        self.addCleanup(override.disable)
+        data.reload()
+        self.addCleanup(data.reload)
+
+    def write(self, root, slug, name, written_at):
+        folder = root / slug
+        folder.mkdir(parents=True)
+        meta = folder / "meta.json"
+        meta.write_text(json.dumps({**FIXTURE_META, "name": name}))
+        os.utime(meta, (written_at, written_at))
+
+    def recent_slugs(self):
+        html = self.client.get("/").content.decode()
+        return re.findall(r'data-slug="([^"]+)"', html)
+
+    def test_searches_newest_first_then_demo(self):
+        self.write(self.demo, "sumas-prairie", "Sumas Prairie", 100)
+        self.write(self.searches, "hope", "Hope", 200)
+        self.write(self.searches, "chilliwack", "Chilliwack", 300)
+        self.assertEqual(self.recent_slugs(), ["chilliwack", "hope", "sumas-prairie"])
+
+    def test_at_most_recent_max_searches(self):
+        for i in range(views.RECENT_MAX + 2):
+            self.write(self.searches, f"place-{i}", f"Place {i}", 100 + i)
+        slugs = self.recent_slugs()
+        self.assertEqual(len(slugs), views.RECENT_MAX)
+        self.assertEqual(slugs[0], f"place-{views.RECENT_MAX + 1}")  # newest
 
 
 class ObservedLocalTest(SimpleTestCase):

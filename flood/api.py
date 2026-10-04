@@ -75,10 +75,13 @@ def streets(request, bbox: str, location: str | None = None):
 @api.post("/analyze")
 def analyze(request, name: str, lon: float, lat: float):
     """Start analysing the newest satellite pass around a searched place (takes 1-2 minutes).
+    A place inside an area that's already analysed (or being analysed) reuses that area.
     Returns {slug, name, bbox, status, message}; poll GET /api/analyze/{slug} until status is
     "done" (then the area is in /api/locations) or "failed" (message says why)."""
     if not (-180 <= lon <= 180 and -85 <= lat <= 85):
         raise HttpError(400, "lon must be -180..180 and lat -85..85")
+    if existing := jobs.covering(lon, lat):
+        return existing
     name = name.strip()[:120] or "Searched area"
     return jobs.start(region_around(name, lon, lat))
 
