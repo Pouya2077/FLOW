@@ -10,7 +10,9 @@ const input = document.getElementById("q");
 const recentPanel = document.getElementById("recent");
 const recentOptions = [...(recentPanel?.querySelectorAll('[role="option"]') ?? [])];
 const searchMessage = document.getElementById("search-message");
-const themeLink = document.querySelector(".theme-toggle");
+const themeLinks = [...document.querySelectorAll(".theme-option")];
+const settingsToggle = document.querySelector(".settings-toggle");
+const settingsMenu = document.getElementById("settings-menu");
 const facilitiesToggle = document.querySelector(".facilities-toggle");
 // One lucide glyph per kind of critical building, rendered by the template.
 const facilityKinds = Object.fromEntries(
@@ -387,8 +389,22 @@ facilitiesToggle?.addEventListener("click", () => {
   if (!show) facilityPopup?.remove();
 });
 
+// The gear opens and closes the settings; Escape closes them too.
+function setSettingsOpen(open) {
+  settingsToggle.setAttribute("aria-expanded", String(open));
+  settingsMenu.hidden = !open;
+}
+settingsToggle?.addEventListener("click", () => {
+  setSettingsOpen(settingsToggle.getAttribute("aria-expanded") !== "true");
+});
+
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && facilityPopup?.isOpen()) facilityPopup.remove();
+  if (event.key !== "Escape" || event.target.closest?.(".search")) return; // the search box has its own
+  if (facilityPopup?.isOpen()) facilityPopup.remove();
+  else if (settingsMenu && !settingsMenu.hidden) {
+    setSettingsOpen(false);
+    settingsToggle.focus();
+  }
 });
 
 // Replace the basemap's road-name layers with tiers that appear by importance. Route shields stay.
@@ -718,9 +734,9 @@ function chooseRecent(index) {
 
 function keepInUrl(params) {
   history.replaceState(null, "", `?${new URLSearchParams(params)}`);
-  const themeUrl = new URL(themeLink.href);
-  const theme = themeUrl.searchParams.get("theme");
-  themeLink.href = `?${new URLSearchParams({ theme, ...params })}`;
+  for (const link of themeLinks) {
+    link.href = `?${new URLSearchParams({ theme: link.dataset.themeOption, ...params })}`;
+  }
 }
 
 function showSearchMessage(text) {

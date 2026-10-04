@@ -169,9 +169,12 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   (`?location=`); the entry for the window on the map has the `--accent` border. **Hardcoded for now**
   (`views.RECENT_SEARCHES = ["sumas-prairie"]`); real recent searches must come from the user's
   history, not be predetermined.
-- **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
-  Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
-  right theme), then the cookie, then light. Toggling reloads the page.
+- **Settings gear:** round 48 px button in the **top-right**; it turns on hover and a click unrolls a
+  column of options below it (click again or Escape closes): **one theme circle** whose icon shows
+  the current mode (sun = light, moon = dark) and switches to the other mode when clicked, then the
+  critical-buildings toggle (`--toggle-on` outline while on). Theme order: `?theme=` URL parameter
+  (also saved to the `theme` cookie, 1 year, so the server renders the right theme), then the cookie,
+  then light. Switching theme reloads the page.
 - **Colours come from the basemap:** every UI colour is a token in `flood/static/flood/app.css` derived
   from Positron (light) / Dark (dark) — Positron's greys for text and borders, its slate water-label
   blue `#495E91` as the UI accent. Don't introduce colours that aren't in the map's palette, except
@@ -196,7 +199,7 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - Click popup with street stats; sidebar listing affected streets sorted by flooded length.
 - **Critical buildings:** lucide glyph on a round badge, on top of all layers; the badge ring follows
   the three states (`--flood` ring, plain, dashed/faded). Click → popup with name, address, contacts
-  and "Water detected on N% of the site". The button under the theme toggle hides them.
+  and "Water detected on N% of the site". The settings menu's toggle hides them.
 - Optional faint flood-extent raster under the traces.
 
 ## Radar (SAR) pitfalls — always account for these

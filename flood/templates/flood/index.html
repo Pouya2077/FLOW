@@ -41,13 +41,21 @@
   </form>
   <p id="search-message" class="search-message" role="status" hidden></p>
 
-  <a class="theme-toggle overlay" href="{{ theme_href }}" aria-label="Switch to {{ other_theme }} mode" title="Switch to {{ other_theme }} mode">
-    {% if theme == "light" %}{% lucide "moon" size=20 class="icon-moon" aria_hidden="true" %}{% else %}{% lucide "sun" size=20 class="icon-sun" aria_hidden="true" %}{% endif %}
-  </a>
-
-  <button class="facilities-toggle overlay" type="button" aria-pressed="true" aria-label="Critical buildings" title="Show or hide critical buildings">
-    {% lucide "building-2" size=20 aria_hidden="true" %}
-  </button>
+  {# Settings: a gear top-right that unrolls the theme toggle and the critical-buildings toggle. #}
+  <div class="settings">
+    <button class="settings-toggle overlay" type="button" aria-expanded="false" aria-controls="settings-menu" aria-label="Settings" title="Settings">
+      {% lucide "settings" size=20 aria_hidden="true" %}
+    </button>
+    <div id="settings-menu" class="settings-menu" hidden>
+      {# One circle: the icon shows the current mode (sun = light, moon = dark); it links to the other. #}
+      <a class="theme-option settings-option overlay" href="{{ theme_toggle.href }}" data-theme-option="{{ theme_toggle.theme }}" aria-label="{{ theme_toggle.label }}" title="{{ theme_toggle.label }}">
+        {% lucide theme_toggle.icon size=20 class=theme_toggle.icon_class aria_hidden="true" %}
+      </a>
+      <button class="facilities-toggle settings-option overlay" type="button" aria-pressed="true" aria-label="Critical buildings" title="Show or hide critical buildings">
+        {% lucide "building-2" size=20 aria_hidden="true" %}
+      </button>
+    </div>
+  </div>
 
   {# One lucide glyph per kind of critical building; map.js draws them onto map icons and popups. #}
   <template id="facility-icons">
