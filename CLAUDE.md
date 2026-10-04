@@ -150,12 +150,15 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   is just where flood data exists; its outline is fixed to the observed area's coordinates.
 - **Floating controls are translucent at rest** (frosted, map shows through) and turn **solid with a
   Maps-style shadow** on hover, focus or while typing. Applies to every overlay control (`.overlay`).
-- **Observation dropdown** (no free-text search): pill (48 px, ~460 px) in the **top-left**, chevron on
-  its right. One option per location: `<name> | <observation time, location's time zone>` (e.g.
-  `Sumas Prairie, Abbotsford | Nov 16, 2021, 6:25 AM PST`, built in `views.location_label`). Custom
-  listbox (WAI-ARIA select-only combobox, full keyboard support), not `<select>`, so the selected
-  option can carry the `--accent` border. Choice is kept in `?location=`; the theme link carries it.
-  `/api/geocode` is currently unused by the UI.
+- **Search:** pill (48 px, ~392 px) in the **top-left**, magnifying-glass button on its right.
+  Submitting fits the map to the first `/api/geocode` result (max zoom 16); the query is kept in
+  `?q=`. Errors / "no places found" show in a solid message under the box.
+- **Recent searches:** focusing the empty search box opens a "Recent" panel (WAI-ARIA combobox +
+  listbox; ↑/↓, Enter, Escape). Each entry: clock icon, address, observation time in the location's
+  time zone (`views.observed_local`). Choosing one flies back to that observation window
+  (`?location=`); the entry for the window on the map has the `--accent` border. **Hardcoded for now**
+  (`views.RECENT_SEARCHES = ["sumas-prairie"]`); real recent searches must come from the user's
+  history, not be predetermined.
 - **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
   Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
   right theme), then the cookie, then light. Toggling reloads the page.
@@ -169,7 +172,7 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - **Three road states, never two:** blue = water observed (`--flood`, widest, drawn on top), solid
   grey = observed clear, dashed grey = not observed / no data. A road outside the satellite footprint
   must never look safe: everything outside `meta.footprint` is covered by a diagonal hatch.
-- **Window outline:** the footprint is outlined 3 px in `--accent`, matching the selected dropdown option.
+- **Window outline:** the footprint is outlined 3 px in `--accent`, matching the selected Recent entry.
 - **Approach dots:** basemap roads crossing the window edge get a dotted stub outside it (~70 screen
   px, fading out in 5 steps), computed in `map.js` from the basemap's `transportation` tiles.
 - **Road labels by importance:** the basemap's road-name layers are hidden and replaced by tiers —

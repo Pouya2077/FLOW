@@ -88,81 +88,137 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* Observation picker: pill button top-left, list drops below it. */
-.picker {
+/* Search box: pill top-left with the search button on its right (Google Maps). */
+.search {
   left: 16px;
-  width: min(460px, calc(100% - 16px - 16px - 48px - 12px));
+  display: flex;
+  align-items: center;
+  width: min(392px, calc(100% - 16px - 16px - 48px - 12px));
+  padding-left: 20px;
 }
 
-.picker-button {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  width: 100%;
+.search input {
+  flex: 1;
+  min-width: 0;
   height: 100%;
-  padding: 0 14px 0 20px;
+  padding: 0;
   border: 0;
-  border-radius: inherit;
+  outline: 0;
   background: transparent;
   color: var(--text);
   font: inherit;
-  text-align: left;
+}
+
+.search input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* Hide WebKit's built-in clear button; it clashes with the search icon. */
+.search input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.search-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted); /* lucide icons stroke with currentColor */
   cursor: pointer;
 }
 
-.picker-value {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.search-button:hover {
+  color: var(--accent);
 }
 
-.picker-button svg {
-  flex: none;
-  color: var(--text-muted); /* lucide icons stroke with currentColor */
-  transition: transform 150ms ease;
-}
-
-.picker-button[aria-expanded="true"] svg {
-  transform: rotate(180deg);
-}
-
-.picker-list {
+/* "Recent" panel under the search box, shown while it's focused and empty. */
+.recent {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: max-content; /* fit the full label; the button may truncate it */
-  min-width: 100%;
-  max-width: calc(100vw - 32px);
-  margin: 0;
+  width: 100%;
   padding: 8px;
   border-radius: 16px;
   background: rgb(var(--surface) / 1);
   box-shadow: var(--shadow);
-  list-style: none;
-  outline: 0;
 }
 
-.picker-list[hidden] {
+.recent[hidden] {
   display: none;
 }
 
-.picker-list [role="option"] {
-  padding: 10px 12px;
+.recent-heading {
+  margin: 4px 12px 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.recent ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recent [role="option"] {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
   border: 2px solid transparent;
   border-radius: 8px;
   cursor: pointer;
 }
 
-.picker-list [role="option"]:hover,
-.picker-list [role="option"].active {
+.recent [role="option"] svg {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.recent [role="option"]:hover,
+.recent [role="option"].active {
   background: rgb(var(--surface-hover));
 }
 
-/* The observation on the map is marked with the accent border, like the window outline. */
-.picker-list [role="option"][aria-selected="true"] {
+/* The observation shown on the map is marked with the accent border, like the window outline. */
+.recent [role="option"][aria-selected="true"] {
   border-color: var(--accent);
+}
+
+.recent-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.recent-when {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* Search errors and "no places found", under the search box. */
+.search-message {
+  position: fixed;
+  top: 72px;
+  left: 16px;
+  z-index: 1;
+  max-width: min(392px, calc(100% - 32px));
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgb(var(--surface) / 1);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.search-message[hidden] {
+  display: none;
 }
 
 .theme-toggle {
@@ -178,7 +234,7 @@ body {
   color: var(--accent);
 }
 
-.picker-button:focus-visible,
+.search-button:focus-visible,
 .theme-toggle:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -206,8 +262,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .overlay,
-  .picker-button svg {
+  .overlay {
     transition: none;
   }
 }
