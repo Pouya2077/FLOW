@@ -7,7 +7,9 @@ from django.core.cache import cache
 from ninja import NinjaAPI
 from ninja.errors import HttpError
 
-from . import data
+from pipeline.regions import region_around
+
+from . import data, jobs
 
 api = NinjaAPI(title="FLOW API", version="0.1.0")
 
@@ -61,6 +63,26 @@ def streets(request, bbox: str):
         if data.intersects(view, s["bbox"])
     ]
     return sorted(rows, key=lambda s: s["flooded_m"], reverse=True)
+
+
+@api.post("/analyze")
+def analyze(request, name: str, lon: float, lat: float):
+    """Start analysing the newest satellite pass around a searched place (takes 1-2 minutes).
+    Returns {slug, name, bbox, status, message}; poll GET /api/analyze/{slug} until status is
+    "done" (then the area is in /api/locations) or "failed" (message says why)."""
+    if not (-180 <= lon <= 180 and -85 <= lat <= 85):
+        raise HttpError(400, "lon must be -180..180 and lat -85..85")
+    name = name.strip()[:120] or "Searched area"
+    return jobs.start(region_around(name, lon, lat))
+
+
+@api.get("/analyze/{slug}")
+def analysis(request, slug: str):
+    """Status of an analysis: queued, running, done or failed."""
+    job = jobs.status(slug)
+    if job is None:
+        raise HttpError(404, f"no analysis for {slug!r}")
+    return job
 
 
 @api.get("/geocode")

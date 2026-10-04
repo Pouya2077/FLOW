@@ -8,7 +8,7 @@ from django.test import SimpleTestCase, override_settings
 
 from pipeline.detect_flood import NoImagery, change_mask, pick_pair
 
-from . import data
+from . import data, jobs
 from .views import observed_local
 
 FIXTURE_META = {"name": "Test Area", "bbox": [-122.3, 49.0, -122.1, 49.1]}
@@ -121,6 +121,97 @@ class DataFoldersTest(SimpleTestCase):
         self.assertEqual(data.locations(), {})  # still cached
         data.reload()
         self.assertIn("chilliwack", data.locations())
+
+
+def run_inline(fn, *args):  # stands in for the background thread
+    fn(*args)
+
+
+@patch("flood.jobs._submit", side_effect=run_inline)
+class AnalysisJobTest(SimpleTestCase):
+    """A search starts a background pipeline run; the page polls its status."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.searches = Path(tmp.name, "searches")
+        override = override_settings(
+            FLOOD_DATA_DIR=Path(tmp.name, "locations"), SEARCH_DATA_DIR=self.searches
+        )
+        override.enable()
+        self.addCleanup(override.disable)
+        data.reload()
+        self.addCleanup(data.reload)
+        jobs._jobs.clear()
+        self.addCleanup(jobs._jobs.clear)
+
+    def fake_pipeline(self, region, date_range, out_dir):  # writes what build() would
+        self.assertIsNone(date_range)  # searches analyse the newest pass
+        folder = out_dir / region.slug
+        folder.mkdir(parents=True)
+        meta = {"name": region.name, "bbox": list(region.bbox), "timezone": region.timezone}
+        (folder / "meta.json").write_text(json.dumps(meta))
+        (folder / "segments.geojson").write_text(json.dumps(FIXTURE_SEGMENTS))
+        (folder / "streets.json").write_text(json.dumps(FIXTURE_STREETS))
+        return folder
+
+    def analyze(self, name="Chilliwack, BC"):
+        return self.client.post(f"/api/analyze?name={name}&lon=-121.95&lat=49.16")
+
+    def test_search_runs_pipeline_and_shows_up(self, _submit):
+        with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline):
+            body = self.analyze().json()
+        self.assertEqual(body["slug"], "chilliwack-bc")
+        status = self.client.get("/api/analyze/chilliwack-bc").json()
+        self.assertEqual(status["status"], "done")
+        slugs = [loc["slug"] for loc in self.client.get("/api/locations").json()]
+        self.assertEqual(slugs, ["chilliwack-bc"])  # data reloaded, no restart needed
+
+    def test_no_imagery_reason_shown(self, _submit):
+        reason = "No Sentinel-1 pass over this area in the selected period."
+        with patch("flood.jobs.fetch_sentinel_radar", side_effect=NoImagery(reason)):
+            self.analyze()
+        status = self.client.get("/api/analyze/chilliwack-bc").json()
+        self.assertEqual((status["status"], status["message"]), ("failed", reason))
+
+    def test_unexpected_error_logged_with_generic_message(self, _submit):
+        with (
+            patch("flood.jobs.fetch_sentinel_radar", side_effect=RuntimeError("boom")),
+            self.assertLogs("flood.jobs", "ERROR"),
+        ):
+            self.analyze()
+        status = self.client.get("/api/analyze/chilliwack-bc").json()
+        self.assertEqual((status["status"], status["message"]), ("failed", jobs.FAILED_MESSAGE))
+
+    def test_already_analysed_area_not_rerun(self, _submit):
+        with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline) as run:
+            self.analyze()
+            data.reload()
+            jobs._jobs.clear()  # e.g. after a runserver restart
+            self.assertEqual(self.analyze().json()["status"], "done")
+        run.assert_called_once()
+
+    def test_running_job_not_started_twice(self, _submit):
+        _submit.side_effect = None  # leave the job queued
+        with patch("flood.jobs.fetch_sentinel_radar") as run:
+            self.assertEqual(self.analyze().json()["status"], "queued")
+            self.assertEqual(self.analyze().json()["status"], "queued")
+        _submit.assert_called_once()
+        run.assert_not_called()
+
+    def test_failed_search_can_be_retried(self, _submit):
+        with patch("flood.jobs.fetch_sentinel_radar", side_effect=NoImagery("none yet")):
+            self.analyze()
+        with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline):
+            self.analyze()
+        self.assertEqual(self.client.get("/api/analyze/chilliwack-bc").json()["status"], "done")
+
+    def test_unknown_analysis_404(self, _submit):
+        self.assertEqual(self.client.get("/api/analyze/nowhere").status_code, 404)
+
+    def test_bad_coordinates_400(self, _submit):
+        response = self.client.post("/api/analyze?name=X&lon=-121.95&lat=95")
+        self.assertEqual(response.status_code, 400)
 
 
 class ChangeDetectionTest(SimpleTestCase):
