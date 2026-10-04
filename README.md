@@ -99,7 +99,7 @@ flood/                  the app: API, page, data loading, background searches, t
 pipeline/               offline Python: radar -> flood mask -> flooded roads + critical buildings
 data/locations/<slug>/  committed demo data, one folder per location
 data/searches/<slug>/   areas people searched (gitignored, same layout)
-data/masks/, data/radar/, cache/   intermediate files and OpenStreetMap cache (gitignored)
+data/masks/, cache/    intermediate files and OpenStreetMap cache (gitignored)
 manage.py               Django's command-line tool (run server, tests)
 pyproject.toml          dependencies + Ruff config (Python's package.json)
 uv.lock                 locked versions (Python's package-lock.json)

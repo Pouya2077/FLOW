@@ -206,10 +206,15 @@ async function loadView() {
   }
   const view = map.getBounds().toArray().flat(); // [west, south, east, north]
   const params = new URLSearchParams({ bbox: view.join(","), location: current });
-  const [segments, facilities] = await Promise.all([
-    getJSON(`/api/flood?${params}`),
-    getJSON(`/api/facilities?${params}`),
-  ]);
+  let segments, facilities;
+  try {
+    [segments, facilities] = await Promise.all([
+      getJSON(`/api/flood?${params}`),
+      getJSON(`/api/facilities?${params}`),
+    ]);
+  } catch {
+    return; // keep what's drawn; the next move retries
+  }
   if (request !== latestRequest) return; // a newer move or window change already started
   map.getSource("segments").setData(segments);
   map.getSource("facilities").setData(facilities);

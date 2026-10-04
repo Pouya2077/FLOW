@@ -104,15 +104,21 @@ the line (`shape: "line"`) for dykes. Properties: `osm_id` (`way/123`), `kind`, 
 - `GET /api/flood?bbox=minx,miny,maxx,maxy` — road segments in view
 - `GET /api/streets?bbox=` — per-street summaries
 - `GET /api/facilities?bbox=` — critical buildings in view
-- `GET /api/meta` — pass time, coverage
+- `GET /api/meta?location=` — pass time, coverage
+- `POST /api/analyze?name=&lon=&lat=` — starts a background analysis (`flood/jobs.py`, one at a
+  time, status in memory) of a 10 km square around a searched place on the newest pass, written to
+  `data/searches/<slug>/`; a point inside an existing area reuses it. Poll `GET /api/analyze/{slug}`
+  until `done` or `failed`.
 
 ### Pipeline (`pipeline/`, plain Python, run as modules from the repo root)
 - `regions.py` — `REGIONS` (slug, name, lon/lat bbox, timezone) and `get_region(slug)`. The only place a city is
   hardcoded; may later move to a data file or DB, so scripts must only go through `get_region`.
-- `fetch_data.py` — downloads one raw Sentinel-1 VV scene from the Copernicus Data Space (free account;
-  `CDSE_USERNAME`/`CDSE_PASSWORD` in `.env`) into `data/radar/` (gitignored). Raw backscatter, not a
-  mask; not yet wired to the steps below. Bbox/dates are hardcoded to Abbotsford, Nov 2021.
-  Run: `uv run python -m pipeline.fetch_data`.
+- `detect_flood.py` — the real mask: finds a Sentinel-1 pass and a reference pass on the same track
+  (Copernicus STAC; `CDSE_USERNAME`/`CDSE_PASSWORD` in `.env`), streams only the region's pixels,
+  runs change detection (Otsu dark threshold + ≥3 dB drop, small patches removed), writes
+  `data/masks/<slug>_s1.tif`, then calls `build_location.build`. Raises `NoImagery` (message shown
+  to the user) when there's nothing to compare. Default: Sumas, Nov 2021.
+  Run: `uv run python -m pipeline.detect_flood`.
 - `map_mask.py <slug>` — rasterizes `test_floods/<slug>.geojson` (hand-drawn test water) into
   `data/masks/<slug>_synthetic.tif` (gitignored), with an unobserved strip and `synthetic=true` tag.
 - `build_location.py <slug> [--mask path] [--out dir]` — the overlay below; writes
@@ -172,7 +178,8 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   (`?location=`); the entry for the window on the map has the `--accent` border. Lists areas searched
   on this server (`data/searches/`, newest first, up to `views.RECENT_MAX`), then the demo
   (`views.DEMO_LOCATIONS`). Not per-user yet (no accounts): everyone on a server sees the same list.
-- **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
+- **Theme toggle:** round 48 px button in the settings menu (gear, **top-right**); its icon shows the
+  current mode (sun in light mode, moon in dark mode) and it links to the other.
   Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
   right theme), then the cookie, then light. Toggling reloads the page.
 - **Colours come from the basemap:** every UI colour is a token in `flood/static/flood/app.css` derived
