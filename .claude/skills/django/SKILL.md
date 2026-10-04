@@ -57,6 +57,7 @@ The folder name is the location's `slug`. Each folder contains three files:
   `name`, `highway`, `osm_way_ids`, `status` (`flooded` | `clear` | `no_data`), `flooded_fraction`,
   `confidence`, `observed_utc`.
 - `streets.json` — list of `{name, total_m, flooded_m, pct, observed_utc, bbox}`.
+- `facilities.geojson` (optional) — critical buildings; see "Critical building" in CLAUDE.md.
 
 All coordinates the API serves are lon/lat (EPSG:4326). Metre lengths are computed earlier, in the
 pipeline (in a projected CRS), never in the web app. `data.py` loads files once per process, so

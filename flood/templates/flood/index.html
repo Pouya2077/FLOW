@@ -44,5 +44,14 @@
   <a class="theme-toggle overlay" href="{{ theme_href }}" aria-label="Switch to {{ other_theme }} mode" title="Switch to {{ other_theme }} mode">
     {% if theme == "light" %}{% lucide "moon" size=20 class="icon-moon" aria_hidden="true" %}{% else %}{% lucide "sun" size=20 class="icon-sun" aria_hidden="true" %}{% endif %}
   </a>
+
+  <button class="facilities-toggle overlay" type="button" aria-pressed="true" aria-label="Critical buildings" title="Show or hide critical buildings">
+    {% lucide "building-2" size=20 aria_hidden="true" %}
+  </button>
+
+  {# One lucide glyph per kind of critical building; map.js draws them onto map icons and popups. #}
+  <template id="facility-icons">
+    {% for kind in facility_kinds %}<span data-kind="{{ kind.slug }}" data-label="{{ kind.label }}"{% if kind.line %} data-line{% endif %}>{% lucide kind.icon size=20 aria_hidden="true" %}</span>{% endfor %}
+  </template>
 </body>
 </html>

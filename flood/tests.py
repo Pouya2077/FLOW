@@ -3,8 +3,11 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
+import geopandas as gpd
 import numpy as np
 from django.test import SimpleTestCase, override_settings
+from rasterio.transform import from_origin
+from shapely.geometry import LineString, Point, box
 
 from pipeline.detect_flood import NoImagery, change_mask, pick_pair
 
@@ -22,6 +25,16 @@ FIXTURE_SEGMENTS = {
         }
     ],
 }
+FIXTURE_FACILITIES = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [-122.2, 49.05]},
+            "properties": {"osm_id": "node/1", "kind": "hospital", "flood_status": "flooded"},
+        }
+    ],
+}
 FIXTURE_STREETS = [
     {"name": "Test Rd", "total_m": 800, "flooded_m": 640, "bbox": [-122.2, 49.05, -122.19, 49.05]}
 ]
@@ -36,6 +49,8 @@ class ApiSmokeTest(SimpleTestCase):
         (loc / "meta.json").write_text(json.dumps(FIXTURE_META))
         (loc / "segments.geojson").write_text(json.dumps(FIXTURE_SEGMENTS))
         (loc / "streets.json").write_text(json.dumps(FIXTURE_STREETS))
+        (loc / "facilities.geojson").write_text(json.dumps(FIXTURE_FACILITIES))
+        self.loc = loc
 
         searches = Path(tmp.name) / "searches"  # empty: no searches yet
         override = override_settings(FLOOD_DATA_DIR=Path(tmp.name), SEARCH_DATA_DIR=searches)
@@ -263,8 +278,8 @@ class ChangeDetectionTest(SimpleTestCase):
         self.assertFalse((mask[:-20, 20:] == 255).any())
 
     def test_empty_scene_is_all_no_data(self):
-        empty = np.full((5, 5), np.nan)
-        self.assertTrue((change_mask(empty, empty)[0] == 255).all())
+        mask, _ = water_mask(np.zeros((5, 5), dtype="uint16"))
+        self.assertTrue((mask == 255).all())
 
 
 class PickPairTest(SimpleTestCase):

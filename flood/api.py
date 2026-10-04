@@ -59,6 +59,20 @@ def flood(request, bbox: str, location: str | None = None):
     return {"type": "FeatureCollection", "features": features}
 
 
+@api.get("/facilities")
+def facilities(request, bbox: str):
+    """Critical buildings (hospitals, police, fire stations, ...) in view, with how flooded each
+    site is, as a FeatureCollection. Dykes come as a point (the icon) plus a line."""
+    view = _parse_bbox(bbox)
+    features = [
+        f
+        for slug in data.locations_in(view)
+        for f in data.facilities(slug)
+        if data.intersects(view, f["bbox"])
+    ]
+    return {"type": "FeatureCollection", "features": features}
+
+
 @api.get("/streets")
 def streets(request, bbox: str, location: str | None = None):
     """Per-street summaries in view, most flooded first. With location=, only that location's."""

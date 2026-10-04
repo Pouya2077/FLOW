@@ -69,7 +69,9 @@ def locations_in(bbox: BBox) -> list[str]:
 
 def _geometry_bbox(geometry: dict) -> BBox:
     coords = geometry["coordinates"]
-    if geometry["type"] == "MultiLineString":
+    if geometry["type"] == "Point":
+        coords = [coords]
+    elif geometry["type"] == "MultiLineString":
         coords = [pt for line in coords for pt in line]
     xs = [pt[0] for pt in coords]
     ys = [pt[1] for pt in coords]

@@ -11,6 +11,14 @@ const recentPanel = document.getElementById("recent");
 const recentOptions = [...(recentPanel?.querySelectorAll('[role="option"]') ?? [])];
 const searchMessage = document.getElementById("search-message");
 const themeLink = document.querySelector(".theme-toggle");
+const facilitiesToggle = document.querySelector(".facilities-toggle");
+// One lucide glyph per kind of critical building, rendered by the template.
+const facilityKinds = Object.fromEntries(
+  [...(document.getElementById("facility-icons")?.content.children ?? [])].map((el) => [
+    el.dataset.kind,
+    { label: el.dataset.label, line: "line" in el.dataset, svg: el.querySelector("svg") },
+  ]),
+);
 
 const css = getComputedStyle(document.documentElement);
 const token = (name) => css.getPropertyValue(name).trim();
@@ -33,6 +41,16 @@ const LABEL_TIERS = [
   { classes: ["motorway", "trunk", "primary"], minzoom: 0, color: "--text" },
 ];
 
+// Critical building icons sit on a badge whose ring shows the site's flood status, with the same
+// three states as roads: flood-blue ring = water at the site, plain = observed clear, dashed and
+// faded = not observed.
+const BADGE_PX = 30;
+const BADGE_RINGS = {
+  flooded: { color: "--flood", width: 3 },
+  clear: { color: "--road-clear", width: 1.5 },
+  no_data: { color: "--road-nodata", width: 1.5, dash: [3, 2.5], alpha: 0.7 },
+};
+
 // Line widths grow with zoom so roads stay visible over the basemap's own roads at any scale.
 const width = (base) => ["interpolate", ["linear"], ["zoom"], 10, base, 14, base * 2.5, 17, base * 6];
 
@@ -49,6 +67,7 @@ const metas = Object.fromEntries(
   ),
 );
 let current = mapEl.dataset.location; // the observation window the map opened on
+const facilityImages = await makeFacilityImages();
 
 const map = new maplibregl.Map({
   container: mapEl,
@@ -178,7 +197,199 @@ async function loadView() {
   const segments = await getJSON(`/api/flood?${params}`);
   if (request !== latestRequest) return; // a newer move or window change already started
   map.getSource("segments").setData(segments);
+  map.getSource("facilities").setData(facilities);
 }
+
+// --- Critical buildings ---
+
+async function makeFacilityImages() {
+  const images = {};
+  for (const [kind, { svg }] of Object.entries(facilityKinds)) {
+    const glyph = await svgImage(svg, token("--text"));
+    for (const [status, ring] of Object.entries(BADGE_RINGS)) {
+      images[`facility-${kind}-${status}`] = badge(glyph, ring);
+    }
+  }
+  return images;
+}
+
+async function svgImage(svg, color, size = 36) {
+  const copy = svg.cloneNode(true);
+  copy.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  copy.setAttribute("width", size);
+  copy.setAttribute("height", size);
+  copy.setAttribute("color", color); // lucide strokes with currentColor
+  const image = new Image();
+  image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(copy.outerHTML)}`;
+  await image.decode();
+  return image;
+}
+
+// Drawn at 2× for sharp icons on high-density screens.
+function badge(glyph, ring) {
+  const size = BADGE_PX * 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  ctx.globalAlpha = ring.alpha ?? 1;
+  const r = size / 2 - ring.width * 2;
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, r, 0, 2 * Math.PI);
+  ctx.fillStyle = `rgb(${token("--surface")})`;
+  ctx.fill();
+  ctx.lineWidth = ring.width * 2;
+  ctx.strokeStyle = token(ring.color);
+  ctx.setLineDash((ring.dash ?? []).map((d) => d * 2));
+  ctx.stroke();
+  ctx.drawImage(glyph, (size - glyph.width) / 2, (size - glyph.height) / 2);
+  return ctx.getImageData(0, 0, size, size);
+}
+
+let facilityPopup;
+function addFacilityLayers() {
+  for (const [name, image] of Object.entries(facilityImages)) map.addImage(name, image, { pixelRatio: 2 });
+  map.addSource("facilities", { type: "geojson", data: emptyCollection() });
+  // A dyke's line is drawn only while its popup is open.
+  map.addLayer({
+    id: "facility-line",
+    type: "line",
+    source: "facilities",
+    filter: ["==", ["get", "osm_id"], ""],
+    layout: { "line-cap": "round", "line-join": "round" },
+    paint: { "line-color": token("--accent"), "line-width": width(2) },
+  });
+  // On top of everything, so roads and labels never hide a hospital.
+  map.addLayer({
+    id: "facilities",
+    type: "symbol",
+    source: "facilities",
+    filter: ["==", ["get", "shape"], "point"],
+    layout: {
+      "icon-image": ["concat", "facility-", ["get", "kind"], "-", ["get", "flood_status"]],
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.7, 14, 1],
+      "icon-allow-overlap": true, // a facility is never hidden at low zoom
+      "symbol-sort-key": ["match", ["get", "flood_status"], "flooded", 2, "clear", 1, 0], // flooded on top
+    },
+  });
+
+  map.on("click", "facilities", (event) => openFacility(event.features[0]));
+  map.on("mouseenter", "facilities", () => (map.getCanvas().style.cursor = "pointer"));
+  map.on("mouseleave", "facilities", () => (map.getCanvas().style.cursor = ""));
+}
+
+function openFacility(feature) {
+  facilityPopup?.remove();
+  const p = feature.properties;
+  map.setFilter("facility-line", ["all", ["==", ["get", "shape"], "line"], ["==", ["get", "osm_id"], p.osm_id]]);
+  facilityPopup = new maplibregl.Popup({ className: "facility-popup", maxWidth: "320px", offset: BADGE_PX / 2 })
+    .setLngLat(feature.geometry.coordinates)
+    .setDOMContent(facilityCard(p))
+    .addTo(map);
+  facilityPopup.on("close", () => map.setFilter("facility-line", ["==", ["get", "osm_id"], ""]));
+}
+
+// The popup's content. OSM text goes in with textContent, never as HTML.
+function facilityCard(p) {
+  const kind = facilityKinds[p.kind] ?? { label: p.kind };
+  const card = el("div", "facility");
+  const head = card.appendChild(el("p", "facility-kind"));
+  if (kind.svg) head.appendChild(kind.svg.cloneNode(true));
+  head.append(kind.label);
+  card.appendChild(el("h2", "facility-name", p.name ?? `Unnamed ${kind.label.toLowerCase()}`));
+
+  card.appendChild(el("p", `facility-flood ${p.flood_status}`, floodText(p, kind)));
+  if (p.length_m) card.appendChild(el("p", "", `${(p.length_m / 1000).toFixed(1)} km in the observed area`));
+  if (p.emergency !== null && p.emergency !== undefined) {
+    card.appendChild(el("p", "", p.emergency ? "Emergency department" : "No emergency department"));
+  }
+  card.appendChild(el("p", p.address ? "" : "muted", p.address ?? "Address not in OpenStreetMap"));
+
+  const contacts = el("ul", "facility-contact");
+  for (const number of splitValues(p.phone)) contacts.appendChild(item(link(`tel:${number.replace(/[^+\d]/g, "")}`, number)));
+  for (const number of splitValues(p.emergency_phone)) {
+    contacts.appendChild(item(link(`tel:${number.replace(/[^+\d]/g, "")}`, `${number} (emergency)`)));
+  }
+  for (const email of splitValues(p.email)) contacts.appendChild(item(link(`mailto:${email}`, email)));
+  const site = webAddress(p.website);
+  if (site) contacts.appendChild(item(link(site.href, site.hostname.replace(/^www\./, ""))));
+  if (contacts.children.length) card.appendChild(contacts);
+
+  const source = card.appendChild(el("p", "facility-source"));
+  source.append(`Satellite: ${localTime(p.observed_utc)} · Map: `);
+  const osm = source.appendChild(link(`https://www.openstreetmap.org/${p.osm_id}`, `OpenStreetMap, ${p.osm_date}`));
+  osm.target = "_blank";
+  osm.rel = "noopener";
+  return card;
+}
+
+// Radar sees water extent, not depth: say how much of the site is wet, never "inaccessible".
+// Confidence isn't shown: for a site it's the same number as the water share (or 100% minus it).
+function floodText(p, kind) {
+  const where = kind.line ? "the area along it" : "the site";
+  const pct = Math.round((p.flooded_fraction ?? 0) * 100);
+  if (p.flood_status === "flooded") return `Water detected on ${pct}% of ${where}`;
+  if (p.flood_status === "clear") return pct ? `No flooding detected (water on ${pct}% of ${where})` : "No water detected";
+  return "Not observed by the satellite";
+}
+
+function localTime(utc) {
+  if (!utc) return "unknown";
+  return new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: metas[current]?.timezone,
+    timeZoneName: "short",
+  }).format(new Date(utc));
+}
+
+// OSM separates several values with ";".
+function splitValues(value) {
+  return value ? value.split(";").map((v) => v.trim()).filter(Boolean) : [];
+}
+
+// Only http(s) links; OSM often leaves the scheme off.
+function webAddress(value) {
+  if (!value) return null;
+  try {
+    const url = new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`);
+    return url.protocol === "https:" || url.protocol === "http:" ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function link(href, text) {
+  const a = el("a", "", text);
+  a.href = href;
+  return a;
+}
+
+function item(child) {
+  const li = el("li");
+  li.appendChild(child);
+  return li;
+}
+
+facilitiesToggle?.addEventListener("click", () => {
+  const show = facilitiesToggle.getAttribute("aria-pressed") !== "true";
+  facilitiesToggle.setAttribute("aria-pressed", String(show));
+  for (const id of ["facilities", "facility-line"]) map.setLayoutProperty(id, "visibility", show ? "visible" : "none");
+  if (!show) facilityPopup?.remove();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && facilityPopup?.isOpen()) facilityPopup.remove();
+});
 
 // Replace the basemap's road-name layers with tiers that appear by importance. Route shields stay.
 function addRoadLabels(style) {
