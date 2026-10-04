@@ -1,8 +1,7 @@
 import math
 import os
-import subprocess
-import sys
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 import numpy as np
 import rasterio
@@ -16,9 +15,11 @@ from rasterio.warp import reproject, transform_bounds
 from rasterio.windows import Window, from_bounds
 from scipy import ndimage
 
+from pipeline.build_location import OUT_DIR, build
+
 # Import the teammate's CRS function
 from pipeline.map_mask import MASK_DIR, utm_crs
-from pipeline.regions import get_region
+from pipeline.regions import Region, get_region
 
 # Load environment variables once when the module is imported
 load_dotenv()
@@ -64,22 +65,35 @@ def track(feature: dict) -> tuple:
     return p["sat:relative_orbit"], p["sat:orbit_state"]
 
 
-# The flood image (first pass in the date range, closest to the peak) and a reference image
-# (latest pass on the same track in the REFERENCE_DAYS before the range starts)
-def pick_pair(bbox, date_range: str) -> tuple[dict, dict] | None:
+# Raised when there are no usable satellite images; the message is shown to the user
+class NoImagery(Exception):
+    pass
+
+
+# The image to analyse and a reference image (latest pass on the same track in the REFERENCE_DAYS
+# before it). For a past flood take the first pass in the range (closest to the peak); for a
+# search take the newest pass.
+def pick_pair(bbox, date_range: str, newest: bool = False) -> tuple[dict, dict]:
     during = search_passes(bbox, date_range)
     if not during:
-        print("No imagery found for this time and location.")
-        return None
-    post = during[0]
+        raise NoImagery("No Sentinel-1 pass over this area in the selected period.")
+    post = during[-1] if newest else during[0]
 
-    start = parse_utc(date_range.split("/")[0])
-    before = f"{iso(start - timedelta(days=REFERENCE_DAYS))}/{iso(start - timedelta(seconds=1))}"
+    taken = parse_utc(post["properties"]["datetime"])
+    before = f"{iso(taken - timedelta(days=REFERENCE_DAYS))}/{iso(taken - timedelta(hours=1))}"
     same_track = [f for f in search_passes(bbox, before) if track(f) == track(post)]
     if not same_track:
-        print(f"No reference image on the same track in the {REFERENCE_DAYS} days before {start}.")
-        return None
+        raise NoImagery(
+            f"No earlier pass on the same orbit track in the {REFERENCE_DAYS} days before "
+            f"{taken:%b %d, %Y} to compare against."
+        )
     return same_track[-1], post
+
+
+# The newest passes: Sentinel-1 revisits every 6-12 days, so look back two weeks
+def latest_range(days: int = 14) -> str:
+    now = datetime.now(UTC)
+    return f"{iso(now - timedelta(days=days))}/{iso(now)}"
 
 
 def parse_utc(value: str) -> datetime:
@@ -208,17 +222,22 @@ def satellite_name(feature: dict) -> str:
 
 
 """
-    Fetches a flood image and a pre-flood reference image of a region from pipeline/regions.py.
+    Fetches an image and a pre-flood reference image of a region (a slug from
+    pipeline/regions.py, or a Region built from a search).
     Turns them into a map-aligned, flood mask using change detection.
-    Automatically triggers build_location.py upon completion.
+    Automatically runs build_location upon completion, writing <out_dir>/<slug>/.
+    date_range=None analyses the newest pass. Raises NoImagery if there is nothing to compare.
 """
 
 
 def fetch_sentinel_radar(
-    region_slug: str = "sumas-prairie",
-    date_range: str = "2021-11-14T00:00:00Z/2021-11-30T23:59:59Z",
-) -> str | None:
-    bbox = get_region(region_slug).bbox
+    region: Region | str = "sumas-prairie",
+    date_range: str | None = "2021-11-14T00:00:00Z/2021-11-30T23:59:59Z",
+    out_dir: Path = OUT_DIR,
+) -> Path:
+    if isinstance(region, str):
+        region = get_region(region)
+    bbox = region.bbox
 
     username = os.getenv("CDSE_USERNAME")
     password = os.getenv("CDSE_PASSWORD")
@@ -228,10 +247,10 @@ def fetch_sentinel_radar(
 
     # 1. Find the flood image and a reference image on the same track (search needs no login)
     print(f"Searching for Sentinel-1 data for bbox {bbox}...")
-    pair = pick_pair(bbox, date_range)
-    if pair is None:
-        return None
-    pre, post = pair
+    if date_range is None:
+        pre, post = pick_pair(bbox, latest_range(), newest=True)
+    else:
+        pre, post = pick_pair(bbox, date_range)
     pre_time, post_time = pre["properties"]["datetime"], post["properties"]["datetime"]
     relative_orbit, orbit = track(post)
     print(f"Flood image:     {post_time} ({satellite_name(post)}, {orbit}, track {relative_orbit})")
@@ -270,7 +289,7 @@ def fetch_sentinel_radar(
 
     # Format the output filename and ensure the directory exists
     MASK_DIR.mkdir(parents=True, exist_ok=True)
-    handoff_filename = str(MASK_DIR / f"{region_slug}_s1.tif")
+    handoff_filename = MASK_DIR / f"{region.slug}_s1.tif"
 
     crs, transform, width, height = grid
     profile = {
@@ -300,19 +319,13 @@ def fetch_sentinel_radar(
             drop_db=str(DROP_DB),
         )
 
-    # 5. Automatic Pipeline Handoff
-    print(f"\nPipeline complete! Triggering build_location.py for {region_slug}...")
-
-    cmd = [sys.executable, "-m", "pipeline.build_location", region_slug, "--mask", handoff_filename]
-
-    try:
-        subprocess.run(cmd, check=True)
-        print("\nSuccess: Location data successfully built!")
-    except subprocess.CalledProcessError as e:
-        print(f"\nError: build_location.py failed with exit code {e.returncode}")
-
-    return handoff_filename
+    # 5. Automatic Pipeline Handoff (in-process: a searched Region isn't in regions.py)
+    print(f"\nMask complete. Overlaying roads for {region.slug}...")
+    return build(region, handoff_filename, out_dir)
 
 
 if __name__ == "__main__":
-    fetch_sentinel_radar()
+    try:
+        fetch_sentinel_radar()
+    except NoImagery as e:
+        raise SystemExit(str(e)) from None
