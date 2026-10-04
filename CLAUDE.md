@@ -50,7 +50,7 @@ Two loosely coupled halves:
 | Sampling | rasterstats (or rasterio.mask) | Flooded fraction of pixels under each buffered segment |
 | Storage | GeoJSON files | No DB needed; MapLibre reads it natively |
 | Backend | Django + Django Ninja | Team knows Django; Ninja gives typed `/api` routes and docs at `/api/docs` |
-| Map | MapLibre GL JS | Free, WebGL, data-driven styling for blue flood traces |
+| Map | MapLibre GL JS **6.12.0** (ES module from jsDelivr; v6 ships no classic `<script>` build) | Free, WebGL, data-driven styling for blue flood traces |
 | Basemap | OpenFreeMap **Positron** (light) / **Dark** (dark), URLs in `settings.BASEMAP_STYLES` | No API key or limits; muted, grey water, so blue flood lines stand out |
 | Icons | lucide (`{% lucide "name" %}`, inline SVG) | Bundled in the package: no CDN or icon font; colour follows `currentColor` |
 | Search | Photon (autocomplete) or Nominatim | Nominatim forbids autocomplete and allows ~1 req/s; call geocoders from the backend with an identifying User-Agent and cache results |
@@ -62,8 +62,10 @@ Two loosely coupled halves:
 One Django project serves both the page and the API. No database: the `flood` app reads the pipeline's
 GeoJSON from `data/locations/<slug>/` (`meta.json`, `segments.geojson`, `streets.json`).
 - `config/` — settings and URLs. `flood/api.py` — Ninja routes. `flood/data.py` — file loading.
-- `flood/templates/flood/index.html` — the page; the map is MapLibre JavaScript. `flood/static/flood/app.css`
-  holds the theme colour variables (`--map-bg`, `--flood`, …) for both themes.
+- `flood/templates/flood/index.html` — the page. `flood/static/flood/map.js` — the MapLibre map (a module:
+  loads locations + meta, draws `/api/flood` for the visible area, wires search). `flood/static/flood/app.css`
+  holds the theme colour variables (`--flood`, `--road-clear`, `--road-nodata`, `--unobserved`, …);
+  `map.js` reads them, so map colours change in CSS only.
 
 ### Tooling conventions
 - **uv** for environments and dependencies (`pyproject.toml` + `uv.lock`; teammates run `uv sync`).
@@ -147,7 +149,9 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - **Floating controls are translucent at rest** (frosted, map shows through) and turn **solid with a
   Maps-style shadow** on hover, focus or while typing. Applies to every overlay control (`.overlay`).
 - **Search:** pill (48 px tall, ~392 px wide) in the **top-left**, magnifying-glass button on its right.
-  On select, fit the map to the result's bounding box and load that area's layers.
+  Submitting fits the map to the first `/api/geocode` result (max zoom 16) and reloads the segments
+  for the new view; the query is kept in the URL (`?q=`) so a reload repeats it. Errors and "no places
+  found" show in a solid message under the search box.
 - **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
   Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
   right theme), then the cookie, then light. Toggling reloads the page.
@@ -158,8 +162,14 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - **Type:** Roboto (the Google Maps face) with a system-font fallback. Icons: lucide, 20 px, stroke in
   `currentColor`.
 - Quality floor: works at phone width, visible keyboard focus, honours `prefers-reduced-motion`.
-- **Three road states, never two:** blue = water observed, grey = observed clear,
-  hatched = not observed / no data. A road outside the satellite footprint must never look safe.
+- **Three road states, never two:** blue = water observed (`--flood`, widest, drawn on top), solid
+  grey = observed clear, dashed grey = not observed / no data. A road outside the satellite footprint
+  must never look safe: everything outside `meta.footprint` is covered by a diagonal hatch, with the
+  footprint outlined.
+- **Flood layers sit above the basemap's roads and below its labels** (inserted before the first label
+  layer after the last non-label layer; Dark has a label layer under its roads).
+- **Notice chip** (bottom centre): "Simulated data, not a real satellite observation" while any location
+  in view has `synthetic: true`; "No flood data for this area" when no location is in view.
 - Persistent data-age banner: "Satellite observation: <date time UTC> (N hours ago)".
 - Click popup with street stats; sidebar listing affected streets sorted by flooded length.
 - Optional faint flood-extent raster under the traces.
