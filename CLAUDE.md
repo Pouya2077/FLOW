@@ -87,10 +87,24 @@ orbit direction, pre-event reference date.
 - `GET /api/streets?bbox=` — per-street summaries
 - `GET /api/meta` — pass time, coverage
 
+### Pipeline (`pipeline/`, plain Python, run as modules from the repo root)
+- `regions.py` — `REGIONS` (slug, name, lon/lat bbox) and `get_region(slug)`. The only place a city is
+  hardcoded; may later move to a data file or DB, so scripts must only go through `get_region`.
+- `map_mask.py <slug>` — rasterizes `test_floods/<slug>.geojson` (hand-drawn test water) into
+  `data/masks/<slug>_synthetic.tif` (gitignored), with an unobserved strip and `synthetic=true` tag.
+- `build_location.py <slug> [--mask path]` — the overlay below; writes `data/locations/<slug>/`.
+  Defaults to the synthetic mask; the data team's mask is passed with `--mask`.
+- Run e.g. `uv run python -m pipeline.build_location sumas-prairie`. OSMnx caches to `cache/`.
+
 ## Road–flood overlay algorithm
-1. Fetch drivable roads for the area with OSMnx; reproject to **EPSG:32610** (UTM 10N, Lower Mainland).
+1. Fetch drivable roads for the area with OSMnx; reproject to the **mask's CRS**. Masks use the UTM
+   zone of the region's centre (EPSG:32610 for the Lower Mainland), so any region gets metre units.
 2. Remove permanent water bodies and OSM `bridge=yes` segments (they always read as flooded).
-3. Split each road into **~20 m** segments; buffer **~5 m** each side (~10 m corridor).
+   Fetch with `simplify=False`, then `ox.simplify_graph(edge_attrs_differ=["bridge"])`: OSMnx's
+   default merge makes a whole stretch inherit `bridge=yes` from a short bridge (dropped 55 km, not
+   1.8 km, at Sumas). Permanent water = OSM water polygons; their pixels are ignored when scoring.
+3. Split each road into **~20 m** segments (equal pieces per stretch, keeping `road_id` + `seq`
+   order); buffer **~5 m** each side (~10 m corridor).
 4. Score each segment by fraction of water pixels; no-data pixels → `status = no_data`.
 5. Flooded if fraction **≥ 0.5**; drop isolated flooded runs shorter than **~40 m** (speckle);
    keep the fraction as confidence.
@@ -138,6 +152,7 @@ and water is dark because it reflects the signal away like a mirror.
   roads.
 - **Bridges and permanent water** read as flooded. Mask them.
 - **Revisit timing:** Sentinel-1 ~6–12 days; passes may miss the peak. Always show observation time.
+  Pitch "near real time: updated each satellite pass", never "live".
 - **Preprocessing and size:** calibration, noise removal, terrain correction; scenes are large. Clip to
   the area of interest early.
 - **Geolocation offset** of a few metres between OSM and imagery; the buffer absorbs it.
@@ -149,6 +164,10 @@ and water is dark because it reflects the signal away like a mirror.
   web app does not wait on the data team; swapping in the real mask changes only the input path.
 - Fallbacks: cache geocoder results, serve precomputed GeoJSON as static files, record a backup demo
   video.
+- **Beyond the demo:** any city/region, refreshed each pass. Planned shape: a list of watched regions
+  and a scheduled job (STAC search for new Sentinel-1 passes → detection → overlay → write that
+  region's folder). Never compute on a user's request; unwatched areas show as no data.
+  `flood/data.py` caches files per process and will need reloading once data updates live.
 
 ## Related free data sources (context, optional)
 - **DriveBC Open511 API** (`https://api.open511.gov.bc.ca/events`): public, no auth; BC road events
