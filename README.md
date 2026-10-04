@@ -100,8 +100,8 @@ frontend sends it, and the backend returns only what falls inside it.
 template. Pages come from views and JSON comes from `api.py`.
 
 **`templates/flood/index.html`: the page itself.** A Google Maps–style layout: a full-screen
-map (a placeholder sketch until MapLibre lands) with a translucent search box top-left and a theme
-toggle top-right. The folder is nested (`templates/flood/`) because that's a
+MapLibre map with a translucent search box top-left and a theme toggle top-right. The map code is
+`flood/static/flood/map.js`. The folder is nested (`templates/flood/`) because that's a
 Django convention to avoid name clashes between apps. Static files (JS and CSS) go in
 `flood/static/flood/`.
 
@@ -134,13 +134,15 @@ Until a location folder exists, the API returns empty results.
 The backend never does heavy maths per request. The data team's pipeline does the hard part once
 and saves files; Django just filters those files and passes them along.
 
-1. The user types "Abbotsford" into the search box. The frontend calls
-   `/api/geocode?q=Abbotsford` and gets back a bounding box.
-2. The map zooms to that box (MapLibre's `fitBounds`).
+1. The map opens fitted to the flood-data window. The user can search any place (the frontend calls
+   `/api/geocode?q=...` and fits the map to the result), or pick the Abbotsford flood from the
+   "Recent" list under the search box to fly back to the window. (Recent is hardcoded for now.)
+2. From there the map zooms and pans freely, like Google Maps.
 3. The frontend calls `/api/flood?bbox=...` with the visible area and draws the returned roads:
-   blue for water detected, grey for observed clear, hatched for not observed.
-4. It calls `/api/streets?bbox=...` to fill the sidebar with the most-flooded streets.
-5. It calls `/api/meta` to show the "Satellite observation: <time>" banner.
+   blue for water detected, solid grey for observed clear, dashed grey for not observed. The window
+   is outlined, everything outside it is hatched, and roads leading in get short dotted stubs.
+4. Later: `/api/streets?bbox=...` for a sidebar of the most-flooded streets, and `/api/meta` for an
+   observation-time banner.
 
 ## Who works where
 

@@ -4,32 +4,30 @@
    on hover, focus or while typing. */
 :root,
 [data-theme="light"] {
-  --map-bg: #f2f3f0; /* Positron background */
-  --map-road: #ffffff; /* Positron major road */
-  --map-casing: #d5d5d5; /* Positron road casing */
-  --map-minor: #e0e0e0; /* Positron minor road */
-  --map-water: #c2c8ca; /* Positron water */
-  --map-park: #e6e9e5; /* Positron park */
+  --map-bg: #f2f3f0; /* Positron background, shown while tiles load */
   --surface: 255 255 255; /* control background, as RGB channels for alpha */
+  --surface-hover: 236 238 234; /* option hover, between Positron's background and park */
   --text: #333333; /* Positron state labels */
   --text-muted: #666666; /* Positron road labels */
   --accent: #495e91; /* Positron water labels, its one non-grey colour */
   --flood: #1f6feb; /* water detected; stronger than --accent so it never reads as UI */
+  --road-clear: #999999; /* observed clear: solid mid-grey, between Positron's casing and labels */
+  --road-nodata: #666666; /* not observed: dashed, in Positron's label grey */
+  --unobserved: rgb(102 102 102 / 0.22); /* hatch over the area outside the satellite footprint */
   --shadow: 0 1px 2px rgb(60 64 67 / 0.3), 0 2px 6px 2px rgb(60 64 67 / 0.15);
 }
 
 [data-theme="dark"] {
-  --map-bg: #0c0c0c; /* Dark background */
-  --map-road: #121212; /* Dark major road */
-  --map-casing: #3c3c3c; /* Dark road casing */
-  --map-minor: #1c1c1c; /* Dark minor road */
-  --map-water: #1b1b1d; /* Dark water */
-  --map-park: #202020; /* Dark park */
+  --map-bg: #0c0c0c; /* Dark background, shown while tiles load */
   --surface: 44 44 47; /* lifted above the map so solid controls read on near-black */
+  --surface-hover: 58 58 62;
   --text: #e3e3e3;
   --text-muted: #9a9a9a;
   --accent: #8fa3d1; /* Positron's slate blue, lifted for dark backgrounds */
   --flood: #4c9aff;
+  --road-clear: #6b6b6b; /* lifted above Dark's place labels so clear roads stay visible */
+  --road-nodata: #9a9a9a;
+  --unobserved: rgb(154 154 154 / 0.16);
   --shadow:
     0 0 0 1px rgb(255 255 255 / 0.08), 0 1px 2px rgb(0 0 0 / 0.6), 0 2px 6px 2px rgb(0 0 0 / 0.35);
 }
@@ -60,58 +58,11 @@ body {
   white-space: nowrap;
 }
 
-/* Map. Until MapLibre lands, an inline SVG sketch drawn in the basemap's own
-   colours stands in, so the translucent controls have something to show through. */
+/* MapLibre fills this; the controls float above it. */
 .map {
   position: fixed;
   inset: 0;
-  display: grid;
-  place-items: center;
   background: var(--map-bg);
-}
-
-.map-sketch {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.map-sketch .park {
-  fill: var(--map-park);
-}
-
-.map-sketch .minor {
-  stroke: var(--map-minor);
-  stroke-width: 4;
-}
-
-.map-sketch .water {
-  stroke: var(--map-water);
-  stroke-width: 44;
-}
-
-.map-sketch .casing {
-  stroke: var(--map-casing);
-  stroke-width: 12;
-}
-
-.map-sketch .inner {
-  stroke: var(--map-road);
-  stroke-width: 8;
-}
-
-.map-placeholder {
-  position: relative;
-  margin: 0;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: rgb(var(--surface) / 0.85);
-  color: var(--text-muted);
-  box-shadow: var(--shadow);
 }
 
 /* Floating controls: translucent at rest, solid when in use. */
@@ -137,6 +88,7 @@ body {
   box-shadow: var(--shadow);
 }
 
+/* Search box: pill top-left with the search button on its right (Google Maps). */
 .search {
   left: 16px;
   display: flex;
@@ -167,33 +119,119 @@ body {
   appearance: none;
 }
 
-.search-button,
-.theme-toggle {
+.search-button {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted); /* lucide icons stroke with currentColor */
-}
-
-.search-button {
-  flex: none;
   width: 48px;
   height: 48px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
+  color: var(--text-muted); /* lucide icons stroke with currentColor */
   cursor: pointer;
 }
 
-.search-button:hover,
-.theme-toggle:hover {
+.search-button:hover {
   color: var(--accent);
+}
+
+/* "Recent" panel under the search box, shown while it's focused and empty. */
+.recent {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  padding: 8px;
+  border-radius: 16px;
+  background: rgb(var(--surface) / 1);
+  box-shadow: var(--shadow);
+}
+
+.recent[hidden] {
+  display: none;
+}
+
+.recent-heading {
+  margin: 4px 12px 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.recent ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recent [role="option"] {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.recent [role="option"] svg {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.recent [role="option"]:hover,
+.recent [role="option"].active {
+  background: rgb(var(--surface-hover));
+}
+
+/* The observation shown on the map is marked with the accent border, like the window outline. */
+.recent [role="option"][aria-selected="true"] {
+  border-color: var(--accent);
+}
+
+.recent-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.recent-when {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* Search errors and "no places found", under the search box. */
+.search-message {
+  position: fixed;
+  top: 72px;
+  left: 16px;
+  z-index: 1;
+  max-width: min(392px, calc(100% - 32px));
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgb(var(--surface) / 1);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.search-message[hidden] {
+  display: none;
 }
 
 .theme-toggle {
   right: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 48px;
+  color: var(--text-muted); /* lucide icons stroke with currentColor */
+}
+
+.theme-toggle:hover {
+  color: var(--accent);
 }
 
 .search-button:focus-visible,
@@ -202,8 +240,43 @@ body {
   outline-offset: 2px;
 }
 
+/* Zoom buttons (MapLibre's NavigationControl), bottom-right like Google Maps. */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgb(var(--surface) / 1);
+  box-shadow: var(--shadow);
+}
+
+.maplibregl-ctrl-group button + button {
+  border-top-color: rgb(var(--surface-hover));
+}
+
+.maplibregl-ctrl-group button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+[data-theme="dark"] .maplibregl-ctrl-group .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .overlay {
     transition: none;
   }
+}
+
+/* MapLibre's attribution box defaults to white; match the theme instead. */
+.maplibregl-ctrl.maplibregl-ctrl-attrib {
+  background: rgb(var(--surface) / 0.85);
+  color: var(--text-muted);
+}
+
+.maplibregl-ctrl-attrib a {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
 }

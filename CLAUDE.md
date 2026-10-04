@@ -50,7 +50,7 @@ Two loosely coupled halves:
 | Sampling | rasterstats (or rasterio.mask) | Flooded fraction of pixels under each buffered segment |
 | Storage | GeoJSON files | No DB needed; MapLibre reads it natively |
 | Backend | Django + Django Ninja | Team knows Django; Ninja gives typed `/api` routes and docs at `/api/docs` |
-| Map | MapLibre GL JS | Free, WebGL, data-driven styling for blue flood traces |
+| Map | MapLibre GL JS **6.12.0** (ES module from jsDelivr; v6 ships no classic `<script>` build) | Free, WebGL, data-driven styling for blue flood traces |
 | Basemap | OpenFreeMap **Positron** (light) / **Dark** (dark), URLs in `settings.BASEMAP_STYLES` | No API key or limits; muted, grey water, so blue flood lines stand out |
 | Icons | lucide (`{% lucide "name" %}`, inline SVG) | Bundled in the package: no CDN or icon font; colour follows `currentColor` |
 | Search | Photon (autocomplete) or Nominatim | Nominatim forbids autocomplete and allows ~1 req/s; call geocoders from the backend with an identifying User-Agent and cache results |
@@ -62,8 +62,10 @@ Two loosely coupled halves:
 One Django project serves both the page and the API. No database: the `flood` app reads the pipeline's
 GeoJSON from `data/locations/<slug>/` (`meta.json`, `segments.geojson`, `streets.json`).
 - `config/` — settings and URLs. `flood/api.py` — Ninja routes. `flood/data.py` — file loading.
-- `flood/templates/flood/index.html` — the page; the map is MapLibre JavaScript. `flood/static/flood/app.css`
-  holds the theme colour variables (`--map-bg`, `--flood`, …) for both themes.
+- `flood/templates/flood/index.html` — the page. `flood/static/flood/map.js` — the MapLibre map (a module:
+  loads locations + meta, draws `/api/flood` for the visible area, wires search). `flood/static/flood/app.css`
+  holds the theme colour variables (`--flood`, `--road-clear`, `--road-nodata`, `--unobserved`, …);
+  `map.js` reads them, so map colours change in CSS only.
 
 ### Tooling conventions
 - **uv** for environments and dependencies (`pyproject.toml` + `uv.lock`; teammates run `uv sync`).
@@ -86,8 +88,9 @@ flooded, 1 − fraction if clear); both `null` for `no_data`. Missing OSM tags a
 `bbox`. Named streets only, sorted by `flooded_m`. `no_data_m` exists so an unobserved street never
 reads as "0% flooded". Divided highways count both carriageways (OSM maps each direction).
 
-**Location meta (output):** `name`, `bbox`, `observed_utc`, `sensor`, `synthetic` (show a "simulated
-data" notice when true), `footprint` (GeoJSON Polygon of observed pixels, for shading the unseen area).
+**Location meta (output):** `name`, `bbox`, `observed_utc`, `timezone` (IANA, from `regions.py`; the UI
+shows the observation in local time), `sensor`, `synthetic` (not shown in the UI — team decision,
+Oct 4), `footprint` (GeoJSON Polygon of observed pixels: the outlined window; outside it is hatched).
 
 **API** (also `GET /api/locations` — demo locations with data):
 - `GET /api/geocode?q=` — proxy to Photon/Nominatim, cached
@@ -96,8 +99,12 @@ data" notice when true), `footprint` (GeoJSON Polygon of observed pixels, for sh
 - `GET /api/meta` — pass time, coverage
 
 ### Pipeline (`pipeline/`, plain Python, run as modules from the repo root)
-- `regions.py` — `REGIONS` (slug, name, lon/lat bbox) and `get_region(slug)`. The only place a city is
+- `regions.py` — `REGIONS` (slug, name, lon/lat bbox, timezone) and `get_region(slug)`. The only place a city is
   hardcoded; may later move to a data file or DB, so scripts must only go through `get_region`.
+- `fetch_data.py` — downloads one raw Sentinel-1 VV scene from the Copernicus Data Space (free account;
+  `CDSE_USERNAME`/`CDSE_PASSWORD` in `.env`) into `data/radar/` (gitignored). Raw backscatter, not a
+  mask; not yet wired to the steps below. Bbox/dates are hardcoded to Abbotsford, Nov 2021.
+  Run: `uv run python -m pipeline.fetch_data`.
 - `map_mask.py <slug>` — rasterizes `test_floods/<slug>.geojson` (hand-drawn test water) into
   `data/masks/<slug>_synthetic.tif` (gitignored), with an unobserved strip and `synthetic=true` tag.
 - `build_location.py <slug> [--mask path] [--out dir]` — the overlay below; writes
@@ -138,12 +145,20 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 **Follow Google Maps conventions** — it's what users already know. Deviate only where noted.
 - **Layout:** full-bleed map filling the window; controls float over it. No page chrome, headers or
   footers.
-- **Map is not draggable:** the search box is the only way to move the map (no pan/zoom gestures;
-  disable MapLibre interaction). This is the one deliberate break from Google Maps.
+- **Map opens fitted to the observation window**, then zooms and pans freely like Google Maps (scroll,
+  pinch, double-click, drag, arrow keys, +/− buttons bottom-right). No rotating or tilting. The window
+  is just where flood data exists; its outline is fixed to the observed area's coordinates.
 - **Floating controls are translucent at rest** (frosted, map shows through) and turn **solid with a
   Maps-style shadow** on hover, focus or while typing. Applies to every overlay control (`.overlay`).
-- **Search:** pill (48 px tall, ~392 px wide) in the **top-left**, magnifying-glass button on its right.
-  On select, fit the map to the result's bounding box and load that area's layers.
+- **Search:** pill (48 px, ~392 px) in the **top-left**, magnifying-glass button on its right.
+  Submitting fits the map to the first `/api/geocode` result (max zoom 16); the query is kept in
+  `?q=`. Errors / "no places found" show in a solid message under the box.
+- **Recent searches:** focusing the empty search box opens a "Recent" panel (WAI-ARIA combobox +
+  listbox; ↑/↓, Enter, Escape). Each entry: clock icon, address, observation time in the location's
+  time zone (`views.observed_local`). Choosing one flies back to that observation window
+  (`?location=`); the entry for the window on the map has the `--accent` border. **Hardcoded for now**
+  (`views.RECENT_SEARCHES = ["sumas-prairie"]`); real recent searches must come from the user's
+  history, not be predetermined.
 - **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
   Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
   right theme), then the cookie, then light. Toggling reloads the page.
@@ -154,8 +169,17 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - **Type:** Roboto (the Google Maps face) with a system-font fallback. Icons: lucide, 20 px, stroke in
   `currentColor`.
 - Quality floor: works at phone width, visible keyboard focus, honours `prefers-reduced-motion`.
-- **Three road states, never two:** blue = water observed, grey = observed clear,
-  hatched = not observed / no data. A road outside the satellite footprint must never look safe.
+- **Three road states, never two:** blue = water observed (`--flood`, widest, drawn on top), solid
+  grey = observed clear, dashed grey = not observed / no data. A road outside the satellite footprint
+  must never look safe: everything outside `meta.footprint` is covered by a diagonal hatch.
+- **Window outline:** the footprint is outlined 3 px in `--accent`, matching the selected Recent entry.
+- **Approach dots:** basemap roads crossing the window edge get a dotted stub outside it (~70 screen
+  px, fading out in 5 steps), computed in `map.js` from the basemap's `transportation` tiles.
+- **Road labels by importance:** the basemap's road-name layers are hidden and replaced by tiers —
+  motorway/trunk/primary always, secondary/tertiary from zoom 12.5, minor/service from 14.5. Route
+  shields stay.
+- **Flood layers sit above the basemap's roads and below its labels** (inserted before the first label
+  layer after the last non-label layer; Dark has a label layer under its roads).
 - Persistent data-age banner: "Satellite observation: <date time UTC> (N hours ago)".
 - Click popup with street stats; sidebar listing affected streets sorted by flooded length.
 - Optional faint flood-extent raster under the traces.
