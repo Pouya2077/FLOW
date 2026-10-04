@@ -30,7 +30,7 @@ def utm_crs(lon: float, lat: float) -> CRS:
     return CRS.from_epsg((32600 if lat >= 0 else 32700) + zone)
 
 
-def build_mask(slug: str) -> tuple[np.ndarray, dict]:
+def build_mask(slug: str, speckle: float = 0.0) -> tuple[np.ndarray, dict]:
     region = get_region(slug)
     west, south, east, north = region.bbox
     crs = utm_crs((west + east) / 2, (south + north) / 2)
@@ -50,6 +50,10 @@ def build_mask(slug: str) -> tuple[np.ndarray, dict]:
     mask = rasterize(shapes, out_shape=(height, width), transform=grid, fill=DRY, dtype="uint8")
     mask[:, int(width * (1 - NO_DATA_STRIP)) :] = NO_DATA
 
+    if speckle:  # imitate radar noise: flip random observed pixels (seeded, so runs repeat)
+        noisy = (np.random.default_rng(0).random(mask.shape) < speckle) & (mask != NO_DATA)
+        mask[noisy] = 1 - mask[noisy]
+
     profile = {
         "driver": "GTiff",
         "height": height,
@@ -68,11 +72,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("region", help="region slug from pipeline/regions.py")
     parser.add_argument("--observed-utc", default="2021-11-16T14:25:00Z")
+    parser.add_argument(
+        "--speckle", type=float, default=0.0, help="share of pixels flipped at random, e.g. 0.3"
+    )
     args = parser.parse_args()
 
-    mask, profile = build_mask(args.region)
+    mask, profile = build_mask(args.region, args.speckle)
     MASK_DIR.mkdir(parents=True, exist_ok=True)
-    out = MASK_DIR / f"{args.region}_synthetic.tif"
+    suffix = "_speckle" if args.speckle else ""
+    out = MASK_DIR / f"{args.region}_synthetic{suffix}.tif"
     with rasterio.open(out, "w", **profile) as dst:
         dst.write(mask, 1)
         dst.update_tags(observed_utc=args.observed_utc, sensor="synthetic", synthetic="true")

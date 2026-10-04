@@ -33,12 +33,14 @@ PERMANENT_WATER_TAGS = {
 
 BUFFER_M = 5  # road half-width: ~10 m strip, about one road width plus OSM/imagery offset
 FLOODED_AT = 0.5  # minimum threshold of pixels covered to be considered flooded
+MIN_FLOOD_RUN_M = 40  # shorter isolated flooded runs are treated as radar speckle
 DRY, WATER, NO_DATA = 0, 1, 255  # mask values
 PERMANENT = 254  # value we give permanent-water pixels so they count as neither wet nor dry
 
 
+# OSMnx stores mixed tags of merged pieces as a list in no fixed order; sort so reruns agree
 def first(value):
-    return value[0] if isinstance(value, list) else value
+    return sorted(value, key=str)[0] if isinstance(value, list) else value
 
 
 # Turn pandas NaN values into null for JSON
@@ -54,7 +56,8 @@ def rounded(value, digits=2):
 # Returns all roads cars can drive on in the region, one row per road stretch
 def fetch_roads(region: Region, crs) -> gpd.GeoDataFrame:
     graph = ox.graph_from_bbox(region.bbox, network_type="drive", simplify=False)
-    graph = ox.simplify_graph(graph, edge_attrs_differ=["bridge"])
+    # Never merge across a bridge or a name change, so each stretch has one true name
+    graph = ox.simplify_graph(graph, edge_attrs_differ=["bridge", "name"])
     graph = ox.convert.to_undirected(graph)
     roads = ox.graph_to_gdfs(graph, nodes=False).reset_index(drop=True)
     roads = roads.reindex(columns=["osmid", "name", "highway", "bridge", "geometry"])
@@ -131,6 +134,34 @@ def score_segments(segments, mask, transform, water) -> gpd.GeoDataFrame:
     return segments.assign(status=status, flooded_fraction=fraction, confidence=confidence)
 
 
+# Mark short flooded runs with clear road on both sides as clear: on real radar these are
+# usually speckle. Runs touching a stretch's end are kept, since the flood may carry on past the
+# intersection. Runs next to no_data are kept
+def remove_speckle(segments: gpd.GeoDataFrame) -> tuple[gpd.GeoDataFrame, int]:
+    segments = segments.sort_values(["road_id", "seq"]).reset_index(drop=True)
+    status, road = segments["status"], segments["road_id"]
+    run_ids = ((status != status.shift()) | (road != road.shift())).cumsum()
+    lengths = segments.length
+
+    def clear_on_same_road(i: int, road_id) -> bool:
+        return 0 <= i < len(segments) and road[i] == road_id and status[i] == "clear"
+
+    flip = []
+    for _, run in segments.groupby(run_ids):
+        first_i, last_i = run.index[0], run.index[-1]
+        if (
+            status[first_i] == "flooded"
+            and lengths[run.index].sum() < MIN_FLOOD_RUN_M
+            and clear_on_same_road(first_i - 1, road[first_i])
+            and clear_on_same_road(last_i + 1, road[first_i])
+        ):
+            flip.extend(run.index)
+
+    segments.loc[flip, "status"] = "clear"
+    segments.loc[flip, "confidence"] = 1 - segments.loc[flip, "flooded_fraction"]
+    return segments, len(flip)
+
+
 # Join consecutive chunks of a road with the same status into one line
 def merge_runs(segments: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     rows = []
@@ -188,8 +219,8 @@ def street_summaries(runs: gpd.GeoDataFrame, observed_utc) -> list[dict]:
 
 
 # Convert regions to lon/lat and write to JSON for rendering
-def write_location(region, runs, tags, footprint) -> Path:
-    out = OUT_DIR / region.slug
+def write_location(region, runs, tags, footprint, out_dir: Path = OUT_DIR) -> Path:
+    out = out_dir / region.slug
     out.mkdir(parents=True, exist_ok=True)
     observed_utc = tags.get("observed_utc")
 
@@ -233,6 +264,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("region", help="region slug from pipeline/regions.py")
     parser.add_argument("--mask", type=Path, help="flood mask GeoTIFF (default: synthetic)")
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=OUT_DIR,
+        help="output folder (default: data/locations, committed)",
+    )
     args = parser.parse_args()
 
     region = get_region(args.region)
@@ -257,9 +294,12 @@ def main() -> None:
     km = segments.assign(m=segments.length).groupby("status")["m"].sum() / 1000
     print("km by status:", ", ".join(f"{s} {v:.1f}" for s, v in km.items()))
 
+    segments, flipped = remove_speckle(segments)
+    print(f"{flipped} segments in isolated flooded runs < {MIN_FLOOD_RUN_M} m reset to clear")
+
     runs = merge_runs(segments)
     footprint = observed_area(mask, transform, crs)
-    out = write_location(region, runs, tags, footprint)
+    out = write_location(region, runs, tags, footprint, args.out)
     print(f"wrote {len(runs)} road stretches to {out}")
 
 
