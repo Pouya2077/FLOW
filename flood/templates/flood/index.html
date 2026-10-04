@@ -69,6 +69,16 @@
     </div>
   </div>
 
+  {# Errors (search, analysis, loading roads): a bar bottom-centre, like Google Maps'. #}
+  <div class="notice" role="alert" hidden>
+    {% lucide "circle-alert" size=20 class="notice-icon" aria_hidden="true" %}
+    <p class="notice-text"></p>
+    <button class="notice-retry" type="button" hidden>Try again</button>
+    <button class="notice-close" type="button" aria-label="Dismiss">
+      {% lucide "x" size=20 aria_hidden="true" %}
+    </button>
+  </div>
+
   {# One lucide glyph per kind of critical building; map.js draws them onto map icons and popups. #}
   <template id="facility-icons">
     {% for kind in facility_kinds %}<span data-kind="{{ kind.slug }}" data-label="{{ kind.label }}"{% if kind.line %} data-line{% endif %}>{% lucide kind.icon size=20 aria_hidden="true" %}</span>{% endfor %}

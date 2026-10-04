@@ -172,6 +172,9 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   stays in view; the query is kept in `?q=`. While the window is analysed a card with a large
   spinner sits in its middle, with the detail under it. No message box under the search bar (team
   decision, Oct 4). Clicking a window's outline shows its size.
+- **Errors are never silent:** a solid bar bottom-centre (`.notice`, `showNotice()` in `map.js`)
+  with "Try again" where retrying helps; it stays until dismissed or the next search. Failed jobs
+  show the server's `message` (`NoImagery` reason, or which free service was down).
 - **Recent searches:** focusing the empty search box opens a "Recent" panel (WAI-ARIA combobox +
   listbox; ↑/↓, Enter, Escape). Each entry: clock icon, address, observation time in the location's
   time zone (`views.observed_local`). Choosing one flies back to that observation window

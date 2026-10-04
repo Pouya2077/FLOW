@@ -526,6 +526,82 @@ body {
   }
 }
 
+/* Errors: a solid bar bottom-centre, like Google Maps'. It stays until dismissed or the next
+   search, so a failure is never missed. */
+.notice {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: max-content;
+  max-width: min(520px, calc(100% - 32px));
+  padding: 6px 6px 6px 14px;
+  border-radius: 8px;
+  background: rgb(var(--surface) / 1);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  transform: translateX(-50%);
+}
+
+.notice[hidden] {
+  display: none;
+}
+
+.notice-icon {
+  flex: none;
+  color: var(--accent);
+}
+
+.notice-text {
+  flex: 1;
+  margin: 0;
+}
+
+.notice button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.notice button[hidden] {
+  display: none;
+}
+
+.notice-retry {
+  padding: 8px 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.notice-close {
+  padding: 6px;
+  color: var(--text-muted);
+}
+
+.notice button:hover {
+  background: rgb(var(--surface-hover));
+}
+
+.notice button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Phones: above the zoom buttons and credits. */
+@media (max-width: 600px) {
+  .notice {
+    bottom: 112px;
+  }
+}
+
 /* Window size, shown when its outline is clicked. */
 .window-popup .maplibregl-popup-tip {
   display: none;
