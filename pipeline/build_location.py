@@ -106,15 +106,21 @@ def split_roads(roads: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
 # Label each chunk as flooded/clear/no_data based on the mask pixels
 def score_segments(segments, mask, transform, water) -> gpd.GeoDataFrame:
+    corridors = segments.geometry.buffer(BUFFER_M, cap_style="flat")
+    status, fraction, confidence = score_areas(corridors, mask, transform, water)
+    return segments.assign(status=status, flooded_fraction=fraction, confidence=confidence)
+
+
+# Status, flooded fraction and confidence for each area (polygons in the mask's CRS), from the
+# mask pixels touching it. Permanent-water pixels count as neither wet nor dry
+def score_areas(areas, mask, transform, water) -> tuple[list, list, list]:
     grid = mask.astype("int16")  # allows no_data = -1
     if len(water):
         permanent = rasterize(water.geometry, out_shape=mask.shape, transform=transform)
         grid[permanent == 1] = PERMANENT
 
-    corridors = segments.geometry.buffer(BUFFER_M, cap_style="flat")
-
     counts = zonal_stats(
-        corridors, grid, affine=transform, categorical=True, all_touched=True, nodata=-1
+        areas, grid, affine=transform, categorical=True, all_touched=True, nodata=-1
     )
 
     status, fraction, confidence = [], [], []
@@ -132,7 +138,7 @@ def score_segments(segments, mask, transform, water) -> gpd.GeoDataFrame:
         fraction.append(f)
         confidence.append(f if flooded else 1 - f)  # how strongly the pixels agree with status
 
-    return segments.assign(status=status, flooded_fraction=fraction, confidence=confidence)
+    return status, fraction, confidence
 
 
 # Mark short flooded runs with clear road on both sides as clear: on real radar these are
@@ -307,6 +313,17 @@ def build(region: Region, mask_path: Path, out_dir: Path = OUT_DIR) -> Path:
     footprint = observed_area(mask, transform, crs)
     out = write_location(region, runs, tags, footprint, out_dir)
     print(f"wrote {len(runs)} road stretches to {out}")
+
+    # Critical buildings, scored against the same mask so they never disagree with the roads.
+    # Optional extra: if OSM can't be reached the roads above are still written and served.
+    from pipeline.build_facilities import build_facilities  # imports this module
+
+    try:
+        build_facilities(
+            region, mask, transform, crs, water, footprint, tags.get("observed_utc"), out_dir
+        )
+    except Exception as e:
+        print(f"critical buildings skipped: {e}")
     return out
 
 

@@ -6,10 +6,16 @@ from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import urlencode
 
+import geopandas as gpd
 import numpy as np
 from django.test import SimpleTestCase, override_settings
+from rasterio.transform import from_origin
+from shapely.geometry import LineString, Point, box
 
+from pipeline.build_facilities import address, dedupe, facilities_in_window, is_public, site
+from pipeline.build_location import score_areas
 from pipeline.detect_flood import NoImagery, change_mask, pick_pair
+from pipeline.facility_kinds import KINDS_BY_SLUG, classify, query_tags
 
 from . import data, jobs, views
 from .views import observed_local
@@ -22,6 +28,16 @@ FIXTURE_SEGMENTS = {
             "type": "Feature",
             "geometry": {"type": "LineString", "coordinates": [[-122.2, 49.05], [-122.19, 49.05]]},
             "properties": {"name": "Test Rd", "status": "flooded", "flooded_fraction": 0.8},
+        }
+    ],
+}
+FIXTURE_FACILITIES = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [-122.2, 49.05]},
+            "properties": {"osm_id": "node/1", "kind": "hospital", "flood_status": "flooded"},
         }
     ],
 }
@@ -39,6 +55,8 @@ class ApiSmokeTest(SimpleTestCase):
         (loc / "meta.json").write_text(json.dumps(FIXTURE_META))
         (loc / "segments.geojson").write_text(json.dumps(FIXTURE_SEGMENTS))
         (loc / "streets.json").write_text(json.dumps(FIXTURE_STREETS))
+        (loc / "facilities.geojson").write_text(json.dumps(FIXTURE_FACILITIES))
+        self.loc = loc
 
         searches = Path(tmp.name) / "searches"  # empty: no searches yet
         override = override_settings(FLOOD_DATA_DIR=Path(tmp.name), SEARCH_DATA_DIR=searches)
@@ -57,6 +75,26 @@ class ApiSmokeTest(SimpleTestCase):
     def test_flood_in_view(self):
         body = self.client.get("/api/flood", {"bbox": "-122.25,49.0,-122.15,49.1"}).json()
         self.assertEqual(len(body["features"]), 1)
+
+    def test_facilities_in_view(self):
+        body = self.client.get("/api/facilities", {"bbox": "-122.25,49.0,-122.15,49.1"}).json()
+        self.assertEqual([f["properties"]["kind"] for f in body["features"]], ["hospital"])
+
+    def test_facilities_only_for_location(self):
+        params = {"bbox": "-122.25,49.0,-122.15,49.1", "location": "elsewhere"}
+        self.assertEqual(self.client.get("/api/facilities", params).json()["features"], [])
+
+    def test_facilities_out_of_view(self):
+        body = self.client.get("/api/facilities", {"bbox": "0,0,1,1"}).json()
+        self.assertEqual(body["features"], [])
+
+    def test_facilities_missing_file_is_empty(self):
+        (self.loc / "facilities.geojson").unlink()
+        body = self.client.get("/api/facilities", {"bbox": "-122.25,49.0,-122.15,49.1"}).json()
+        self.assertEqual(body["features"], [])
+
+    def test_facilities_bad_bbox(self):
+        self.assertEqual(self.client.get("/api/facilities", {"bbox": "1,2"}).status_code, 400)
 
     def test_flood_out_of_view(self):
         body = self.client.get("/api/flood", {"bbox": "0,0,1,1"}).json()
@@ -418,37 +456,114 @@ class ThemeTest(SimpleTestCase):
     def get(self, **params):
         return self.client.get("/", params)
 
-    def assertTheme(self, response, theme, icon):
+    def assertTheme(self, response, theme):
+        """One theme circle: its icon shows the current mode and it links to the other mode."""
         self.assertEqual(response.context["theme"], theme)
         self.assertContains(response, f'data-theme="{theme}"')
-        self.assertContains(response, f'class="icon-{icon}"')
+        other = "dark" if theme == "light" else "light"
+        label = f"Switch to {other} mode"
+        self.assertContains(
+            response, f'data-theme-option="{other}" aria-label="{label}" title="{label}"'
+        )
+        self.assertContains(response, 'class="theme-option', count=1)
+        self.assertContains(response, f'class="icon-{"sun" if theme == "light" else "moon"}"')
 
     def test_default_is_light(self):
         response = self.get()
-        self.assertTheme(response, "light", "moon")
+        self.assertTheme(response, "light")
         self.assertNotIn("theme", response.cookies)
 
     def test_param_dark_sets_cookie(self):
         response = self.get(theme="dark")
-        self.assertTheme(response, "dark", "sun")
+        self.assertTheme(response, "dark")
         self.assertEqual(response.cookies["theme"].value, "dark")
         self.assertContains(response, 'href="?theme=light&amp;location=')
 
     def test_cookie_used_without_param(self):
         self.client.cookies["theme"] = "dark"
-        self.assertTheme(self.get(), "dark", "sun")
+        self.assertTheme(self.get(), "dark")
 
     def test_param_overrides_cookie(self):
         self.client.cookies["theme"] = "dark"
         response = self.get(theme="light")
-        self.assertTheme(response, "light", "moon")
+        self.assertTheme(response, "light")
         self.assertEqual(response.cookies["theme"].value, "light")
 
     def test_invalid_param_falls_back_to_light(self):
         response = self.get(theme="purple")
-        self.assertTheme(response, "light", "moon")
+        self.assertTheme(response, "light")
         self.assertNotIn("theme", response.cookies)
 
     def test_invalid_cookie_falls_back_to_light(self):
         self.client.cookies["theme"] = "purple"
-        self.assertTheme(self.get(), "light", "moon")
+        self.assertTheme(self.get(), "light")
+
+
+class FacilityTest(SimpleTestCase):
+    """Critical buildings: OSM tags -> kind, public filter, window clipping and flood scoring."""
+
+    def test_first_matching_kind_wins(self):
+        self.assertEqual(classify({"amenity": "hospital", "healthcare": "clinic"}).slug, "hospital")
+        self.assertEqual(classify({"emergency": "assembly_point"}).slug, "shelter")
+        self.assertIsNone(classify({"amenity": "shelter"}))  # bus and picnic shelters
+
+    def test_query_has_every_kinds_tags(self):
+        tags = query_tags()
+        self.assertIn("fire_station", tags["amenity"])
+        self.assertIn("dyke", tags["man_made"])
+
+    def test_private_dropped(self):
+        self.assertTrue(is_public({"amenity": "school"}))
+        self.assertFalse(is_public({"amenity": "school", "operator:type": "private"}))
+        self.assertFalse(is_public({"amenity": "fuel", "access": "private"}))
+
+    def test_address(self):
+        tags = {"addr:housenumber": "1", "addr:street": "Vye Rd", "addr:city": "Abbotsford"}
+        self.assertEqual(address(tags), "1 Vye Rd, Abbotsford")
+        self.assertIsNone(address({"addr:city": "Abbotsford"}))  # a city alone isn't an address
+
+    def osm(self, rows):
+        frame = gpd.GeoDataFrame(
+            [tags for _, tags, _ in rows], geometry=[g for _, _, g in rows], crs=32610
+        )
+        frame.index = [(element, i) for i, (element, _, _) in enumerate(rows)]
+        return frame
+
+    def test_window_keeps_inside_and_clips_lines(self):
+        rows = facilities_in_window(
+            self.osm(
+                [
+                    ("node", {"amenity": "police"}, Point(50, 50)),
+                    ("node", {"amenity": "police"}, Point(150, 50)),  # outside
+                    ("way", {"man_made": "dyke"}, LineString([(-50, 10), (50, 10)])),
+                ]
+            ),
+            box(0, 0, 100, 100),
+            32610,
+        )
+        self.assertEqual([r["kind"].slug for r in rows], ["police", "dyke"])
+        self.assertAlmostEqual(rows[1]["geometry"].length, 50)
+
+    def test_node_and_building_merged(self):
+        police = KINDS_BY_SLUG["police"]
+        node = {"osm_id": "node/1", "tags": {"phone": "1"}, "geometry": Point(5, 5)}
+        way = {"osm_id": "way/2", "tags": {"name": "HQ"}, "geometry": box(0, 0, 9, 9)}
+        rows = dedupe([node | {"kind": police}, way | {"kind": police}])
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["osm_id"], "way/2")  # the outline is kept
+        self.assertEqual(rows[0]["tags"], {"name": "HQ", "phone": "1"})
+
+    def test_site_scored_against_mask(self):
+        mask = np.zeros((20, 20), dtype="uint8")
+        mask[:, :10] = 1  # west half water
+        mask[:, 18:] = 255  # east edge unobserved
+        transform = from_origin(0, 200, 10, 10)  # 10 m pixels
+        water = gpd.GeoDataFrame(geometry=[], crs=32610)
+        status, fraction, _ = score_areas(
+            [site(Point(40, 100)), site(Point(140, 100)), box(185, 50, 200, 150)],
+            mask,
+            transform,
+            water,
+        )
+        self.assertEqual(status, ["flooded", "clear", "no_data"])
+        self.assertEqual(fraction[1], 0)
