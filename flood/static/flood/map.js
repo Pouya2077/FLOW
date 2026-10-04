@@ -9,7 +9,6 @@ const form = document.querySelector(".search");
 const input = document.getElementById("q");
 const recentPanel = document.getElementById("recent");
 const recentOptions = [...(recentPanel?.querySelectorAll('[role="option"]') ?? [])];
-const searchMessage = document.getElementById("search-message");
 const themeLinks = [...document.querySelectorAll(".theme-option")];
 const settingsToggle = document.querySelector(".settings-toggle");
 const settingsMenu = document.getElementById("settings-menu");
@@ -645,18 +644,13 @@ function hatchPattern(color) {
 async function search(query) {
   query = query.trim();
   if (!query) return;
-  showSearchMessage("");
   let results;
   try {
     results = await getJSON(`/api/geocode?q=${encodeURIComponent(query)}`);
   } catch {
-    showSearchMessage("Search isn't available right now. Try again in a moment.");
-    return;
+    return; // geocoder unavailable
   }
-  if (results.length === 0) {
-    showSearchMessage(`No places found for “${query}”.`);
-    return;
-  }
+  if (results.length === 0) return;
   keepInUrl({ q: query });
   analyze(results[0]);
 }
@@ -681,7 +675,6 @@ async function analyze(place) {
   try {
     job = await getJSON(`/api/analyze?${params}`, { method: "POST" });
   } catch {
-    showSearchMessage("Satellite analysis isn't available right now. Try again in a moment.");
     map.fitBounds(place.bbox, { padding: PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 800 });
     return;
   }
@@ -697,10 +690,9 @@ async function analyze(place) {
     if (job.status === "failed") {
       hideLoading();
       showPending(null);
-      showSearchMessage(`No satellite result for ${job.name}: ${job.message}`);
       return;
     }
-    showLoading(job.bbox, `Analysing the latest satellite pass for ${job.name}. This may take a minute.`);
+    showLoading(job.bbox, job.name);
     await new Promise((resolve) => setTimeout(resolve, POLL_MS));
     try {
       job = await getJSON(`/api/analyze/${encodeURIComponent(job.slug)}`);
@@ -717,24 +709,30 @@ async function finishAnalysis(job) {
   showWindow(job.slug);
   keepInUrl({ q: input.value.trim(), location: job.slug });
   frame(job.slug, true);
-  const when = observedLocal(meta);
-  showSearchMessage(when ? `Satellite pass of ${when}. Blue = water detected.` : "");
 }
 
-// "Loading..." with a spinner in the middle of the window being analysed; the detail goes under it,
+// A large spinner in the middle of the window being analysed; the detail goes under it,
 // so the search box stays clear.
 let loadingMarker;
-function showLoading(bbox, detail) {
+function showLoading(bbox, place) {
   if (!loadingMarker) {
     const card = el("div", "window-loading");
     card.setAttribute("role", "status");
     card.appendChild(el("div", "spinner"));
-    card.appendChild(el("p", "window-loading-title", "Loading..."));
+    card.appendChild(el("span", "visually-hidden", "Loading")); // the spinner, for screen readers
     card.appendChild(el("p", "window-loading-detail"));
     loadingMarker = new maplibregl.Marker({ element: card });
   }
   const [w, s, e, n] = bbox;
-  loadingMarker.getElement().querySelector(".window-loading-detail").textContent = detail;
+  // The place stands out from the rest of the line; text nodes, never HTML.
+  loadingMarker
+    .getElement()
+    .querySelector(".window-loading-detail")
+    .replaceChildren(
+      "Analysing the latest satellite pass for ",
+      el("span", "window-loading-place", place),
+      ". This may take a minute.",
+    );
   loadingMarker.setLngLat([(w + e) / 2, (s + n) / 2]).addTo(map);
 }
 
@@ -773,26 +771,11 @@ function bboxOutline([w, s, e, n]) {
   return { type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: ring } };
 }
 
-// Observation time in the location's own time zone, e.g. "Sep 28, 2026, 7:20 AM PDT"
-function observedLocal(meta) {
-  if (!meta.observed_utc) return "";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: meta.timezone || "UTC",
-    timeZoneName: "short", // can't be combined with dateStyle/timeStyle
-  }).format(new Date(meta.observed_utc));
-}
-
 function chooseRecent(index) {
   const option = recentOptions[index];
   recentOptions.forEach((o) => o.setAttribute("aria-selected", String(o === option)));
   input.value = option.querySelector(".recent-place").textContent;
   closeRecent();
-  showSearchMessage("");
   analysisRun++; // stop following a search that's still being analysed
   hideLoading();
   showPending(null);
@@ -806,11 +789,6 @@ function keepInUrl(params) {
   for (const link of themeLinks) {
     link.href = `?${new URLSearchParams({ theme: link.dataset.themeOption, ...params })}`;
   }
-}
-
-function showSearchMessage(text) {
-  searchMessage.textContent = text;
-  searchMessage.hidden = !text;
 }
 
 let active = -1;
@@ -873,11 +851,15 @@ const autocompleteList = autocompleteContainer.querySelector('ul');
 let currentSuggestions = []; 
 let debounceTimer;
 
-// The search button turns into a green Enter button while there's text to search.
+// The magnifying glass turns into a green Enter button only while someone is typing: the box has
+// focus and text in it.
 function updateSearchButton() {
-  form.classList.toggle("has-text", Boolean(input.value.trim()));
+  form.classList.toggle("has-text", document.activeElement === input && Boolean(input.value.trim()));
 }
-updateSearchButton(); // a reload with ?q= starts with text in the box
+input.addEventListener("focus", updateSearchButton);
+input.addEventListener("blur", updateSearchButton);
+// Pressing the button would blur the box first and turn it back into a magnifying glass mid-click.
+form.querySelector(".search-button").addEventListener("mousedown", (event) => event.preventDefault());
 
 input.addEventListener("input", (e) => {
   updateSearchButton();

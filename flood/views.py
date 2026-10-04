@@ -11,8 +11,9 @@ from . import data
 
 THEMES = ("light", "dark")
 
-# The Recent panel lists areas searched on this server, newest first, then the demo flood (always
-# offered). There are no user accounts, so everyone using this server sees the same searches.
+# The Recent panel lists areas searched on this server, newest first, then the demo flood, which
+# counts as the oldest: at most RECENT_MAX in all, so the demo drops off after that many searches.
+# There are no user accounts, so everyone using this server sees the same searches.
 RECENT_MAX = 5
 DEMO_LOCATIONS = ["sumas-prairie"]
 
@@ -36,11 +37,11 @@ def index(request):
         location = next(iter(locations), None)  # the window the map opens on
     query = request.GET.get("q", "").strip()
 
-    searched = data.searched()[:RECENT_MAX]
+    searched = data.searched()
     demo = [s for s in DEMO_LOCATIONS if s in locations and s not in searched]
     recent = [
         {"slug": slug, "place": locations[slug]["name"], "when": observed_local(locations[slug])}
-        for slug in searched + demo
+        for slug in (searched + demo)[:RECENT_MAX]
     ]
     # One toggle: its icon shows the current mode, clicking switches to the other. Switching
     # reloads the page, so carry the current view over.

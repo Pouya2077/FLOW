@@ -227,25 +227,6 @@ body {
   font-size: 13px;
 }
 
-/* Search errors and "no places found", under the search box. */
-.search-message {
-  position: fixed;
-  top: 72px;
-  left: 16px;
-  z-index: 1;
-  max-width: min(392px, calc(100% - 32px));
-  margin: 0;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: rgb(var(--surface) / 1);
-  color: var(--text);
-  box-shadow: var(--shadow);
-}
-
-.search-message[hidden] {
-  display: none;
-}
-
 /* Settings: a gear top-right. Hovering turns it; clicking unrolls the options below it. */
 .settings {
   position: fixed;
@@ -459,7 +440,7 @@ body {
   color: inherit;
 }
 
-/* "Loading..." in the middle of a window whose satellite analysis is running. */
+/* A spinner in the middle of a window whose satellite analysis is running. */
 .window-loading {
   display: flex;
   flex-direction: column;
@@ -481,21 +462,21 @@ body {
   margin: 0;
 }
 
-.window-loading-title {
-  font-size: 20px;
-  font-weight: 500;
-}
-
 .window-loading-detail {
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 14px;
+}
+
+/* The searched place: black on light, white on dark, so it stands out from the muted line. */
+.window-loading-place {
+  color: var(--toggle-on);
 }
 
 .spinner {
-  width: 32px;
-  height: 32px;
-  margin-bottom: 4px;
-  border: 3px solid rgb(var(--surface-hover));
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+  border: 6px solid rgb(var(--surface-hover));
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 800ms linear infinite;

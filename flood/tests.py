@@ -430,6 +430,18 @@ class RecentSavedSearchesTest(SimpleTestCase):
         self.write(self.searches, "chilliwack", "Chilliwack", 300)
         self.assertEqual(self.recent_slugs(), ["chilliwack", "hope", "sumas-prairie"])
 
+    def test_demo_counts_toward_the_cap(self):
+        self.write(self.demo, "sumas-prairie", "Sumas Prairie", 100)
+        for i in range(views.RECENT_MAX - 1):
+            self.write(self.searches, f"place-{i}", f"Place {i}", 200 + i)
+        self.assertEqual(self.recent_slugs()[-1], "sumas-prairie")  # oldest, at the bottom
+        self.write(self.searches, "newest", "Newest", 300)
+        data.reload()  # as jobs.py does when a search finishes
+        slugs = self.recent_slugs()
+        self.assertEqual(len(slugs), views.RECENT_MAX)
+        self.assertEqual(slugs[0], "newest")
+        self.assertNotIn("sumas-prairie", slugs)  # pushed off by the fifth search
+
     def test_at_most_recent_max_searches(self):
         for i in range(views.RECENT_MAX + 2):
             self.write(self.searches, f"place-{i}", f"Place {i}", 100 + i)
