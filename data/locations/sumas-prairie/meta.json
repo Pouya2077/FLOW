@@ -6,23 +6,15 @@
     -122.08,
     49.1
   ],
-<<<<<<< HEAD
   "observed_utc": "2021-11-16T14:20:31.869322Z",
   "timezone": "America/Vancouver",
   "sensor": "Sentinel-1B",
   "synthetic": false,
-=======
-  "observed_utc": "2021-11-16T14:25:00Z",
-  "timezone": "America/Vancouver",
-  "sensor": "synthetic",
-  "synthetic": true,
->>>>>>> 654f6b666848d316b5115a696a35dd76e7d3e36a
   "footprint": {
     "type": "Polygon",
     "coordinates": [
       [
         [
-<<<<<<< HEAD
           -122.078026,
           49.099985
         ],
@@ -41,26 +33,6 @@
         [
           -122.078026,
           49.099985
-=======
-          -122.179459,
-          49.144989
-        ],
-        [
-          -122.180957,
-          49.054085
-        ],
-        [
-          -122.32023,
-          49.05499
-        ],
-        [
-          -122.318988,
-          49.145896
-        ],
-        [
-          -122.179459,
-          49.144989
->>>>>>> 654f6b666848d316b5115a696a35dd76e7d3e36a
         ]
       ]
     ]

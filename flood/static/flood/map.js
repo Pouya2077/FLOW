@@ -1,6 +1,6 @@
 // Flood map: draws the pipeline's road segments over the OpenFreeMap basemap with MapLibre.
 // The map opens fitted to an observation window, the area with flood data, then zooms and pans
-// freely like Google Maps. The search box moves it to any place; "Recent" searches jump
+// freely like Google Maps (CLAUDE.md). The search box moves it to any place; "Recent" searches jump
 // back to an observation window.
 import * as maplibregl from "https://cdn.jsdelivr.net/npm/maplibre-gl@6.12.0/dist/maplibre-gl.mjs";
 
@@ -371,7 +371,7 @@ function hatchPattern(color) {
   return ctx.getImageData(0, 0, size, size);
 }
 
-// --- Search box, "Recent", and Autocomplete ---
+// --- Search box and "Recent" (WAI-ARIA combobox with a listbox popup) ---
 
 async function search(query) {
   query = query.trim();
@@ -392,6 +392,7 @@ async function search(query) {
   map.fitBounds(results[0].bbox, { padding: PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 800 });
 }
 
+// Jump to an observation window from "Recent".
 function chooseRecent(index) {
   const option = recentOptions[index];
   recentOptions.forEach((o) => o.setAttribute("aria-selected", String(o === option)));
@@ -404,6 +405,7 @@ function chooseRecent(index) {
   frame(current, true);
 }
 
+// Record the view in the address bar and the theme link, so a reload or theme switch keeps it.
 function keepInUrl(params) {
   history.replaceState(null, "", `?${new URLSearchParams(params)}`);
   const themeUrl = new URL(themeLink.href);
@@ -439,7 +441,7 @@ function setActive(index) {
 
 input.addEventListener("focus", openRecent);
 input.addEventListener("click", openRecent);
-
+input.addEventListener("input", () => (input.value.trim() ? closeRecent() : openRecent()));
 input.addEventListener("keydown", (event) => {
   const open = recentPanel && !recentPanel.hidden;
   const count = recentOptions.length;
@@ -456,129 +458,16 @@ input.addEventListener("keydown", (event) => {
     closeRecent();
   }
 });
-
 recentOptions.forEach((option, i) => {
-  option.addEventListener("mousedown", (event) => event.preventDefault()); 
+  option.addEventListener("mousedown", (event) => event.preventDefault()); // keep focus in the box
   option.addEventListener("click", () => chooseRecent(i));
 });
-
-// --- NEW Autocomplete Logic ---
-
-const autocompleteContainer = document.createElement('div');
-autocompleteContainer.className = 'recent';
-autocompleteContainer.hidden = true;
-// We removed the ID here so it doesn't conflict with your HTML file
-autocompleteContainer.innerHTML = '<ul role="listbox"></ul>';
-form.appendChild(autocompleteContainer);
-
-// Grab the exact UL we just created, ignoring the rest of the page
-const autocompleteList = autocompleteContainer.querySelector('ul');
-let currentSuggestions = []; 
-let debounceTimer;
-
-input.addEventListener("input", (e) => {
-  const query = e.target.value.trim();
-  clearTimeout(debounceTimer);
-
-  if (!query) {
-    openRecent();
-    autocompleteContainer.hidden = true;
-    currentSuggestions = [];
-    return;
-  }
-
-  closeRecent();
-
-  if (query.length < 3) {
-    autocompleteContainer.hidden = true;
-    currentSuggestions = [];
-    return;
-  }
-
-  debounceTimer = setTimeout(async () => {
-    try {
-      const response = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&lat=49.28&lon=-123.12`);
-      const data = await response.json();
-      currentSuggestions = data.features;
-      renderSuggestions(currentSuggestions);
-    } catch (err) {
-      console.error("Autocomplete fetch failed:", err);
-    }
-  }, 300);
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".search")) closeRecent();
 });
-
-function renderSuggestions(features) {
-  autocompleteList.innerHTML = '';
-  
-  if (features.length === 0) {
-    autocompleteContainer.hidden = true;
-    return;
-  }
-
-  // An SVG map pin icon that perfectly matches your "Recent" clock icon
-  const pinIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
-
-  features.forEach((feature) => {
-    const li = document.createElement('li');
-    li.role = 'option';
-    
-    const props = feature.properties;
-    
-    // Format the address cleanly
-    const streetInfo = [props.housenumber, props.street].filter(Boolean).join(' ');
-    const placeName = props.name || streetInfo || props.city || "Unknown Location";
-    const regionDetails = [props.city, props.state].filter((item) => item && item !== placeName).join(', ');
-
-    // Use your native HTML structure so app.css styles it perfectly
-    li.innerHTML = `
-      ${pinIcon}
-      <span class="recent-text">
-        <span class="recent-place">${placeName}</span>
-        ${regionDetails ? `<span class="recent-when">${regionDetails}</span>` : ''}
-      </span>
-    `;
-
-li.addEventListener('mousedown', (event) => event.preventDefault()); 
-    li.addEventListener('click', () => {
-      const exactAddress = [placeName, regionDetails].filter(Boolean).join(', ');
-      input.value = exactAddress;
-      autocompleteContainer.hidden = true;
-      
-      // SEND TO DJANGO: Force a page reload so Python's index view catches the ?q= parameter
-      window.location.href = `/?q=${encodeURIComponent(exactAddress)}`;
-    });
-
-    autocompleteList.appendChild(li);
-  });
-
-  autocompleteContainer.hidden = false;
-}
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   closeRecent();
-  autocompleteContainer.hidden = true;
-
-  if (currentSuggestions.length > 0) {
-    const props = currentSuggestions[0].properties;
-    const streetInfo = [props.housenumber, props.street].filter(Boolean).join(' ');
-    const placeName = props.name || streetInfo || props.city || "Unknown Location";
-    const regionDetails = [props.city, props.state].filter(item => item && item !== placeName).join(', ');
-    
-    const exactAddress = [placeName, regionDetails].filter(Boolean).join(', ');
-    input.value = exactAddress;
-    
-    // SEND TO DJANGO
-    window.location.href = `/?q=${encodeURIComponent(exactAddress)}`;
-  } else {
-    // SEND TO DJANGO (Fallback for exactly what they typed)
-    window.location.href = `/?q=${encodeURIComponent(input.value)}`;
-  }
-});
-
-document.addEventListener("click", (event) => {
-  if (!event.target.closest(".search")) {
-    closeRecent();
-    autocompleteContainer.hidden = true;
-  }
+  search(input.value);
 });
