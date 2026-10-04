@@ -145,12 +145,9 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 **Follow Google Maps conventions** — it's what users already know. Deviate only where noted.
 - **Layout:** full-bleed map filling the window; controls float over it. No page chrome, headers or
   footers.
-- **Map is locked to the observation window:** users can **zoom in** (scroll, pinch, double-click,
-  +/− buttons bottom-right) and **drag / arrow-key pan** inside the window, but never zoom out past
-  the fitted view or pan past the window's edge. No rotating or tilting. `minZoom` is set after each
-  fit; panning is clamped by `constrainToWindow` (MapLibre `transformConstrain`), which keeps the
-  visible area inside the window when zoomed in and centred when it's smaller. The one deliberate
-  break from Google Maps.
+- **Map opens fitted to the observation window**, then zooms and pans freely like Google Maps (scroll,
+  pinch, double-click, drag, arrow keys, +/− buttons bottom-right). No rotating or tilting. The window
+  is just where flood data exists; its outline is fixed to the observed area's coordinates.
 - **Floating controls are translucent at rest** (frosted, map shows through) and turn **solid with a
   Maps-style shadow** on hover, focus or while typing. Applies to every overlay control (`.overlay`).
 - **Observation dropdown** (no free-text search): pill (48 px, ~460 px) in the **top-left**, chevron on
