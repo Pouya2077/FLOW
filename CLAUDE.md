@@ -166,15 +166,12 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - **Recent searches:** focusing the empty search box opens a "Recent" panel (WAI-ARIA combobox +
   listbox; ↑/↓, Enter, Escape). Each entry: clock icon, address, observation time in the location's
   time zone (`views.observed_local`). Choosing one flies back to that observation window
-  (`?location=`); the entry for the window on the map has the `--accent` border. **Hardcoded for now**
-  (`views.RECENT_SEARCHES = ["sumas-prairie"]`); real recent searches must come from the user's
-  history, not be predetermined.
-- **Settings gear:** round 48 px button in the **top-right**; it turns on hover and a click unrolls a
-  column of options below it (click again or Escape closes): **one theme circle** whose icon shows
-  the current mode (sun = light, moon = dark) and switches to the other mode when clicked, then the
-  critical-buildings toggle (`--toggle-on` outline while on). Theme order: `?theme=` URL parameter
-  (also saved to the `theme` cookie, 1 year, so the server renders the right theme), then the cookie,
-  then light. Switching theme reloads the page.
+  (`?location=`); the entry for the window on the map has the `--accent` border. Lists areas searched
+  on this server (`data/searches/`, newest first, up to `views.RECENT_MAX`), then the demo
+  (`views.DEMO_LOCATIONS`). Not per-user yet (no accounts): everyone on a server sees the same list.
+- **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
+  Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
+  right theme), then the cookie, then light. Toggling reloads the page.
 - **Colours come from the basemap:** every UI colour is a token in `flood/static/flood/app.css` derived
   from Positron (light) / Dark (dark) — Positron's greys for text and borders, its slate water-label
   blue `#495E91` as the UI accent. Don't introduce colours that aren't in the map's palette, except
