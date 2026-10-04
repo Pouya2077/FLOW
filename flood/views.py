@@ -5,6 +5,8 @@ from django.conf import settings
 from django.shortcuts import render
 from django.utils.http import urlencode
 
+from pipeline.facility_kinds import KINDS
+
 from . import data
 
 THEMES = ("light", "dark")
@@ -39,17 +41,28 @@ def index(request):
         for slug in RECENT_SEARCHES
         if slug in locations
     ]
-    # Switching theme reloads the page, so carry the current view over.
-    theme_params = {"theme": other_theme, "location": location, "q": query}
-    theme_href = "?" + urlencode({k: v for k, v in theme_params.items() if v})
+    # One toggle: its icon shows the current mode, clicking switches to the other. Switching
+    # reloads the page, so carry the current view over.
+    other_theme = "dark" if theme == "light" else "light"
+    icon = "sun" if theme == "light" else "moon"
+    theme_toggle = {
+        "theme": other_theme,
+        "label": f"Switch to {other_theme} mode",
+        "icon": icon,
+        "icon_class": f"icon-{icon}",
+        "href": "?"
+        + urlencode(
+            {k: v for k, v in {"theme": other_theme, "location": location, "q": query}.items() if v}
+        ),
+    }
 
     response = render(
         request,
         "flood/index.html",
         {
             "theme": theme,
-            "other_theme": other_theme,
-            "theme_href": theme_href,
+            "theme_toggle": theme_toggle,
+            "facility_kinds": KINDS,
             "basemap_style": settings.BASEMAP_STYLES[theme],
             "location": location,
             "query": query,

@@ -92,10 +92,18 @@ reads as "0% flooded". Divided highways count both carriageways (OSM maps each d
 shows the observation in local time), `sensor`, `synthetic` (not shown in the UI — team decision,
 Oct 4), `footprint` (GeoJSON Polygon of observed pixels: the outlined window; outside it is hatched).
 
+**Critical building (output, `facilities.geojson`):** public OSM facilities inside the footprint; kinds,
+tags and lucide icons live in `pipeline/facility_kinds.py`. A Point per facility (`shape: "point"`), plus
+the line (`shape: "line"`) for dykes. Properties: `osm_id` (`way/123`), `kind`, `name`, `address`,
+`phone`, `emergency_phone`, `email`, `website`, `emergency` (hospital ER), `flood_status` /
+`flooded_fraction` / `confidence` (as for roads, over the building outline or a 25 m circle),
+`length_m` (lines), `observed_utc`, `osm_date` (OSM queried as of the observation; today if that fails).
+
 **API** (also `GET /api/locations` — demo locations with data):
 - `GET /api/geocode?q=` — proxy to Photon/Nominatim, cached
 - `GET /api/flood?bbox=minx,miny,maxx,maxy` — road segments in view
 - `GET /api/streets?bbox=` — per-street summaries
+- `GET /api/facilities?bbox=` — critical buildings in view
 - `GET /api/meta` — pass time, coverage
 
 ### Pipeline (`pipeline/`, plain Python, run as modules from the repo root)
@@ -112,6 +120,8 @@ Oct 4), `footprint` (GeoJSON Polygon of observed pixels: the outlined window; ou
   `--mask`. Use `--out` for experiments so the committed data isn't overwritten.
 - `map_mask.py <slug> --speckle 0.3` writes a noisy `<slug>_synthetic_speckle.tif` for testing step 5.
 - Run e.g. `uv run python -m pipeline.build_location sumas-prairie` (~40 s). OSMnx caches to `cache/`.
+- `build_facilities.py <slug> [--mask] [--out]` — critical buildings; runs at the end of `build_location`
+  (same mask), or alone. The dated Overpass query takes ~2 min uncached.
 - **Output in `data/locations/` is committed** so the UI and demo work without running the pipeline.
   Only the pipeline owner regenerates it, in its own commit; on a conflict, rerun rather than merge.
   Restart runserver after regenerating (files are cached per process).
@@ -159,9 +169,12 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   (`?location=`); the entry for the window on the map has the `--accent` border. **Hardcoded for now**
   (`views.RECENT_SEARCHES = ["sumas-prairie"]`); real recent searches must come from the user's
   history, not be predetermined.
-- **Theme toggle:** round 48 px button in the **top-right**, moon in light mode, sun in dark mode.
-  Order: `?theme=` URL parameter (also saved to the `theme` cookie, 1 year, so the server renders the
-  right theme), then the cookie, then light. Toggling reloads the page.
+- **Settings gear:** round 48 px button in the **top-right**; it turns on hover and a click unrolls a
+  column of options below it (click again or Escape closes): **one theme circle** whose icon shows
+  the current mode (sun = light, moon = dark) and switches to the other mode when clicked, then the
+  critical-buildings toggle (`--toggle-on` outline while on). Theme order: `?theme=` URL parameter
+  (also saved to the `theme` cookie, 1 year, so the server renders the right theme), then the cookie,
+  then light. Switching theme reloads the page.
 - **Colours come from the basemap:** every UI colour is a token in `flood/static/flood/app.css` derived
   from Positron (light) / Dark (dark) — Positron's greys for text and borders, its slate water-label
   blue `#495E91` as the UI accent. Don't introduce colours that aren't in the map's palette, except
@@ -184,6 +197,9 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
   layer after the last non-label layer; Dark has a label layer under its roads).
 - Persistent data-age banner: "Satellite observation: <date time UTC> (N hours ago)".
 - Click popup with street stats; sidebar listing affected streets sorted by flooded length.
+- **Critical buildings:** lucide glyph on a round badge, on top of all layers; the badge ring follows
+  the three states (`--flood` ring, plain, dashed/faded). Click → popup with name, address, contacts
+  and "Water detected on N% of the site". The settings menu's toggle hides them.
 - Optional faint flood-extent raster under the traces.
 
 ## Radar (SAR) pitfalls — always account for these
