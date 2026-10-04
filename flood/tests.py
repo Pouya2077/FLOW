@@ -93,6 +93,11 @@ class ThemeTest(SimpleTestCase):
         self.assertTheme(response, "light", "moon")
         self.assertNotIn("theme", response.cookies)
 
+    def test_search_box(self):
+        response = self.get(q="Sumas Prairie")
+        self.assertContains(response, 'role="search"')
+        self.assertContains(response, 'value="Sumas Prairie"')
+
     def test_invalid_cookie_falls_back_to_light(self):
         self.client.cookies["theme"] = "purple"
         self.assertTheme(self.get(), "light", "moon")
