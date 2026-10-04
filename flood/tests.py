@@ -3,7 +3,10 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
+import numpy as np
 from django.test import SimpleTestCase, override_settings
+
+from pipeline.detect_flood import water_mask
 
 from . import data
 from .views import observed_local
@@ -72,7 +75,32 @@ class ApiSmokeTest(SimpleTestCase):
         self.assertContains(response, 'value="Abbotsford"')
         self.assertContains(response, "q=Abbotsford")
         geocode.assert_called_once_with("Abbotsford")
-        fetch_radar.assert_called_once_with(bbox=[-122.4, 48.9, -122.1, 49.1])
+        fetch_radar.assert_not_called()  # not a region in pipeline/regions.py
+
+    @patch("flood.views.fetch_sentinel_radar", return_value=None)
+    @patch("flood.views.get_10km_range", return_value=[-122.4, 48.9, -122.1, 49.1])
+    def test_search_for_region_runs_pipeline_on_region(self, geocode, fetch_radar):
+        self.client.get("/", {"q": "Sumas Prairie"})
+        fetch_radar.assert_called_once_with(region_slug="sumas-prairie")
+
+
+class WaterMaskTest(SimpleTestCase):
+    """Raw Sentinel-1 GRD pixels are uncalibrated amplitudes in the hundreds, not 0-1."""
+
+    def test_dark_pixels_are_water_on_raw_scale(self):
+        rng = np.random.default_rng(0)
+        raw = rng.gamma(4.4, 300 / 4.4, (100, 100))  # bright fields, speckled
+        raw[:40, :40] = rng.gamma(4.4, 40 / 4.4, (40, 40))  # dark water patch
+        raw[:, -10:] = 0  # GRD fill: outside the scene
+        mask, threshold = water_mask(raw.astype("uint16"))
+        self.assertGreater((mask[:40, :40] == 1).mean(), 0.9)
+        self.assertLess((mask[50:, :80] == 1).mean(), 0.05)
+        self.assertTrue((mask[:, -10:] == 255).all())
+        self.assertTrue(np.isfinite(threshold))
+
+    def test_empty_scene_is_all_no_data(self):
+        mask, _ = water_mask(np.zeros((5, 5), dtype="uint16"))
+        self.assertTrue((mask == 255).all())
 
 
 class RecentSearchTest(SimpleTestCase):
