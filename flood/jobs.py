@@ -32,7 +32,7 @@ FAILED_MESSAGE = "The satellite analysis failed. Try again in a few minutes."
 def start(region: Region) -> dict:
     with _lock:
         job = _jobs.get(region.slug)
-        if job and job["status"] in ("queued", "running"):
+        if job and job["status"] in ("queued", "running", "done"):  # only failed ones re-run
             return dict(job)
         if region.slug in data.locations() and not job:
             return _finished(region.slug)
