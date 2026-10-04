@@ -1,24 +1,752 @@
 [
   {
-    "name": "1st Avenue",
-    "total_m": 365,
-    "flooded_m": 0,
-    "no_data_m": 365,
-    "pct": 0.0,
+    "name": "Trans-Canada Highway",
+    "total_m": 27513,
+    "flooded_m": 9321,
+    "no_data_m": 0,
+    "pct": 33.9,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
-      -122.264655,
-      49.003295,
-      -122.259694,
-      49.003415
+      -122.278966,
+      49.033237,
+      -122.119877,
+      49.096404
+    ]
+  },
+  {
+    "name": "Marion Road",
+    "total_m": 8069,
+    "flooded_m": 5273,
+    "no_data_m": 0,
+    "pct": 65.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.140857,
+      49.007638,
+      -122.139285,
+      49.079808
+    ]
+  },
+  {
+    "name": "No 5 Road",
+    "total_m": 5885,
+    "flooded_m": 4844,
+    "no_data_m": 0,
+    "pct": 82.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.16113,
+      49.060294,
+      -122.080358,
+      49.060703
+    ]
+  },
+  {
+    "name": "Dixon Road",
+    "total_m": 6338,
+    "flooded_m": 4831,
+    "no_data_m": 0,
+    "pct": 76.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.125108,
+      49.031432,
+      -122.124911,
+      49.088595
+    ]
+  },
+  {
+    "name": "South Parallel Road",
+    "total_m": 13420,
+    "flooded_m": 4508,
+    "no_data_m": 0,
+    "pct": 33.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.265457,
+      49.030225,
+      -122.121118,
+      49.091895
+    ]
+  },
+  {
+    "name": "North Parallel Road",
+    "total_m": 10546,
+    "flooded_m": 4381,
+    "no_data_m": 0,
+    "pct": 41.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.23329,
+      49.035504,
+      -122.124166,
+      49.091193
+    ]
+  },
+  {
+    "name": "Campbell Road",
+    "total_m": 6544,
+    "flooded_m": 4042,
+    "no_data_m": 0,
+    "pct": 61.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.183058,
+      49.04584,
+      -122.093306,
+      49.046214
+    ]
+  },
+  {
+    "name": "Old Yale Road",
+    "total_m": 10879,
+    "flooded_m": 3909,
+    "no_data_m": 0,
+    "pct": 35.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.279272,
+      49.004709,
+      -122.080016,
+      49.053499
+    ]
+  },
+  {
+    "name": "McDermott Road",
+    "total_m": 6399,
+    "flooded_m": 3364,
+    "no_data_m": 0,
+    "pct": 52.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.162478,
+      49.009039,
+      -122.160666,
+      49.074851
+    ]
+  },
+  {
+    "name": "No. 4 Road",
+    "total_m": 5834,
+    "flooded_m": 3259,
+    "no_data_m": 0,
+    "pct": 55.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.162478,
+      49.074851,
+      -122.080438,
+      49.075252
+    ]
+  },
+  {
+    "name": "Whatcom Road",
+    "total_m": 10228,
+    "flooded_m": 2705,
+    "no_data_m": 0,
+    "pct": 26.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.241818,
+      49.002458,
+      -122.216363,
+      49.065896
+    ]
+  },
+  {
+    "name": "Interprovincial Highway",
+    "total_m": 6647,
+    "flooded_m": 2452,
+    "no_data_m": 0,
+    "pct": 36.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.113963,
+      49.031531,
+      -122.109563,
+      49.090422
+    ]
+  },
+  {
+    "name": "Vye Road",
+    "total_m": 11171,
+    "flooded_m": 2012,
+    "no_data_m": 0,
+    "pct": 18.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.276955,
+      49.01685,
+      -122.128102,
+      49.017111
+    ]
+  },
+  {
+    "name": "Wells Line Road",
+    "total_m": 6816,
+    "flooded_m": 1713,
+    "no_data_m": 0,
+    "pct": 25.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.205074,
+      49.031371,
+      -122.111679,
+      49.031642
+    ]
+  },
+  {
+    "name": "Lamson Road",
+    "total_m": 3034,
+    "flooded_m": 1469,
+    "no_data_m": 0,
+    "pct": 48.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.194737,
+      49.004091,
+      -122.194615,
+      49.031636
+    ]
+  },
+  {
+    "name": "Boundary Road",
+    "total_m": 6172,
+    "flooded_m": 1466,
+    "no_data_m": 0,
+    "pct": 23.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.256687,
+      49.002458,
+      -122.08035,
+      49.097119
+    ]
+  },
+  {
+    "name": "Sumas Way",
+    "total_m": 10117,
+    "flooded_m": 1418,
+    "no_data_m": 0,
+    "pct": 14.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.279892,
+      49.004193,
+      -122.265177,
+      49.058448
+    ]
+  },
+  {
+    "name": "Tolmie Road",
+    "total_m": 6083,
+    "flooded_m": 1074,
+    "no_data_m": 0,
+    "pct": 17.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.098247,
+      49.042193,
+      -122.095104,
+      49.096327
+    ]
+  },
+  {
+    "name": "No. 3 Road",
+    "total_m": 4064,
+    "flooded_m": 1041,
+    "no_data_m": 0,
+    "pct": 25.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.136898,
+      49.089321,
+      -122.080397,
+      49.09096
+    ]
+  },
+  {
+    "name": "Cole Road",
+    "total_m": 4575,
+    "flooded_m": 916,
+    "no_data_m": 0,
+    "pct": 20.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.183736,
+      49.017013,
+      -122.177605,
+      49.057294
+    ]
+  },
+  {
+    "name": "Atkinson Road",
+    "total_m": 2303,
+    "flooded_m": 798,
+    "no_data_m": 0,
+    "pct": 34.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.19276,
+      49.06047,
+      -122.161057,
+      49.063149
+    ]
+  },
+  {
+    "name": "Angus Campbell Road",
+    "total_m": 3822,
+    "flooded_m": 782,
+    "no_data_m": 0,
+    "pct": 20.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.250023,
+      49.002466,
+      -122.24558,
+      49.036005
+    ]
+  },
+  {
+    "name": "Lakemount Road",
+    "total_m": 1045,
+    "flooded_m": 661,
+    "no_data_m": 0,
+    "pct": 63.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.164552,
+      49.074851,
+      -122.157224,
+      49.080615
+    ]
+  },
+  {
+    "name": "York Road",
+    "total_m": 999,
+    "flooded_m": 659,
+    "no_data_m": 0,
+    "pct": 66.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.227906,
+      49.017015,
+      -122.22776,
+      49.025998
+    ]
+  },
+  {
+    "name": "Powerhouse Road",
+    "total_m": 1635,
+    "flooded_m": 618,
+    "no_data_m": 0,
+    "pct": 37.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.129318,
+      49.016898,
+      -122.128305,
+      49.031424
+    ]
+  },
+  {
+    "name": "Towne Road",
+    "total_m": 1701,
+    "flooded_m": 560,
+    "no_data_m": 0,
+    "pct": 32.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.093306,
+      49.045967,
+      -122.08035,
+      49.058255
+    ]
+  },
+  {
+    "name": "Fadden Road",
+    "total_m": 1975,
+    "flooded_m": 537,
+    "no_data_m": 0,
+    "pct": 27.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.206472,
+      49.007545,
+      -122.20507,
+      49.032975
+    ]
+  },
+  {
+    "name": "Eldridge Road",
+    "total_m": 1983,
+    "flooded_m": 501,
+    "no_data_m": 0,
+    "pct": 25.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.183373,
+      49.056077,
+      -122.170921,
+      49.069852
+    ]
+  },
+  {
+    "name": "Beharrell Road",
+    "total_m": 782,
+    "flooded_m": 485,
+    "no_data_m": 0,
+    "pct": 62.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.250037,
+      49.092963,
+      -122.249967,
+      49.099998
+    ]
+  },
+  {
+    "name": "McKee Road",
+    "total_m": 6276,
+    "flooded_m": 474,
+    "no_data_m": 0,
+    "pct": 7.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260665,
+      49.055504,
+      -122.205474,
+      49.079831
+    ]
+  },
+  {
+    "name": "McMillan Road",
+    "total_m": 2523,
+    "flooded_m": 435,
+    "no_data_m": 0,
+    "pct": 17.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.261816,
+      49.03835,
+      -122.260225,
+      49.06015
+    ]
+  },
+  {
+    "name": "Smith Line Road",
+    "total_m": 1110,
+    "flooded_m": 424,
+    "no_data_m": 0,
+    "pct": 38.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.200398,
+      49.031625,
+      -122.198744,
+      49.041123
+    ]
+  },
+  {
+    "name": "Townshipline Road",
+    "total_m": 1680,
+    "flooded_m": 420,
+    "no_data_m": 0,
+    "pct": 25.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.277283,
+      49.089226,
+      -122.254269,
+      49.089285
+    ]
+  },
+  {
+    "name": "Lower Sumas Mountain Road",
+    "total_m": 2246,
+    "flooded_m": 382,
+    "no_data_m": 0,
+    "pct": 17.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.224035,
+      49.045521,
+      -122.194439,
+      49.057187
+    ]
+  },
+  {
+    "name": "Maher Road",
+    "total_m": 1869,
+    "flooded_m": 382,
+    "no_data_m": 0,
+    "pct": 20.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.20883,
+      49.00971,
+      -122.172474,
+      49.010922
+    ]
+  },
+  {
+    "name": "Straiton Road",
+    "total_m": 3483,
+    "flooded_m": 359,
+    "no_data_m": 0,
+    "pct": 10.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.252796,
+      49.077939,
+      -122.218917,
+      49.089262
+    ]
+  },
+  {
+    "name": "Angus Crescent",
+    "total_m": 524,
+    "flooded_m": 343,
+    "no_data_m": 0,
+    "pct": 65.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.241801,
+      49.071099,
+      -122.239442,
+      49.072851
+    ]
+  },
+  {
+    "name": "Hallert Road",
+    "total_m": 2745,
+    "flooded_m": 320,
+    "no_data_m": 0,
+    "pct": 11.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.278311,
+      49.09645,
+      -122.240121,
+      49.096473
+    ]
+  },
+  {
+    "name": "McClary Avenue",
+    "total_m": 324,
+    "flooded_m": 305,
+    "no_data_m": 0,
+    "pct": 94.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.269895,
+      49.030163,
+      -122.265465,
+      49.030298
+    ]
+  },
+  {
+    "name": "Nelles Road",
+    "total_m": 1007,
+    "flooded_m": 295,
+    "no_data_m": 0,
+    "pct": 29.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.218976,
+      49.023953,
+      -122.205232,
+      49.024014
+    ]
+  },
+  {
+    "name": "Old Clayburn Road",
+    "total_m": 4549,
+    "flooded_m": 288,
+    "no_data_m": 0,
+    "pct": 6.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.277224,
+      49.053717,
+      -122.249318,
+      49.082452
+    ]
+  },
+  {
+    "name": "Bateman Road",
+    "total_m": 1807,
+    "flooded_m": 281,
+    "no_data_m": 0,
+    "pct": 15.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.279454,
+      49.07452,
+      -122.254773,
+      49.074786
+    ]
+  },
+  {
+    "name": "Sandringham Drive",
+    "total_m": 1354,
+    "flooded_m": 275,
+    "no_data_m": 0,
+    "pct": 20.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.225871,
+      49.053045,
+      -122.218009,
+      49.055483
+    ]
+  },
+  {
+    "name": "Winfield Drive",
+    "total_m": 642,
+    "flooded_m": 270,
+    "no_data_m": 0,
+    "pct": 42.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.230179,
+      49.038297,
+      -122.226643,
+      49.040656
+    ]
+  },
+  {
+    "name": "Walter Road",
+    "total_m": 526,
+    "flooded_m": 268,
+    "no_data_m": 0,
+    "pct": 50.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.225119,
+      49.051472,
+      -122.218908,
+      49.052275
+    ]
+  },
+  {
+    "name": "Sumas Mountain Road",
+    "total_m": 6091,
+    "flooded_m": 260,
+    "no_data_m": 0,
+    "pct": 4.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.205593,
+      49.053531,
+      -122.191429,
+      49.09993
+    ]
+  },
+  {
+    "name": "McKinley Drive",
+    "total_m": 2212,
+    "flooded_m": 246,
+    "no_data_m": 0,
+    "pct": 11.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.24957,
+      49.060157,
+      -122.240845,
+      49.073299
+    ]
+  },
+  {
+    "name": "Bowman Road",
+    "total_m": 2279,
+    "flooded_m": 240,
+    "no_data_m": 0,
+    "pct": 10.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.172637,
+      49.010922,
+      -122.172439,
+      49.03152
+    ]
+  },
+  {
+    "name": "Arnold Road",
+    "total_m": 1027,
+    "flooded_m": 221,
+    "no_data_m": 0,
+    "pct": 21.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.151127,
+      49.007827,
+      -122.150476,
+      49.016939
+    ]
+  },
+  {
+    "name": "Faddon Road",
+    "total_m": 845,
+    "flooded_m": 221,
+    "no_data_m": 0,
+    "pct": 26.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.205232,
+      49.024014,
+      -122.205074,
+      49.031595
+    ]
+  },
+  {
+    "name": "Riverside Road",
+    "total_m": 4320,
+    "flooded_m": 218,
+    "no_data_m": 0,
+    "pct": 5.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.279918,
+      49.006195,
+      -122.271457,
+      49.042852
+    ]
+  },
+  {
+    "name": "Marshall Road",
+    "total_m": 5500,
+    "flooded_m": 204,
+    "no_data_m": 0,
+    "pct": 3.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.27958,
+      49.03807,
+      -122.223551,
+      49.049552
+    ]
+  },
+  {
+    "name": "Timberlane Drive",
+    "total_m": 1239,
+    "flooded_m": 203,
+    "no_data_m": 0,
+    "pct": 16.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.240343,
+      49.040184,
+      -122.228223,
+      49.043841
     ]
   },
   {
     "name": "2nd Avenue",
     "total_m": 839,
-    "flooded_m": 0,
-    "no_data_m": 839,
-    "pct": 0.0,
+    "flooded_m": 197,
+    "no_data_m": 0,
+    "pct": 23.4,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
       -122.26591,
@@ -28,10 +756,2474 @@
     ]
   },
   {
+    "name": "Monashee Street",
+    "total_m": 373,
+    "flooded_m": 186,
+    "no_data_m": 0,
+    "pct": 50.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.25094,
+      49.064006,
+      -122.249972,
+      49.06715
+    ]
+  },
+  {
+    "name": "Wright Street",
+    "total_m": 924,
+    "flooded_m": 182,
+    "no_data_m": 0,
+    "pct": 19.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.261014,
+      49.064136,
+      -122.260724,
+      49.081947
+    ]
+  },
+  {
+    "name": "Atkinson Lane",
+    "total_m": 321,
+    "flooded_m": 180,
+    "no_data_m": 0,
+    "pct": 56.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.184668,
+      49.061379,
+      -122.183162,
+      49.062777
+    ]
+  },
+  {
+    "name": "1st Avenue",
+    "total_m": 365,
+    "flooded_m": 179,
+    "no_data_m": 0,
+    "pct": 49.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.264655,
+      49.003295,
+      -122.259694,
+      49.003415
+    ]
+  },
+  {
+    "name": "Corbould Road",
+    "total_m": 518,
+    "flooded_m": 179,
+    "no_data_m": 0,
+    "pct": 34.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.156513,
+      49.003415,
+      -122.156474,
+      49.008071
+    ]
+  },
+  {
+    "name": "DeLair Road",
+    "total_m": 2394,
+    "flooded_m": 178,
+    "no_data_m": 0,
+    "pct": 7.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.268665,
+      49.033645,
+      -122.240473,
+      49.039268
+    ]
+  },
+  {
+    "name": "Rockwell Drive",
+    "total_m": 529,
+    "flooded_m": 165,
+    "no_data_m": 0,
+    "pct": 31.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.249717,
+      49.036503,
+      -122.243308,
+      49.037598
+    ]
+  },
+  {
+    "name": "Southridge Place",
+    "total_m": 185,
+    "flooded_m": 165,
+    "no_data_m": 0,
+    "pct": 88.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.227202,
+      49.042168,
+      -122.2259,
+      49.043306
+    ]
+  },
+  {
+    "name": "Orchard Drive",
+    "total_m": 1280,
+    "flooded_m": 162,
+    "no_data_m": 0,
+    "pct": 12.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260254,
+      49.038468,
+      -122.252258,
+      49.046132
+    ]
+  },
+  {
+    "name": "Marble Hill Drive",
+    "total_m": 571,
+    "flooded_m": 157,
+    "no_data_m": 0,
+    "pct": 27.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.257405,
+      49.049969,
+      -122.255018,
+      49.052272
+    ]
+  },
+  {
+    "name": "Immel Street",
+    "total_m": 1730,
+    "flooded_m": 151,
+    "no_data_m": 0,
+    "pct": 8.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.272813,
+      49.054887,
+      -122.26071,
+      49.064136
+    ]
+  },
+  {
+    "name": "Walterleaf Place",
+    "total_m": 151,
+    "flooded_m": 151,
+    "no_data_m": 0,
+    "pct": 100.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.225348,
+      49.041917,
+      -122.224297,
+      49.043008
+    ]
+  },
+  {
+    "name": "Mierau Street",
+    "total_m": 822,
+    "flooded_m": 144,
+    "no_data_m": 0,
+    "pct": 17.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.266542,
+      49.062385,
+      -122.260907,
+      49.066391
+    ]
+  },
+  {
+    "name": "Cassandra Drive",
+    "total_m": 384,
+    "flooded_m": 142,
+    "no_data_m": 0,
+    "pct": 36.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.22267,
+      49.053208,
+      -122.218999,
+      49.055478
+    ]
+  },
+  {
+    "name": "Laburnum Avenue",
+    "total_m": 2539,
+    "flooded_m": 141,
+    "no_data_m": 0,
+    "pct": 5.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.273524,
+      49.060145,
+      -122.249408,
+      49.071841
+    ]
+  },
+  {
+    "name": "McCabe Place",
+    "total_m": 200,
+    "flooded_m": 140,
+    "no_data_m": 0,
+    "pct": 70.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260524,
+      49.053035,
+      -122.257786,
+      49.053092
+    ]
+  },
+  {
+    "name": "Mendham Street",
+    "total_m": 293,
+    "flooded_m": 137,
+    "no_data_m": 0,
+    "pct": 46.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.273481,
+      49.047038,
+      -122.272873,
+      49.049268
+    ]
+  },
+  {
+    "name": "Blackham Drive",
+    "total_m": 581,
+    "flooded_m": 136,
+    "no_data_m": 0,
+    "pct": 23.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.267506,
+      49.049384,
+      -122.266064,
+      49.054117
+    ]
+  },
+  {
+    "name": "4th Avenue",
+    "total_m": 1328,
+    "flooded_m": 134,
+    "no_data_m": 0,
+    "pct": 10.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.277372,
+      49.005994,
+      -122.260809,
+      49.006195
+    ]
+  },
+  {
+    "name": "Cariboo Court",
+    "total_m": 230,
+    "flooded_m": 134,
+    "no_data_m": 0,
+    "pct": 58.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.252027,
+      49.064572,
+      -122.250676,
+      49.066016
+    ]
+  },
+  {
+    "name": "Bassano Terrace",
+    "total_m": 581,
+    "flooded_m": 122,
+    "no_data_m": 0,
+    "pct": 20.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.239675,
+      49.063835,
+      -122.237107,
+      49.066099
+    ]
+  },
+  {
+    "name": "Clayburn Road",
+    "total_m": 1905,
+    "flooded_m": 122,
+    "no_data_m": 0,
+    "pct": 6.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.279133,
+      49.081885,
+      -122.253237,
+      49.082492
+    ]
+  },
+  {
+    "name": "Stephen Leacock Drive",
+    "total_m": 1091,
+    "flooded_m": 122,
+    "no_data_m": 0,
+    "pct": 11.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.225503,
+      49.079705,
+      -122.217026,
+      49.084074
+    ]
+  },
+  {
+    "name": "Fooks Road",
+    "total_m": 829,
+    "flooded_m": 121,
+    "no_data_m": 0,
+    "pct": 14.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.210546,
+      49.043798,
+      -122.210001,
+      49.051161
+    ]
+  },
+  {
+    "name": "McKee Connector",
+    "total_m": 317,
+    "flooded_m": 120,
+    "no_data_m": 0,
+    "pct": 37.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.264873,
+      49.05489,
+      -122.260665,
+      49.055504
+    ]
+  },
+  {
+    "name": "Sandy Hill Road",
+    "total_m": 915,
+    "flooded_m": 120,
+    "no_data_m": 0,
+    "pct": 13.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.249408,
+      49.067843,
+      -122.241427,
+      49.071672
+    ]
+  },
+  {
+    "name": "Udy Road",
+    "total_m": 981,
+    "flooded_m": 120,
+    "no_data_m": 0,
+    "pct": 12.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.191312,
+      49.082478,
+      -122.186662,
+      49.089609
+    ]
+  },
+  {
+    "name": "Kenny Road",
+    "total_m": 1183,
+    "flooded_m": 119,
+    "no_data_m": 0,
+    "pct": 10.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.239037,
+      49.013501,
+      -122.238737,
+      49.024133
+    ]
+  },
+  {
+    "name": "Sandstone Drive",
+    "total_m": 336,
+    "flooded_m": 119,
+    "no_data_m": 0,
+    "pct": 35.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.250195,
+      49.038505,
+      -122.249774,
+      49.041351
+    ]
+  },
+  {
+    "name": "Sandon Drive",
+    "total_m": 520,
+    "flooded_m": 107,
+    "no_data_m": 0,
+    "pct": 20.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.26748,
+      49.051398,
+      -122.260405,
+      49.051505
+    ]
+  },
+  {
+    "name": "Cassiar Avenue",
+    "total_m": 1036,
+    "flooded_m": 103,
+    "no_data_m": 0,
+    "pct": 9.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.258005,
+      49.056095,
+      -122.249837,
+      49.058492
+    ]
+  },
+  {
+    "name": "Prior Avenue",
+    "total_m": 200,
+    "flooded_m": 102,
+    "no_data_m": 0,
+    "pct": 51.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.264949,
+      49.070712,
+      -122.260693,
+      49.070832
+    ]
+  },
+  {
+    "name": "Chapman Place",
+    "total_m": 136,
+    "flooded_m": 97,
+    "no_data_m": 0,
+    "pct": 71.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.266274,
+      49.050232,
+      -122.266228,
+      49.05145
+    ]
+  },
+  {
+    "name": "Dunsmuir Way",
+    "total_m": 531,
+    "flooded_m": 97,
+    "no_data_m": 0,
+    "pct": 18.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.263858,
+      49.066228,
+      -122.263174,
+      49.070713
+    ]
+  },
+  {
+    "name": "Caves Court",
+    "total_m": 364,
+    "flooded_m": 96,
+    "no_data_m": 0,
+    "pct": 26.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.243153,
+      49.071529,
+      -122.242831,
+      49.074763
+    ]
+  },
+  {
+    "name": "McLeod Avenue",
+    "total_m": 270,
+    "flooded_m": 96,
+    "no_data_m": 0,
+    "pct": 35.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260574,
+      49.05374,
+      -122.256878,
+      49.053802
+    ]
+  },
+  {
+    "name": "Chantrell Place",
+    "total_m": 285,
+    "flooded_m": 94,
+    "no_data_m": 0,
+    "pct": 33.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.262536,
+      49.052274,
+      -122.25864,
+      49.052283
+    ]
+  },
+  {
+    "name": "Latimer Street",
+    "total_m": 1148,
+    "flooded_m": 94,
+    "no_data_m": 0,
+    "pct": 8.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.261014,
+      49.065999,
+      -122.255986,
+      49.074765
+    ]
+  },
+  {
+    "name": "Ledgeview Drive",
+    "total_m": 238,
+    "flooded_m": 94,
+    "no_data_m": 0,
+    "pct": 39.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.236655,
+      49.068906,
+      -122.23381,
+      49.069809
+    ]
+  },
+  {
+    "name": "Maclure Road",
+    "total_m": 343,
+    "flooded_m": 94,
+    "no_data_m": 0,
+    "pct": 27.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.276224,
+      49.059371,
+      -122.272029,
+      49.06024
+    ]
+  },
+  {
+    "name": "Mount Blanchard Drive",
+    "total_m": 925,
+    "flooded_m": 87,
+    "no_data_m": 0,
+    "pct": 9.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.261314,
+      49.062315,
+      -122.25133,
+      49.064573
+    ]
+  },
+  {
+    "name": "6th Avenue",
+    "total_m": 327,
+    "flooded_m": 83,
+    "no_data_m": 0,
+    "pct": 25.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.265295,
+      49.00785,
+      -122.26083,
+      49.007855
+    ]
+  },
+  {
+    "name": "Carrington Lane",
+    "total_m": 167,
+    "flooded_m": 83,
+    "no_data_m": 0,
+    "pct": 50.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.219841,
+      49.052238,
+      -122.218269,
+      49.053245
+    ]
+  },
+  {
+    "name": "Everett Road",
+    "total_m": 516,
+    "flooded_m": 83,
+    "no_data_m": 0,
+    "pct": 16.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.254518,
+      49.033805,
+      -122.254411,
+      49.038436
+    ]
+  },
+  {
+    "name": "Country Place",
+    "total_m": 751,
+    "flooded_m": 82,
+    "no_data_m": 0,
+    "pct": 11.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.221675,
+      49.048182,
+      -122.216423,
+      49.050233
+    ]
+  },
+  {
+    "name": "Railway Avenue",
+    "total_m": 411,
+    "flooded_m": 82,
+    "no_data_m": 0,
+    "pct": 20.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.2677,
+      49.002457,
+      -122.26703,
+      49.006024
+    ]
+  },
+  {
+    "name": "Cardiff Place",
+    "total_m": 242,
+    "flooded_m": 81,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.216884,
+      49.05381,
+      -122.213951,
+      49.05475
+    ]
+  },
+  {
+    "name": "Goldstream Drive",
+    "total_m": 344,
+    "flooded_m": 80,
+    "no_data_m": 0,
+    "pct": 23.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.24002,
+      49.060956,
+      -122.239486,
+      49.063835
+    ]
+  },
+  {
+    "name": "Millar Crescent",
+    "total_m": 494,
+    "flooded_m": 80,
+    "no_data_m": 0,
+    "pct": 16.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.259573,
+      49.068809,
+      -122.255932,
+      49.070124
+    ]
+  },
+  {
+    "name": "Schneider Road",
+    "total_m": 603,
+    "flooded_m": 80,
+    "no_data_m": 0,
+    "pct": 13.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.179213,
+      49.005303,
+      -122.177907,
+      49.010426
+    ]
+  },
+  {
+    "name": "Anora Drive",
+    "total_m": 785,
+    "flooded_m": 79,
+    "no_data_m": 0,
+    "pct": 10.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.26384,
+      49.042372,
+      -122.260391,
+      49.044298
+    ]
+  },
+  {
+    "name": "Barker Road",
+    "total_m": 474,
+    "flooded_m": 79,
+    "no_data_m": 0,
+    "pct": 16.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.167383,
+      49.00507,
+      -122.167223,
+      49.009298
+    ]
+  },
+  {
+    "name": "Quarry Avenue",
+    "total_m": 511,
+    "flooded_m": 79,
+    "no_data_m": 0,
+    "pct": 15.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.2675,
+      49.053015,
+      -122.260524,
+      49.053085
+    ]
+  },
+  {
+    "name": "Glenn Mountain Drive",
+    "total_m": 494,
+    "flooded_m": 78,
+    "no_data_m": 0,
+    "pct": 15.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260344,
+      49.048522,
+      -122.254336,
+      49.049993
+    ]
+  },
+  {
+    "name": "Hyatt Place",
+    "total_m": 227,
+    "flooded_m": 78,
+    "no_data_m": 0,
+    "pct": 34.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.275515,
+      49.046406,
+      -122.275242,
+      49.047434
+    ]
+  },
+  {
+    "name": "Selkirk Avenue",
+    "total_m": 370,
+    "flooded_m": 78,
+    "no_data_m": 0,
+    "pct": 21.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.247508,
+      49.061336,
+      -122.243643,
+      49.062794
+    ]
+  },
+  {
+    "name": "Winson Road",
+    "total_m": 192,
+    "flooded_m": 77,
+    "no_data_m": 0,
+    "pct": 40.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.277456,
+      49.004287,
+      -122.277372,
+      49.006003
+    ]
+  },
+  {
+    "name": "Roscoe Road",
+    "total_m": 76,
+    "flooded_m": 76,
+    "no_data_m": 0,
+    "pct": 100.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.219362,
+      49.040306,
+      -122.219347,
+      49.04099
+    ]
+  },
+  {
+    "name": "Georgia Street",
+    "total_m": 232,
+    "flooded_m": 67,
+    "no_data_m": 0,
+    "pct": 29.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.264408,
+      49.056426,
+      -122.264254,
+      49.058505
+    ]
+  },
+  {
+    "name": "Gough Street",
+    "total_m": 127,
+    "flooded_m": 65,
+    "no_data_m": 0,
+    "pct": 51.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.258887,
+      49.000411,
+      -122.258885,
+      49.001552
+    ]
+  },
+  {
+    "name": "Knox Crescent",
+    "total_m": 383,
+    "flooded_m": 63,
+    "no_data_m": 0,
+    "pct": 16.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.251088,
+      49.036695,
+      -122.246894,
+      49.037487
+    ]
+  },
+  {
+    "name": "Ackerman Court",
+    "total_m": 227,
+    "flooded_m": 62,
+    "no_data_m": 0,
+    "pct": 27.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.259256,
+      49.033695,
+      -122.257196,
+      49.034397
+    ]
+  },
+  {
+    "name": "Donlyn Avenue",
+    "total_m": 421,
+    "flooded_m": 62,
+    "no_data_m": 0,
+    "pct": 14.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.271884,
+      49.065539,
+      -122.266177,
+      49.065729
+    ]
+  },
+  {
+    "name": "Sandy Hill Crescent",
+    "total_m": 318,
+    "flooded_m": 62,
+    "no_data_m": 0,
+    "pct": 19.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.248209,
+      49.069299,
+      -122.245954,
+      49.070824
+    ]
+  },
+  {
+    "name": "Charlie Spruce Place",
+    "total_m": 607,
+    "flooded_m": 61,
+    "no_data_m": 0,
+    "pct": 10.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.199881,
+      49.084436,
+      -122.198253,
+      49.089556
+    ]
+  },
+  {
+    "name": "Aladdin Crescent",
+    "total_m": 380,
+    "flooded_m": 60,
+    "no_data_m": 0,
+    "pct": 15.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.268454,
+      49.045837,
+      -122.266298,
+      49.046967
+    ]
+  },
+  {
+    "name": "Blacklock Road",
+    "total_m": 298,
+    "flooded_m": 60,
+    "no_data_m": 0,
+    "pct": 20.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.139436,
+      49.022056,
+      -122.135359,
+      49.02206
+    ]
+  },
+  {
+    "name": "Dina Place",
+    "total_m": 402,
+    "flooded_m": 60,
+    "no_data_m": 0,
+    "pct": 15.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.242038,
+      49.039779,
+      -122.238355,
+      49.040744
+    ]
+  },
+  {
+    "name": "Hamon Drive",
+    "total_m": 733,
+    "flooded_m": 60,
+    "no_data_m": 0,
+    "pct": 8.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.262772,
+      49.034988,
+      -122.254506,
+      49.036315
+    ]
+  },
+  {
+    "name": "Kilgard Road",
+    "total_m": 1262,
+    "flooded_m": 60,
+    "no_data_m": 0,
+    "pct": 4.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.202223,
+      49.054634,
+      -122.186579,
+      49.057711
+    ]
+  },
+  {
+    "name": "Potter Road",
+    "total_m": 240,
+    "flooded_m": 60,
+    "no_data_m": 0,
+    "pct": 25.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260797,
+      49.016935,
+      -122.260764,
+      49.019092
+    ]
+  },
+  {
+    "name": "Robson Drive",
+    "total_m": 464,
+    "flooded_m": 60,
+    "no_data_m": 0,
+    "pct": 13.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.267628,
+      49.068622,
+      -122.264949,
+      49.070717
+    ]
+  },
+  {
+    "name": "Baldwin Road",
+    "total_m": 372,
+    "flooded_m": 59,
+    "no_data_m": 0,
+    "pct": 15.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.267482,
+      49.051398,
+      -122.2637,
+      49.052279
+    ]
+  },
+  {
+    "name": "Davie Street",
+    "total_m": 595,
+    "flooded_m": 59,
+    "no_data_m": 0,
+    "pct": 9.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.266177,
+      49.065539,
+      -122.264917,
+      49.070716
+    ]
+  },
+  {
+    "name": "Forrest Terrace",
+    "total_m": 158,
+    "flooded_m": 59,
+    "no_data_m": 0,
+    "pct": 37.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.274541,
+      49.034057,
+      -122.27251,
+      49.034504
+    ]
+  },
+  {
+    "name": "Lonzo Road",
+    "total_m": 372,
+    "flooded_m": 59,
+    "no_data_m": 0,
+    "pct": 16.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.271117,
+      49.033844,
+      -122.266923,
+      49.035016
+    ]
+  },
+  {
+    "name": "Serendipity Street",
+    "total_m": 196,
+    "flooded_m": 59,
+    "no_data_m": 0,
+    "pct": 30.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.263714,
+      49.055228,
+      -122.263247,
+      49.056945
+    ]
+  },
+  {
+    "name": "Larch Street",
+    "total_m": 440,
+    "flooded_m": 58,
+    "no_data_m": 0,
+    "pct": 13.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.279737,
+      49.050542,
+      -122.273761,
+      49.050975
+    ]
+  },
+  {
+    "name": "Lauren Court",
+    "total_m": 116,
+    "flooded_m": 58,
+    "no_data_m": 0,
+    "pct": 50.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.239852,
+      49.070627,
+      -122.239506,
+      49.071609
+    ]
+  },
+  {
+    "name": "Belanger Drive",
+    "total_m": 582,
+    "flooded_m": 57,
+    "no_data_m": 0,
+    "pct": 9.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.248513,
+      49.075143,
+      -122.24514,
+      49.078036
+    ]
+  },
+  {
+    "name": "Terrace Court",
+    "total_m": 130,
+    "flooded_m": 56,
+    "no_data_m": 0,
+    "pct": 42.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260724,
+      49.065045,
+      -122.258946,
+      49.065117
+    ]
+  },
+  {
+    "name": "Brigette Street",
+    "total_m": 175,
+    "flooded_m": 55,
+    "no_data_m": 0,
+    "pct": 31.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.263336,
+      49.05695,
+      -122.262821,
+      49.05847
+    ]
+  },
+  {
+    "name": "Camden Court",
+    "total_m": 67,
+    "flooded_m": 45,
+    "no_data_m": 0,
+    "pct": 66.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.248997,
+      49.041658,
+      -122.248128,
+      49.041796
+    ]
+  },
+  {
+    "name": "Dorset Place",
+    "total_m": 114,
+    "flooded_m": 44,
+    "no_data_m": 0,
+    "pct": 38.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.270548,
+      49.057779,
+      -122.270053,
+      49.058427
+    ]
+  },
+  {
+    "name": "McMillan Place",
+    "total_m": 110,
+    "flooded_m": 44,
+    "no_data_m": 0,
+    "pct": 40.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260391,
+      49.050767,
+      -122.258887,
+      49.050769
+    ]
+  },
+  {
+    "name": "Goodchild Street",
+    "total_m": 242,
+    "flooded_m": 43,
+    "no_data_m": 0,
+    "pct": 17.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.248741,
+      49.076994,
+      -122.248191,
+      49.078976
+    ]
+  },
+  {
+    "name": "Kinloch Place",
+    "total_m": 150,
+    "flooded_m": 43,
+    "no_data_m": 0,
+    "pct": 28.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.245701,
+      49.075406,
+      -122.244442,
+      49.076364
+    ]
+  },
+  {
+    "name": "Glenalmond Place",
+    "total_m": 105,
+    "flooded_m": 42,
+    "no_data_m": 0,
+    "pct": 40.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.256731,
+      49.055875,
+      -122.255587,
+      49.05623
+    ]
+  },
+  {
+    "name": "Marcet Court",
+    "total_m": 147,
+    "flooded_m": 42,
+    "no_data_m": 0,
+    "pct": 28.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260291,
+      49.04716,
+      -122.259169,
+      49.047849
+    ]
+  },
+  {
+    "name": "Millar Court",
+    "total_m": 42,
+    "flooded_m": 42,
+    "no_data_m": 0,
+    "pct": 100.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.257158,
+      49.069735,
+      -122.257064,
+      49.070108
+    ]
+  },
+  {
+    "name": "Mount Blanchard Place",
+    "total_m": 148,
+    "flooded_m": 42,
+    "no_data_m": 0,
+    "pct": 28.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.254759,
+      49.064559,
+      -122.253977,
+      49.065628
+    ]
+  },
+  {
+    "name": "Silver Way",
+    "total_m": 192,
+    "flooded_m": 42,
+    "no_data_m": 0,
+    "pct": 22.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.192599,
+      49.059075,
+      -122.192553,
+      49.060798
+    ]
+  },
+  {
+    "name": "Terravista Place",
+    "total_m": 127,
+    "flooded_m": 42,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.238236,
+      49.064754,
+      -122.237176,
+      49.065429
+    ]
+  },
+  {
+    "name": "Foothills Court",
+    "total_m": 116,
+    "flooded_m": 41,
+    "no_data_m": 0,
+    "pct": 35.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.225355,
+      49.044604,
+      -122.22497,
+      49.045555
+    ]
+  },
+  {
+    "name": "Fraser Street",
+    "total_m": 604,
+    "flooded_m": 41,
+    "no_data_m": 0,
+    "pct": 6.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.28,
+      49.045474,
+      -122.271735,
+      49.045548
+    ]
+  },
+  {
+    "name": "Guilford Road",
+    "total_m": 1149,
+    "flooded_m": 41,
+    "no_data_m": 0,
+    "pct": 3.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.266585,
+      49.038258,
+      -122.264954,
+      49.048156
+    ]
+  },
+  {
+    "name": "Higginson Crescent",
+    "total_m": 132,
+    "flooded_m": 41,
+    "no_data_m": 0,
+    "pct": 31.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.279076,
+      49.032195,
+      -122.277282,
+      49.032282
+    ]
+  },
+  {
+    "name": "McBride Street",
+    "total_m": 289,
+    "flooded_m": 41,
+    "no_data_m": 0,
+    "pct": 14.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.257669,
+      49.053095,
+      -122.256547,
+      49.05559
+    ]
+  },
+  {
+    "name": "McColl Court",
+    "total_m": 61,
+    "flooded_m": 41,
+    "no_data_m": 0,
+    "pct": 66.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.259804,
+      49.054455,
+      -122.259786,
+      49.055002
+    ]
+  },
+  {
+    "name": "Omineca Court",
+    "total_m": 82,
+    "flooded_m": 41,
+    "no_data_m": 0,
+    "pct": 50.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.24511,
+      49.062114,
+      -122.244798,
+      49.062798
+    ]
+  },
+  {
+    "name": "Stockton Crescent",
+    "total_m": 61,
+    "flooded_m": 41,
+    "no_data_m": 0,
+    "pct": 66.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.273791,
+      49.050547,
+      -122.273742,
+      49.051093
+    ]
+  },
+  {
+    "name": "Vernon Terrace",
+    "total_m": 285,
+    "flooded_m": 41,
+    "no_data_m": 0,
+    "pct": 14.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.258758,
+      49.060993,
+      -122.2585,
+      49.063537
+    ]
+  },
+  {
+    "name": "Creekstone Place",
+    "total_m": 40,
+    "flooded_m": 40,
+    "no_data_m": 0,
+    "pct": 100.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.262765,
+      49.069261,
+      -122.262682,
+      49.069611
+    ]
+  },
+  {
+    "name": "Gladys Avenue",
+    "total_m": 648,
+    "flooded_m": 40,
+    "no_data_m": 0,
+    "pct": 6.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.279809,
+      49.040303,
+      -122.272582,
+      49.043587
+    ]
+  },
+  {
+    "name": "Glenshiel Drive",
+    "total_m": 502,
+    "flooded_m": 40,
+    "no_data_m": 0,
+    "pct": 8.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.255514,
+      49.053035,
+      -122.253404,
+      49.056095
+    ]
+  },
+  {
+    "name": "Miraun Crescent",
+    "total_m": 280,
+    "flooded_m": 40,
+    "no_data_m": 0,
+    "pct": 14.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.268284,
+      49.044,
+      -122.266236,
+      49.045069
+    ]
+  },
+  {
+    "name": "Oakhill Drive",
+    "total_m": 398,
+    "flooded_m": 40,
+    "no_data_m": 0,
+    "pct": 10.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260274,
+      49.044493,
+      -122.254844,
+      49.044563
+    ]
+  },
+  {
+    "name": "Renton Street",
+    "total_m": 364,
+    "flooded_m": 40,
+    "no_data_m": 0,
+    "pct": 11.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.277719,
+      49.044571,
+      -122.272787,
+      49.044874
+    ]
+  },
+  {
+    "name": "York Avenue",
+    "total_m": 480,
+    "flooded_m": 40,
+    "no_data_m": 0,
+    "pct": 8.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.271181,
+      49.056807,
+      -122.264784,
+      49.057198
+    ]
+  },
+  {
+    "name": "Ash Street",
+    "total_m": 856,
+    "flooded_m": 39,
+    "no_data_m": 0,
+    "pct": 4.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.277707,
+      49.050111,
+      -122.277132,
+      49.057364
+    ]
+  },
+  {
+    "name": "Exbury Avenue",
+    "total_m": 288,
+    "flooded_m": 39,
+    "no_data_m": 0,
+    "pct": 13.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.257219,
+      49.06799,
+      -122.253376,
+      49.068226
+    ]
+  },
+  {
+    "name": "McAdam Road",
+    "total_m": 301,
+    "flooded_m": 39,
+    "no_data_m": 0,
+    "pct": 12.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.26506,
+      49.048756,
+      -122.264805,
+      49.051448
+    ]
+  },
+  {
+    "name": "Midas Street",
+    "total_m": 296,
+    "flooded_m": 39,
+    "no_data_m": 0,
+    "pct": 13.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.27024,
+      49.043358,
+      -122.269648,
+      49.045958
+    ]
+  },
+  {
+    "name": "Purcell Avenue",
+    "total_m": 469,
+    "flooded_m": 39,
+    "no_data_m": 0,
+    "pct": 8.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.246569,
+      49.060436,
+      -122.243636,
+      49.06314
+    ]
+  },
+  {
+    "name": "Shadbolt Avenue",
+    "total_m": 572,
+    "flooded_m": 39,
+    "no_data_m": 0,
+    "pct": 6.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.226147,
+      49.079762,
+      -122.222112,
+      49.082471
+    ]
+  },
+  {
+    "name": "Bulkley Street",
+    "total_m": 114,
+    "flooded_m": 38,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.251048,
+      49.068257,
+      -122.250633,
+      49.069238
+    ]
+  },
+  {
+    "name": "McMillan Court",
+    "total_m": 113,
+    "flooded_m": 38,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.261658,
+      49.045486,
+      -122.260243,
+      49.045889
+    ]
+  },
+  {
+    "name": "Regal Park Way",
+    "total_m": 929,
+    "flooded_m": 38,
+    "no_data_m": 0,
+    "pct": 4.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.236316,
+      49.050977,
+      -122.225119,
+      49.053085
+    ]
+  },
+  {
+    "name": "Sheena Place",
+    "total_m": 57,
+    "flooded_m": 38,
+    "no_data_m": 0,
+    "pct": 66.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.241638,
+      49.072115,
+      -122.240869,
+      49.072172
+    ]
+  },
+  {
+    "name": "Armstrong Avenue",
+    "total_m": 220,
+    "flooded_m": 37,
+    "no_data_m": 0,
+    "pct": 17.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.262323,
+      49.081074,
+      -122.259311,
+      49.081088
+    ]
+  },
+  {
+    "name": "Cameron Crescent",
+    "total_m": 1166,
+    "flooded_m": 37,
+    "no_data_m": 0,
+    "pct": 3.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.258182,
+      49.042651,
+      -122.247562,
+      49.048178
+    ]
+  },
+  {
+    "name": "Marcliffe Place",
+    "total_m": 112,
+    "flooded_m": 37,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.270111,
+      49.053355,
+      -122.268591,
+      49.053422
+    ]
+  },
+  {
+    "name": "Elwood Place",
+    "total_m": 54,
+    "flooded_m": 36,
+    "no_data_m": 0,
+    "pct": 66.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.258572,
+      49.041164,
+      -122.2585,
+      49.04165
+    ]
+  },
+  {
+    "name": "Kristin Court",
+    "total_m": 51,
+    "flooded_m": 34,
+    "no_data_m": 0,
+    "pct": 66.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.243605,
+      49.072496,
+      -122.242913,
+      49.072538
+    ]
+  },
+  {
+    "name": "Stewart Crescent",
+    "total_m": 112,
+    "flooded_m": 32,
+    "no_data_m": 0,
+    "pct": 28.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.273903,
+      49.049499,
+      -122.272891,
+      49.050017
+    ]
+  },
+  {
+    "name": "Westview Boulevard",
+    "total_m": 1150,
+    "flooded_m": 27,
+    "no_data_m": 0,
+    "pct": 2.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.238513,
+      49.061783,
+      -122.230757,
+      49.066162
+    ]
+  },
+  {
+    "name": "Hearthstone Court",
+    "total_m": 128,
+    "flooded_m": 25,
+    "no_data_m": 0,
+    "pct": 19.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.26275,
+      49.074215,
+      -122.26101,
+      49.074299
+    ]
+  },
+  {
+    "name": "Picton Street",
+    "total_m": 491,
+    "flooded_m": 24,
+    "no_data_m": 0,
+    "pct": 4.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.271287,
+      49.064529,
+      -122.268764,
+      49.06821
+    ]
+  },
+  {
+    "name": "Heather Drive",
+    "total_m": 128,
+    "flooded_m": 23,
+    "no_data_m": 0,
+    "pct": 17.8,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.279427,
+      49.035835,
+      -122.278214,
+      49.035969
+    ]
+  },
+  {
+    "name": "Lion Court",
+    "total_m": 46,
+    "flooded_m": 23,
+    "no_data_m": 0,
+    "pct": 50.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.233227,
+      49.039844,
+      -122.23321,
+      49.040257
+    ]
+  },
+  {
+    "name": "Marvern Way",
+    "total_m": 254,
+    "flooded_m": 23,
+    "no_data_m": 0,
+    "pct": 9.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.259976,
+      49.060757,
+      -122.25983,
+      49.063039
+    ]
+  },
+  {
+    "name": "Blauson Boulevard",
+    "total_m": 710,
+    "flooded_m": 22,
+    "no_data_m": 0,
+    "pct": 3.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.217032,
+      49.079171,
+      -122.212677,
+      49.083979
+    ]
+  },
+  {
+    "name": "Calder Place",
+    "total_m": 86,
+    "flooded_m": 22,
+    "no_data_m": 0,
+    "pct": 25.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.266167,
+      49.049424,
+      -122.264986,
+      49.049431
+    ]
+  },
+  {
+    "name": "Country Court",
+    "total_m": 88,
+    "flooded_m": 22,
+    "no_data_m": 0,
+    "pct": 25.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.220166,
+      49.048731,
+      -122.219888,
+      49.049422
+    ]
+  },
+  {
+    "name": "Hamon Crescent",
+    "total_m": 44,
+    "flooded_m": 22,
+    "no_data_m": 0,
+    "pct": 50.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.256,
+      49.034749,
+      -122.255984,
+      49.035147
+    ]
+  },
+  {
+    "name": "St Andrews Court",
+    "total_m": 89,
+    "flooded_m": 22,
+    "no_data_m": 0,
+    "pct": 25.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.235662,
+      49.068331,
+      -122.23458,
+      49.06865
+    ]
+  },
+  {
+    "name": "Webb Court",
+    "total_m": 88,
+    "flooded_m": 22,
+    "no_data_m": 0,
+    "pct": 25.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.255988,
+      49.045269,
+      -122.254805,
+      49.045336
+    ]
+  },
+  {
+    "name": "Grosvenor Place",
+    "total_m": 164,
+    "flooded_m": 21,
+    "no_data_m": 0,
+    "pct": 12.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.27417,
+      49.046301,
+      -122.274131,
+      49.047777
+    ]
+  },
+  {
+    "name": "Harrison Street",
+    "total_m": 439,
+    "flooded_m": 21,
+    "no_data_m": 0,
+    "pct": 4.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.264882,
+      49.001552,
+      -122.258885,
+      49.001577
+    ]
+  },
+  {
+    "name": "Knox Terrace",
+    "total_m": 123,
+    "flooded_m": 21,
+    "no_data_m": 0,
+    "pct": 16.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.251097,
+      49.03663,
+      -122.250465,
+      49.037444
+    ]
+  },
+  {
+    "name": "McKee Place",
+    "total_m": 297,
+    "flooded_m": 21,
+    "no_data_m": 0,
+    "pct": 7.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.248901,
+      49.062794,
+      -122.246898,
+      49.064173
+    ]
+  },
+  {
+    "name": "McNab Avenue",
+    "total_m": 250,
+    "flooded_m": 21,
+    "no_data_m": 0,
+    "pct": 8.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260609,
+      49.054441,
+      -122.257189,
+      49.054517
+    ]
+  },
+  {
+    "name": "Sumas Avenue",
+    "total_m": 276,
+    "flooded_m": 21,
+    "no_data_m": 0,
+    "pct": 7.6,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.263739,
+      49.000017,
+      -122.263412,
+      49.00241
+    ]
+  },
+  {
+    "name": "Applewood Drive",
+    "total_m": 345,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 5.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.232276,
+      49.063206,
+      -122.230879,
+      49.066102
+    ]
+  },
+  {
+    "name": "Bell Road",
+    "total_m": 1847,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 1.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.272019,
+      49.081917,
+      -122.271757,
+      49.098533
+    ]
+  },
+  {
+    "name": "Belrose Road",
+    "total_m": 180,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 11.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.089608,
+      49.049026,
+      -122.08724,
+      49.049388
+    ]
+  },
+  {
+    "name": "Cathedral Court",
+    "total_m": 60,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.240326,
+      49.061904,
+      -122.239512,
+      49.061933
+    ]
+  },
+  {
+    "name": "Cooper Place",
+    "total_m": 80,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 25.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260927,
+      49.072046,
+      -122.259843,
+      49.072103
+    ]
+  },
+  {
+    "name": "Creekstone Drive",
+    "total_m": 364,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 5.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.263174,
+      49.066229,
+      -122.262638,
+      49.069261
+    ]
+  },
+  {
+    "name": "Elgon Court",
+    "total_m": 161,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 12.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.275459,
+      49.05871,
+      -122.275324,
+      49.060153
+    ]
+  },
+  {
+    "name": "Emmerson Road",
+    "total_m": 617,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 3.2,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.185247,
+      49.089666,
+      -122.184312,
+      49.095065
+    ]
+  },
+  {
+    "name": "Garfield Street",
+    "total_m": 436,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 4.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.264944,
+      49.000006,
+      -122.258998,
+      49.000055
+    ]
+  },
+  {
+    "name": "Harper Drive",
+    "total_m": 332,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 5.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.252001,
+      49.043161,
+      -122.249621,
+      49.045351
+    ]
+  },
+  {
+    "name": "Kelly Road",
+    "total_m": 101,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 20.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.19397,
+      49.059828,
+      -122.192592,
+      49.059903
+    ]
+  },
+  {
+    "name": "Lakeview Drive",
+    "total_m": 433,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 4.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.188511,
+      49.056077,
+      -122.183373,
+      49.056862
+    ]
+  },
+  {
+    "name": "Lawson Street",
+    "total_m": 169,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 11.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.260367,
+      49.000048,
+      -122.26035,
+      49.001566
+    ]
+  },
+  {
+    "name": "Skyline Drive",
+    "total_m": 805,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 2.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.26433,
+      49.03621,
+      -122.254502,
+      49.037156
+    ]
+  },
+  {
+    "name": "Spencer Street",
+    "total_m": 345,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 5.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.254513,
+      49.0345,
+      -122.251142,
+      49.035364
+    ]
+  },
+  {
+    "name": "Walden Street",
+    "total_m": 236,
+    "flooded_m": 20,
+    "no_data_m": 0,
+    "pct": 8.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.268145,
+      49.065713,
+      -122.268026,
+      49.06783
+    ]
+  },
+  {
+    "name": "Ascott Avenue",
+    "total_m": 639,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 3.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.271251,
+      49.06405,
+      -122.264222,
+      49.065418
+    ]
+  },
+  {
+    "name": "Callaghan Crescent",
+    "total_m": 231,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 8.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.22429,
+      49.080756,
+      -122.222538,
+      49.081751
+    ]
+  },
+  {
+    "name": "Castle Pines Court",
+    "total_m": 112,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 16.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.234863,
+      49.069297,
+      -122.234576,
+      49.070281
+    ]
+  },
+  {
+    "name": "Cherry Street",
+    "total_m": 323,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 5.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.265452,
+      49.000025,
+      -122.264878,
+      49.001656
+    ]
+  },
+  {
+    "name": "Corbett Place",
+    "total_m": 199,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 9.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.249333,
+      49.076902,
+      -122.246674,
+      49.077158
+    ]
+  },
+  {
+    "name": "De Cosmos Avenue",
+    "total_m": 192,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 10.1,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.265379,
+      49.068553,
+      -122.26277,
+      49.068622
+    ]
+  },
+  {
+    "name": "McCorkell Drive",
+    "total_m": 484,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 3.9,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.249276,
+      49.03819,
+      -122.245203,
+      49.039963
+    ]
+  },
+  {
+    "name": "Melan Court",
+    "total_m": 56,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.25878,
+      49.003734,
+      -122.258675,
+      49.004219
+    ]
+  },
+  {
+    "name": "Pierce Terrace",
+    "total_m": 112,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 16.7,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.250873,
+      49.068584,
+      -122.249387,
+      49.068752
+    ]
+  },
+  {
+    "name": "Semath Road",
+    "total_m": 93,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 20.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.187415,
+      49.056371,
+      -122.187319,
+      49.057206
+    ]
+  },
+  {
+    "name": "Stoneleigh Avenue",
+    "total_m": 304,
+    "flooded_m": 19,
+    "no_data_m": 0,
+    "pct": 6.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.271704,
+      49.054124,
+      -122.26811,
+      49.054887
+    ]
+  },
+  {
+    "name": "Blatchford Way",
+    "total_m": 724,
+    "flooded_m": 18,
+    "no_data_m": 0,
+    "pct": 2.5,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.268521,
+      49.042347,
+      -122.260243,
+      49.045049
+    ]
+  },
+  {
+    "name": "Davie Court",
+    "total_m": 55,
+    "flooded_m": 18,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.265655,
+      49.066844,
+      -122.26493,
+      49.066945
+    ]
+  },
+  {
+    "name": "Hampshire Place",
+    "total_m": 51,
+    "flooded_m": 17,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.275376,
+      49.044183,
+      -122.27535,
+      49.044638
+    ]
+  },
+  {
+    "name": "Hillview Crescent",
+    "total_m": 51,
+    "flooded_m": 17,
+    "no_data_m": 0,
+    "pct": 33.3,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.261412,
+      49.035906,
+      -122.261186,
+      49.036322
+    ]
+  },
+  {
+    "name": "Whatcom Place",
+    "total_m": 17,
+    "flooded_m": 17,
+    "no_data_m": 0,
+    "pct": 100.0,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.228208,
+      49.048781,
+      -122.227974,
+      49.048783
+    ]
+  },
+  {
+    "name": "Vedder Way",
+    "total_m": 460,
+    "flooded_m": 11,
+    "no_data_m": 0,
+    "pct": 2.4,
+    "observed_utc": "2021-11-28T14:20:31.361448Z",
+    "bbox": [
+      -122.27247,
+      49.034182,
+      -122.271117,
+      49.038208
+    ]
+  },
+  {
     "name": "3rd Avenue",
     "total_m": 528,
     "flooded_m": 0,
-    "no_data_m": 528,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -42,24 +3234,10 @@
     ]
   },
   {
-    "name": "4th Avenue",
-    "total_m": 1328,
-    "flooded_m": 0,
-    "no_data_m": 1328,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.277372,
-      49.005994,
-      -122.260809,
-      49.006195
-    ]
-  },
-  {
     "name": "5th Avenue",
     "total_m": 385,
     "flooded_m": 0,
-    "no_data_m": 385,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -70,24 +3248,10 @@
     ]
   },
   {
-    "name": "6th Avenue",
-    "total_m": 327,
-    "flooded_m": 0,
-    "no_data_m": 327,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.265295,
-      49.00785,
-      -122.26083,
-      49.007855
-    ]
-  },
-  {
     "name": "7th Avenue",
     "total_m": 294,
     "flooded_m": 0,
-    "no_data_m": 294,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -101,7 +3265,7 @@
     "name": "Abbotsford Way",
     "total_m": 287,
     "flooded_m": 0,
-    "no_data_m": 287,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -109,20 +3273,6 @@
       49.038364,
       -122.276638,
       49.040917
-    ]
-  },
-  {
-    "name": "Ackerman Court",
-    "total_m": 227,
-    "flooded_m": 0,
-    "no_data_m": 227,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.259256,
-      49.033695,
-      -122.257196,
-      49.034397
     ]
   },
   {
@@ -140,24 +3290,10 @@
     ]
   },
   {
-    "name": "Aladdin Crescent",
-    "total_m": 380,
-    "flooded_m": 0,
-    "no_data_m": 380,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.268454,
-      49.045837,
-      -122.266298,
-      49.046967
-    ]
-  },
-  {
     "name": "Alderview Street",
     "total_m": 187,
     "flooded_m": 0,
-    "no_data_m": 187,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -185,7 +3321,7 @@
     "name": "Alma Street",
     "total_m": 56,
     "flooded_m": 0,
-    "no_data_m": 56,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -199,7 +3335,7 @@
     "name": "Amblewood Place",
     "total_m": 214,
     "flooded_m": 0,
-    "no_data_m": 214,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -210,66 +3346,10 @@
     ]
   },
   {
-    "name": "Angus Campbell Road",
-    "total_m": 3822,
-    "flooded_m": 0,
-    "no_data_m": 3822,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.250023,
-      49.002466,
-      -122.24558,
-      49.036005
-    ]
-  },
-  {
-    "name": "Angus Crescent",
-    "total_m": 524,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.241801,
-      49.071099,
-      -122.239442,
-      49.072851
-    ]
-  },
-  {
-    "name": "Anora Drive",
-    "total_m": 785,
-    "flooded_m": 0,
-    "no_data_m": 785,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.26384,
-      49.042372,
-      -122.260391,
-      49.044298
-    ]
-  },
-  {
-    "name": "Applewood Drive",
-    "total_m": 345,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.232276,
-      49.063206,
-      -122.230879,
-      49.066102
-    ]
-  },
-  {
     "name": "Aquila Drive",
     "total_m": 291,
     "flooded_m": 0,
-    "no_data_m": 291,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -291,90 +3371,6 @@
       49.060794,
       -122.25995,
       49.061435
-    ]
-  },
-  {
-    "name": "Armstrong Avenue",
-    "total_m": 220,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.262323,
-      49.081074,
-      -122.259311,
-      49.081088
-    ]
-  },
-  {
-    "name": "Arnold Road",
-    "total_m": 1027,
-    "flooded_m": 0,
-    "no_data_m": 1027,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.151127,
-      49.007827,
-      -122.150476,
-      49.016939
-    ]
-  },
-  {
-    "name": "Ascott Avenue",
-    "total_m": 639,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.271251,
-      49.06405,
-      -122.264222,
-      49.065418
-    ]
-  },
-  {
-    "name": "Ash Street",
-    "total_m": 856,
-    "flooded_m": 0,
-    "no_data_m": 561,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.277707,
-      49.050111,
-      -122.277132,
-      49.057364
-    ]
-  },
-  {
-    "name": "Atkinson Lane",
-    "total_m": 321,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.184668,
-      49.061379,
-      -122.183162,
-      49.062777
-    ]
-  },
-  {
-    "name": "Atkinson Road",
-    "total_m": 2303,
-    "flooded_m": 0,
-    "no_data_m": 1231,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.19276,
-      49.06047,
-      -122.161057,
-      49.063149
     ]
   },
   {
@@ -451,7 +3447,7 @@
     "name": "B Street",
     "total_m": 761,
     "flooded_m": 0,
-    "no_data_m": 761,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -462,38 +3458,10 @@
     ]
   },
   {
-    "name": "Baldwin Road",
-    "total_m": 372,
-    "flooded_m": 0,
-    "no_data_m": 372,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.267482,
-      49.051398,
-      -122.2637,
-      49.052279
-    ]
-  },
-  {
-    "name": "Barker Road",
-    "total_m": 474,
-    "flooded_m": 0,
-    "no_data_m": 474,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.167383,
-      49.00507,
-      -122.167223,
-      49.009298
-    ]
-  },
-  {
     "name": "Barron's Way",
     "total_m": 242,
     "flooded_m": 0,
-    "no_data_m": 242,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -504,38 +3472,10 @@
     ]
   },
   {
-    "name": "Bassano Terrace",
-    "total_m": 581,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.239675,
-      49.063835,
-      -122.237107,
-      49.066099
-    ]
-  },
-  {
-    "name": "Bateman Road",
-    "total_m": 1807,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.279454,
-      49.07452,
-      -122.254773,
-      49.074786
-    ]
-  },
-  {
     "name": "Beck Road",
     "total_m": 818,
     "flooded_m": 0,
-    "no_data_m": 818,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -549,7 +3489,7 @@
     "name": "Beecroft Crescent",
     "total_m": 107,
     "flooded_m": 0,
-    "no_data_m": 107,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -557,62 +3497,6 @@
       49.048602,
       -122.274142,
       49.049563
-    ]
-  },
-  {
-    "name": "Beharrell Road",
-    "total_m": 782,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.250037,
-      49.092963,
-      -122.249967,
-      49.099998
-    ]
-  },
-  {
-    "name": "Belanger Drive",
-    "total_m": 582,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.248513,
-      49.075143,
-      -122.24514,
-      49.078036
-    ]
-  },
-  {
-    "name": "Bell Road",
-    "total_m": 1847,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.272019,
-      49.081917,
-      -122.271757,
-      49.098533
-    ]
-  },
-  {
-    "name": "Belrose Road",
-    "total_m": 180,
-    "flooded_m": 0,
-    "no_data_m": 180,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.089608,
-      49.049026,
-      -122.08724,
-      49.049388
     ]
   },
   {
@@ -633,7 +3517,7 @@
     "name": "Bernina Court",
     "total_m": 170,
     "flooded_m": 0,
-    "no_data_m": 170,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -647,7 +3531,7 @@
     "name": "Berry Road",
     "total_m": 7,
     "flooded_m": 0,
-    "no_data_m": 7,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -689,7 +3573,7 @@
     "name": "Birch Street",
     "total_m": 227,
     "flooded_m": 0,
-    "no_data_m": 227,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -700,38 +3584,10 @@
     ]
   },
   {
-    "name": "Blackham Drive",
-    "total_m": 581,
-    "flooded_m": 0,
-    "no_data_m": 581,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.267506,
-      49.049384,
-      -122.266064,
-      49.054117
-    ]
-  },
-  {
-    "name": "Blacklock Road",
-    "total_m": 298,
-    "flooded_m": 0,
-    "no_data_m": 298,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.139436,
-      49.022056,
-      -122.135359,
-      49.02206
-    ]
-  },
-  {
     "name": "Blatchford Lane",
     "total_m": 21,
     "flooded_m": 0,
-    "no_data_m": 21,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -739,34 +3595,6 @@
       49.042368,
       -122.267528,
       49.04254
-    ]
-  },
-  {
-    "name": "Blatchford Way",
-    "total_m": 724,
-    "flooded_m": 0,
-    "no_data_m": 724,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.268521,
-      49.042347,
-      -122.260243,
-      49.045049
-    ]
-  },
-  {
-    "name": "Blauson Boulevard",
-    "total_m": 710,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.217032,
-      49.079171,
-      -122.212677,
-      49.083979
     ]
   },
   {
@@ -801,7 +3629,7 @@
     "name": "Boley Street",
     "total_m": 191,
     "flooded_m": 0,
-    "no_data_m": 191,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -809,34 +3637,6 @@
       49.041096,
       -122.231959,
       49.042649
-    ]
-  },
-  {
-    "name": "Boundary Road",
-    "total_m": 6172,
-    "flooded_m": 0,
-    "no_data_m": 6172,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.256687,
-      49.002458,
-      -122.08035,
-      49.097119
-    ]
-  },
-  {
-    "name": "Bowman Road",
-    "total_m": 2279,
-    "flooded_m": 0,
-    "no_data_m": 2279,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.172637,
-      49.010922,
-      -122.172439,
-      49.03152
     ]
   },
   {
@@ -857,7 +3657,7 @@
     "name": "Brewster Place",
     "total_m": 205,
     "flooded_m": 0,
-    "no_data_m": 205,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -871,7 +3671,7 @@
     "name": "Briarwood Place",
     "total_m": 60,
     "flooded_m": 0,
-    "no_data_m": 60,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -882,24 +3682,10 @@
     ]
   },
   {
-    "name": "Brigette Street",
-    "total_m": 175,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.263336,
-      49.05695,
-      -122.262821,
-      49.05847
-    ]
-  },
-  {
     "name": "Bristol Drive",
     "total_m": 423,
     "flooded_m": 0,
-    "no_data_m": 423,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -924,20 +3710,6 @@
     ]
   },
   {
-    "name": "Bulkley Street",
-    "total_m": 114,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.251048,
-      49.068257,
-      -122.250633,
-      49.069238
-    ]
-  },
-  {
     "name": "Burnside Drive",
     "total_m": 307,
     "flooded_m": 0,
@@ -949,20 +3721,6 @@
       49.067673,
       -122.247779,
       49.069713
-    ]
-  },
-  {
-    "name": "Calder Place",
-    "total_m": 86,
-    "flooded_m": 0,
-    "no_data_m": 86,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.266167,
-      49.049424,
-      -122.264986,
-      49.049431
     ]
   },
   {
@@ -980,38 +3738,10 @@
     ]
   },
   {
-    "name": "Callaghan Crescent",
-    "total_m": 231,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.22429,
-      49.080756,
-      -122.222538,
-      49.081751
-    ]
-  },
-  {
-    "name": "Camden Court",
-    "total_m": 67,
-    "flooded_m": 0,
-    "no_data_m": 67,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.248997,
-      49.041658,
-      -122.248128,
-      49.041796
-    ]
-  },
-  {
     "name": "Camellia Court",
     "total_m": 163,
     "flooded_m": 0,
-    "no_data_m": 163,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1022,38 +3752,10 @@
     ]
   },
   {
-    "name": "Cameron Crescent",
-    "total_m": 1166,
-    "flooded_m": 0,
-    "no_data_m": 1166,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.258182,
-      49.042651,
-      -122.247562,
-      49.048178
-    ]
-  },
-  {
-    "name": "Campbell Road",
-    "total_m": 6544,
-    "flooded_m": 0,
-    "no_data_m": 6544,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.183058,
-      49.04584,
-      -122.093306,
-      49.046214
-    ]
-  },
-  {
     "name": "Canterbury Avenue",
     "total_m": 632,
     "flooded_m": 0,
-    "no_data_m": 632,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1061,34 +3763,6 @@
       49.040996,
       -122.231485,
       49.04259
-    ]
-  },
-  {
-    "name": "Cardiff Place",
-    "total_m": 242,
-    "flooded_m": 0,
-    "no_data_m": 141,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.216884,
-      49.05381,
-      -122.213951,
-      49.05475
-    ]
-  },
-  {
-    "name": "Cariboo Court",
-    "total_m": 230,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.252027,
-      49.064572,
-      -122.250676,
-      49.066016
     ]
   },
   {
@@ -1123,7 +3797,7 @@
     "name": "Carleton Place",
     "total_m": 47,
     "flooded_m": 0,
-    "no_data_m": 47,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1151,7 +3825,7 @@
     "name": "Carol Street",
     "total_m": 108,
     "flooded_m": 0,
-    "no_data_m": 108,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1159,48 +3833,6 @@
       49.035355,
       -122.259545,
       49.03631
-    ]
-  },
-  {
-    "name": "Carrington Lane",
-    "total_m": 167,
-    "flooded_m": 0,
-    "no_data_m": 167,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.219841,
-      49.052238,
-      -122.218269,
-      49.053245
-    ]
-  },
-  {
-    "name": "Cassandra Drive",
-    "total_m": 384,
-    "flooded_m": 0,
-    "no_data_m": 182,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.22267,
-      49.053208,
-      -122.218999,
-      49.055478
-    ]
-  },
-  {
-    "name": "Cassiar Avenue",
-    "total_m": 1036,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.258005,
-      49.056095,
-      -122.249837,
-      49.058492
     ]
   },
   {
@@ -1229,48 +3861,6 @@
       49.056905,
       -122.25553,
       49.057773
-    ]
-  },
-  {
-    "name": "Castle Pines Court",
-    "total_m": 112,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.234863,
-      49.069297,
-      -122.234576,
-      49.070281
-    ]
-  },
-  {
-    "name": "Cathedral Court",
-    "total_m": 60,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.240326,
-      49.061904,
-      -122.239512,
-      49.061933
-    ]
-  },
-  {
-    "name": "Caves Court",
-    "total_m": 364,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.243153,
-      49.071529,
-      -122.242831,
-      49.074763
     ]
   },
   {
@@ -1305,7 +3895,7 @@
     "name": "Champlain Crescent",
     "total_m": 260,
     "flooded_m": 0,
-    "no_data_m": 260,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1319,7 +3909,7 @@
     "name": "Champlain Drive",
     "total_m": 184,
     "flooded_m": 0,
-    "no_data_m": 184,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1341,62 +3931,6 @@
       49.075148,
       -122.248244,
       49.076155
-    ]
-  },
-  {
-    "name": "Chantrell Place",
-    "total_m": 285,
-    "flooded_m": 0,
-    "no_data_m": 285,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.262536,
-      49.052274,
-      -122.25864,
-      49.052283
-    ]
-  },
-  {
-    "name": "Chapman Place",
-    "total_m": 136,
-    "flooded_m": 0,
-    "no_data_m": 136,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.266274,
-      49.050232,
-      -122.266228,
-      49.05145
-    ]
-  },
-  {
-    "name": "Charlie Spruce Place",
-    "total_m": 607,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.199881,
-      49.084436,
-      -122.198253,
-      49.089556
-    ]
-  },
-  {
-    "name": "Cherry Street",
-    "total_m": 323,
-    "flooded_m": 0,
-    "no_data_m": 323,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.265452,
-      49.000025,
-      -122.264878,
-      49.001656
     ]
   },
   {
@@ -1428,24 +3962,10 @@
     ]
   },
   {
-    "name": "Clayburn Road",
-    "total_m": 1905,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.279133,
-      49.081885,
-      -122.253237,
-      49.082492
-    ]
-  },
-  {
     "name": "Cleveland Street",
     "total_m": 445,
     "flooded_m": 0,
-    "no_data_m": 445,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1484,94 +4004,10 @@
     ]
   },
   {
-    "name": "Cole Road",
-    "total_m": 4575,
-    "flooded_m": 0,
-    "no_data_m": 4575,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.183736,
-      49.017013,
-      -122.177605,
-      49.057294
-    ]
-  },
-  {
-    "name": "Cooper Place",
-    "total_m": 80,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260927,
-      49.072046,
-      -122.259843,
-      49.072103
-    ]
-  },
-  {
-    "name": "Corbett Place",
-    "total_m": 199,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.249333,
-      49.076902,
-      -122.246674,
-      49.077158
-    ]
-  },
-  {
-    "name": "Corbould Road",
-    "total_m": 518,
-    "flooded_m": 0,
-    "no_data_m": 518,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.156513,
-      49.003415,
-      -122.156474,
-      49.008071
-    ]
-  },
-  {
-    "name": "Country Court",
-    "total_m": 88,
-    "flooded_m": 0,
-    "no_data_m": 88,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.220166,
-      49.048731,
-      -122.219888,
-      49.049422
-    ]
-  },
-  {
-    "name": "Country Place",
-    "total_m": 751,
-    "flooded_m": 0,
-    "no_data_m": 751,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.221675,
-      49.048182,
-      -122.216423,
-      49.050233
-    ]
-  },
-  {
     "name": "Coutts Way",
     "total_m": 108,
     "flooded_m": 0,
-    "no_data_m": 108,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1585,7 +4021,7 @@
     "name": "Cranberry Court",
     "total_m": 218,
     "flooded_m": 0,
-    "no_data_m": 218,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1596,38 +4032,10 @@
     ]
   },
   {
-    "name": "Creekstone Drive",
-    "total_m": 364,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.263174,
-      49.066229,
-      -122.262638,
-      49.069261
-    ]
-  },
-  {
-    "name": "Creekstone Place",
-    "total_m": 40,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.262765,
-      49.069261,
-      -122.262682,
-      49.069611
-    ]
-  },
-  {
     "name": "Currie Place",
     "total_m": 96,
     "flooded_m": 0,
-    "no_data_m": 96,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1641,7 +4049,7 @@
     "name": "D Street",
     "total_m": 296,
     "flooded_m": 0,
-    "no_data_m": 296,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1655,7 +4063,7 @@
     "name": "Dahl Crescent",
     "total_m": 360,
     "flooded_m": 0,
-    "no_data_m": 360,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1669,7 +4077,7 @@
     "name": "Damson Avenue",
     "total_m": 119,
     "flooded_m": 0,
-    "no_data_m": 119,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1680,38 +4088,10 @@
     ]
   },
   {
-    "name": "Davie Court",
-    "total_m": 55,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.265655,
-      49.066844,
-      -122.26493,
-      49.066945
-    ]
-  },
-  {
-    "name": "Davie Street",
-    "total_m": 595,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.266177,
-      49.065539,
-      -122.264917,
-      49.070716
-    ]
-  },
-  {
     "name": "Dawson Road",
     "total_m": 3084,
     "flooded_m": 0,
-    "no_data_m": 214,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1719,34 +4099,6 @@
       49.088994,
       -122.177375,
       49.089929
-    ]
-  },
-  {
-    "name": "De Cosmos Avenue",
-    "total_m": 192,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.265379,
-      49.068553,
-      -122.26277,
-      49.068622
-    ]
-  },
-  {
-    "name": "DeLair Road",
-    "total_m": 2394,
-    "flooded_m": 0,
-    "no_data_m": 2394,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.268665,
-      49.033645,
-      -122.240473,
-      49.039268
     ]
   },
   {
@@ -1778,38 +4130,10 @@
     ]
   },
   {
-    "name": "Dina Place",
-    "total_m": 402,
-    "flooded_m": 0,
-    "no_data_m": 402,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.242038,
-      49.039779,
-      -122.238355,
-      49.040744
-    ]
-  },
-  {
-    "name": "Dixon Road",
-    "total_m": 6338,
-    "flooded_m": 0,
-    "no_data_m": 6338,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.125108,
-      49.031432,
-      -122.124911,
-      49.088595
-    ]
-  },
-  {
     "name": "Dogwood Crescent",
     "total_m": 105,
     "flooded_m": 0,
-    "no_data_m": 105,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1837,7 +4161,7 @@
     "name": "Doneagle Place",
     "total_m": 234,
     "flooded_m": 0,
-    "no_data_m": 234,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1848,38 +4172,10 @@
     ]
   },
   {
-    "name": "Donlyn Avenue",
-    "total_m": 421,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.271884,
-      49.065539,
-      -122.266177,
-      49.065729
-    ]
-  },
-  {
-    "name": "Dorset Place",
-    "total_m": 114,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.270548,
-      49.057779,
-      -122.270053,
-      49.058427
-    ]
-  },
-  {
     "name": "Dover Court",
     "total_m": 319,
     "flooded_m": 0,
-    "no_data_m": 319,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1904,24 +4200,10 @@
     ]
   },
   {
-    "name": "Dunsmuir Way",
-    "total_m": 531,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.263858,
-      49.066228,
-      -122.263174,
-      49.070713
-    ]
-  },
-  {
     "name": "Durham Place",
     "total_m": 51,
     "flooded_m": 0,
-    "no_data_m": 51,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1935,7 +4217,7 @@
     "name": "Eagle Mountain Drive",
     "total_m": 2243,
     "flooded_m": 0,
-    "no_data_m": 2243,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1949,7 +4231,7 @@
     "name": "Eagle Peak Drive",
     "total_m": 261,
     "flooded_m": 0,
-    "no_data_m": 261,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1963,7 +4245,7 @@
     "name": "Eagle Summit Crescent",
     "total_m": 154,
     "flooded_m": 0,
-    "no_data_m": 154,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1977,7 +4259,7 @@
     "name": "Eagle Summit Drive",
     "total_m": 488,
     "flooded_m": 0,
-    "no_data_m": 488,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -1991,7 +4273,7 @@
     "name": "Eagle View Place",
     "total_m": 93,
     "flooded_m": 0,
-    "no_data_m": 93,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2005,7 +4287,7 @@
     "name": "Eaglecrest Drive",
     "total_m": 300,
     "flooded_m": 0,
-    "no_data_m": 300,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2019,7 +4301,7 @@
     "name": "Eaglecrest Place",
     "total_m": 149,
     "flooded_m": 0,
-    "no_data_m": 149,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2047,7 +4329,7 @@
     "name": "Edgeview Place",
     "total_m": 109,
     "flooded_m": 0,
-    "no_data_m": 109,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2075,7 +4357,7 @@
     "name": "Eldorado Place",
     "total_m": 99,
     "flooded_m": 0,
-    "no_data_m": 99,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2086,24 +4368,10 @@
     ]
   },
   {
-    "name": "Eldridge Road",
-    "total_m": 1983,
-    "flooded_m": 0,
-    "no_data_m": 1625,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.183373,
-      49.056077,
-      -122.170921,
-      49.069852
-    ]
-  },
-  {
     "name": "Eleanor Avenue",
     "total_m": 213,
     "flooded_m": 0,
-    "no_data_m": 213,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2114,24 +4382,10 @@
     ]
   },
   {
-    "name": "Elgon Court",
-    "total_m": 161,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.275459,
-      49.05871,
-      -122.275324,
-      49.060153
-    ]
-  },
-  {
     "name": "Elliot Avenue",
     "total_m": 144,
     "flooded_m": 0,
-    "no_data_m": 144,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2153,20 +4407,6 @@
       49.06024,
       -122.276224,
       49.064789
-    ]
-  },
-  {
-    "name": "Elwood Place",
-    "total_m": 54,
-    "flooded_m": 0,
-    "no_data_m": 54,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.258572,
-      49.041164,
-      -122.2585,
-      49.04165
     ]
   },
   {
@@ -2198,24 +4438,10 @@
     ]
   },
   {
-    "name": "Emmerson Road",
-    "total_m": 617,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.185247,
-      49.089666,
-      -122.184312,
-      49.095065
-    ]
-  },
-  {
     "name": "Empress Drive",
     "total_m": 468,
     "flooded_m": 0,
-    "no_data_m": 468,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2229,7 +4455,7 @@
     "name": "Enderby Street",
     "total_m": 183,
     "flooded_m": 0,
-    "no_data_m": 183,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2271,7 +4497,7 @@
     "name": "Essex Drive",
     "total_m": 214,
     "flooded_m": 0,
-    "no_data_m": 214,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2313,7 +4539,7 @@
     "name": "Everett Drive",
     "total_m": 447,
     "flooded_m": 0,
-    "no_data_m": 447,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2324,24 +4550,10 @@
     ]
   },
   {
-    "name": "Everett Road",
-    "total_m": 516,
-    "flooded_m": 0,
-    "no_data_m": 516,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.254518,
-      49.033805,
-      -122.254411,
-      49.038436
-    ]
-  },
-  {
     "name": "Everett Street",
     "total_m": 385,
     "flooded_m": 0,
-    "no_data_m": 385,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2355,7 +4567,7 @@
     "name": "Everson Place",
     "total_m": 148,
     "flooded_m": 0,
-    "no_data_m": 148,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2363,20 +4575,6 @@
       49.040047,
       -122.25838,
       49.04062
-    ]
-  },
-  {
-    "name": "Exbury Avenue",
-    "total_m": 288,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.257219,
-      49.06799,
-      -122.253376,
-      49.068226
     ]
   },
   {
@@ -2394,38 +4592,10 @@
     ]
   },
   {
-    "name": "Fadden Road",
-    "total_m": 1975,
-    "flooded_m": 0,
-    "no_data_m": 1975,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.206472,
-      49.007545,
-      -122.20507,
-      49.032975
-    ]
-  },
-  {
-    "name": "Faddon Road",
-    "total_m": 845,
-    "flooded_m": 0,
-    "no_data_m": 845,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.205232,
-      49.024014,
-      -122.205074,
-      49.031595
-    ]
-  },
-  {
     "name": "Falcon Place",
     "total_m": 63,
     "flooded_m": 0,
-    "no_data_m": 63,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2453,7 +4623,7 @@
     "name": "Farmer Road",
     "total_m": 836,
     "flooded_m": 0,
-    "no_data_m": 836,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2467,7 +4637,7 @@
     "name": "Filuk Place",
     "total_m": 196,
     "flooded_m": 0,
-    "no_data_m": 196,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2495,7 +4665,7 @@
     "name": "Fisk Street",
     "total_m": 324,
     "flooded_m": 0,
-    "no_data_m": 324,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2520,34 +4690,6 @@
     ]
   },
   {
-    "name": "Fooks Road",
-    "total_m": 829,
-    "flooded_m": 0,
-    "no_data_m": 829,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.210546,
-      49.043798,
-      -122.210001,
-      49.051161
-    ]
-  },
-  {
-    "name": "Foothills Court",
-    "total_m": 116,
-    "flooded_m": 0,
-    "no_data_m": 116,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.225355,
-      49.044604,
-      -122.22497,
-      49.045555
-    ]
-  },
-  {
     "name": "Forest Oaks Court",
     "total_m": 153,
     "flooded_m": 0,
@@ -2562,38 +4704,10 @@
     ]
   },
   {
-    "name": "Forrest Terrace",
-    "total_m": 158,
-    "flooded_m": 0,
-    "no_data_m": 158,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.274541,
-      49.034057,
-      -122.27251,
-      49.034504
-    ]
-  },
-  {
-    "name": "Fraser Street",
-    "total_m": 604,
-    "flooded_m": 0,
-    "no_data_m": 604,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.28,
-      49.045474,
-      -122.271735,
-      49.045548
-    ]
-  },
-  {
     "name": "Gable Court",
     "total_m": 48,
     "flooded_m": 0,
-    "no_data_m": 48,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2604,24 +4718,10 @@
     ]
   },
   {
-    "name": "Garfield Street",
-    "total_m": 436,
-    "flooded_m": 0,
-    "no_data_m": 436,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.264944,
-      49.000006,
-      -122.258998,
-      49.000055
-    ]
-  },
-  {
     "name": "George Ferguson Way",
     "total_m": 615,
     "flooded_m": 0,
-    "no_data_m": 615,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2632,24 +4732,10 @@
     ]
   },
   {
-    "name": "Georgia Street",
-    "total_m": 232,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.264408,
-      49.056426,
-      -122.264254,
-      49.058505
-    ]
-  },
-  {
     "name": "Gingerhills Drive",
     "total_m": 288,
     "flooded_m": 0,
-    "no_data_m": 288,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2660,38 +4746,10 @@
     ]
   },
   {
-    "name": "Gladys Avenue",
-    "total_m": 648,
-    "flooded_m": 0,
-    "no_data_m": 648,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.279809,
-      49.040303,
-      -122.272582,
-      49.043587
-    ]
-  },
-  {
-    "name": "Glenalmond Place",
-    "total_m": 105,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.256731,
-      49.055875,
-      -122.255587,
-      49.05623
-    ]
-  },
-  {
     "name": "Glenavon Court",
     "total_m": 93,
     "flooded_m": 0,
-    "no_data_m": 93,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2705,7 +4763,7 @@
     "name": "Glenavon Street",
     "total_m": 317,
     "flooded_m": 0,
-    "no_data_m": 158,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2758,38 +4816,10 @@
     ]
   },
   {
-    "name": "Glenn Mountain Drive",
-    "total_m": 494,
-    "flooded_m": 0,
-    "no_data_m": 494,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260344,
-      49.048522,
-      -122.254336,
-      49.049993
-    ]
-  },
-  {
-    "name": "Glenshiel Drive",
-    "total_m": 502,
-    "flooded_m": 0,
-    "no_data_m": 321,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.255514,
-      49.053035,
-      -122.253404,
-      49.056095
-    ]
-  },
-  {
     "name": "Glenwill Avenue",
     "total_m": 73,
     "flooded_m": 0,
-    "no_data_m": 73,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2800,24 +4830,10 @@
     ]
   },
   {
-    "name": "Goldstream Drive",
-    "total_m": 344,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.24002,
-      49.060956,
-      -122.239486,
-      49.063835
-    ]
-  },
-  {
     "name": "Good Road",
     "total_m": 89,
     "flooded_m": 0,
-    "no_data_m": 89,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2831,7 +4847,7 @@
     "name": "Goodbrand Drive",
     "total_m": 914,
     "flooded_m": 0,
-    "no_data_m": 914,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2842,38 +4858,10 @@
     ]
   },
   {
-    "name": "Goodchild Street",
-    "total_m": 242,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.248741,
-      49.076994,
-      -122.248191,
-      49.078976
-    ]
-  },
-  {
-    "name": "Gough Street",
-    "total_m": 127,
-    "flooded_m": 0,
-    "no_data_m": 127,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.258887,
-      49.000411,
-      -122.258885,
-      49.001552
-    ]
-  },
-  {
     "name": "Graystone Drive",
     "total_m": 505,
     "flooded_m": 0,
-    "no_data_m": 505,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2887,7 +4875,7 @@
     "name": "Graystone Lane",
     "total_m": 96,
     "flooded_m": 0,
-    "no_data_m": 96,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2901,7 +4889,7 @@
     "name": "Green Avenue",
     "total_m": 410,
     "flooded_m": 0,
-    "no_data_m": 410,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2915,7 +4903,7 @@
     "name": "Griffiths Road",
     "total_m": 220,
     "flooded_m": 0,
-    "no_data_m": 220,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -2923,34 +4911,6 @@
       49.036494,
       -122.265266,
       49.038266
-    ]
-  },
-  {
-    "name": "Grosvenor Place",
-    "total_m": 164,
-    "flooded_m": 0,
-    "no_data_m": 164,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.27417,
-      49.046301,
-      -122.274131,
-      49.047777
-    ]
-  },
-  {
-    "name": "Guilford Road",
-    "total_m": 1149,
-    "flooded_m": 0,
-    "no_data_m": 1149,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.266585,
-      49.038258,
-      -122.264954,
-      49.048156
     ]
   },
   {
@@ -2965,90 +4925,6 @@
       49.068954,
       -122.240198,
       49.069892
-    ]
-  },
-  {
-    "name": "Hallert Road",
-    "total_m": 2745,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.278311,
-      49.09645,
-      -122.240121,
-      49.096473
-    ]
-  },
-  {
-    "name": "Hamon Crescent",
-    "total_m": 44,
-    "flooded_m": 0,
-    "no_data_m": 44,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.256,
-      49.034749,
-      -122.255984,
-      49.035147
-    ]
-  },
-  {
-    "name": "Hamon Drive",
-    "total_m": 733,
-    "flooded_m": 0,
-    "no_data_m": 733,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.262772,
-      49.034988,
-      -122.254506,
-      49.036315
-    ]
-  },
-  {
-    "name": "Hampshire Place",
-    "total_m": 51,
-    "flooded_m": 0,
-    "no_data_m": 51,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.275376,
-      49.044183,
-      -122.27535,
-      49.044638
-    ]
-  },
-  {
-    "name": "Harper Drive",
-    "total_m": 332,
-    "flooded_m": 0,
-    "no_data_m": 332,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.252001,
-      49.043161,
-      -122.249621,
-      49.045351
-    ]
-  },
-  {
-    "name": "Harrison Street",
-    "total_m": 439,
-    "flooded_m": 0,
-    "no_data_m": 439,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.264882,
-      49.001552,
-      -122.258885,
-      49.001577
     ]
   },
   {
@@ -3108,38 +4984,10 @@
     ]
   },
   {
-    "name": "Hearthstone Court",
-    "total_m": 128,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.26275,
-      49.074215,
-      -122.26101,
-      49.074299
-    ]
-  },
-  {
-    "name": "Heather Drive",
-    "total_m": 128,
-    "flooded_m": 0,
-    "no_data_m": 128,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.279427,
-      49.035835,
-      -122.278214,
-      49.035969
-    ]
-  },
-  {
     "name": "Heatherstone Place",
     "total_m": 147,
     "flooded_m": 0,
-    "no_data_m": 147,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3153,7 +5001,7 @@
     "name": "Hemlock Crescent",
     "total_m": 130,
     "flooded_m": 0,
-    "no_data_m": 130,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3195,7 +5043,7 @@
     "name": "Henley Avenue",
     "total_m": 96,
     "flooded_m": 0,
-    "no_data_m": 96,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3209,7 +5057,7 @@
     "name": "Hibiscus Court",
     "total_m": 172,
     "flooded_m": 0,
-    "no_data_m": 172,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3223,7 +5071,7 @@
     "name": "Hickory Lane",
     "total_m": 141,
     "flooded_m": 0,
-    "no_data_m": 141,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3231,20 +5079,6 @@
       49.047803,
       -122.245295,
       49.04895
-    ]
-  },
-  {
-    "name": "Higginson Crescent",
-    "total_m": 132,
-    "flooded_m": 0,
-    "no_data_m": 132,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.279076,
-      49.032195,
-      -122.277282,
-      49.032282
     ]
   },
   {
@@ -3265,7 +5099,7 @@
     "name": "Highfield Crescent",
     "total_m": 179,
     "flooded_m": 0,
-    "no_data_m": 179,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3290,20 +5124,6 @@
     ]
   },
   {
-    "name": "Hillview Crescent",
-    "total_m": 51,
-    "flooded_m": 0,
-    "no_data_m": 51,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.261412,
-      49.035906,
-      -122.261186,
-      49.036322
-    ]
-  },
-  {
     "name": "Hurst Crescent",
     "total_m": 347,
     "flooded_m": 0,
@@ -3318,24 +5138,10 @@
     ]
   },
   {
-    "name": "Hyatt Place",
-    "total_m": 227,
-    "flooded_m": 0,
-    "no_data_m": 227,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.275515,
-      49.046406,
-      -122.275242,
-      49.047434
-    ]
-  },
-  {
     "name": "Hycrest Place",
     "total_m": 34,
     "flooded_m": 0,
-    "no_data_m": 34,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3346,24 +5152,10 @@
     ]
   },
   {
-    "name": "Immel Street",
-    "total_m": 1730,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.272813,
-      49.054887,
-      -122.26071,
-      49.064136
-    ]
-  },
-  {
     "name": "Industrial Way",
     "total_m": 328,
     "flooded_m": 0,
-    "no_data_m": 328,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3371,20 +5163,6 @@
       49.013782,
       -122.271785,
       49.013793
-    ]
-  },
-  {
-    "name": "Interprovincial Highway",
-    "total_m": 6647,
-    "flooded_m": 0,
-    "no_data_m": 6647,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.113963,
-      49.031531,
-      -122.109563,
-      49.090422
     ]
   },
   {
@@ -3405,7 +5183,7 @@
     "name": "Jade Drive",
     "total_m": 630,
     "flooded_m": 0,
-    "no_data_m": 630,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3419,7 +5197,7 @@
     "name": "Jersey Court",
     "total_m": 24,
     "flooded_m": 0,
-    "no_data_m": 24,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3433,7 +5211,7 @@
     "name": "Jersey Place",
     "total_m": 207,
     "flooded_m": 0,
-    "no_data_m": 207,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3447,7 +5225,7 @@
     "name": "Jewel Court",
     "total_m": 249,
     "flooded_m": 0,
-    "no_data_m": 249,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3461,7 +5239,7 @@
     "name": "Jonquil Place",
     "total_m": 204,
     "flooded_m": 0,
-    "no_data_m": 204,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3475,7 +5253,7 @@
     "name": "Jordan Place",
     "total_m": 40,
     "flooded_m": 0,
-    "no_data_m": 40,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3489,7 +5267,7 @@
     "name": "Joshua Place",
     "total_m": 63,
     "flooded_m": 0,
-    "no_data_m": 63,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3503,7 +5281,7 @@
     "name": "Kahana Place",
     "total_m": 218,
     "flooded_m": 0,
-    "no_data_m": 218,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3517,7 +5295,7 @@
     "name": "Kahu Court",
     "total_m": 37,
     "flooded_m": 0,
-    "no_data_m": 37,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3556,24 +5334,10 @@
     ]
   },
   {
-    "name": "Kelly Road",
-    "total_m": 101,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.19397,
-      49.059828,
-      -122.192592,
-      49.059903
-    ]
-  },
-  {
     "name": "Kelmer Crescent",
     "total_m": 59,
     "flooded_m": 0,
-    "no_data_m": 59,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3581,20 +5345,6 @@
       49.036964,
       -122.278737,
       49.037054
-    ]
-  },
-  {
-    "name": "Kenny Road",
-    "total_m": 1183,
-    "flooded_m": 0,
-    "no_data_m": 1183,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.239037,
-      49.013501,
-      -122.238737,
-      49.024133
     ]
   },
   {
@@ -3626,24 +5376,10 @@
     ]
   },
   {
-    "name": "Kilgard Road",
-    "total_m": 1262,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.202223,
-      49.054634,
-      -122.186579,
-      49.057711
-    ]
-  },
-  {
     "name": "King Road",
     "total_m": 553,
     "flooded_m": 0,
-    "no_data_m": 553,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3654,52 +5390,10 @@
     ]
   },
   {
-    "name": "Kinloch Place",
-    "total_m": 150,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.245701,
-      49.075406,
-      -122.244442,
-      49.076364
-    ]
-  },
-  {
-    "name": "Knox Crescent",
-    "total_m": 383,
-    "flooded_m": 0,
-    "no_data_m": 383,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.251088,
-      49.036695,
-      -122.246894,
-      49.037487
-    ]
-  },
-  {
-    "name": "Knox Terrace",
-    "total_m": 123,
-    "flooded_m": 0,
-    "no_data_m": 123,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.251097,
-      49.03663,
-      -122.250465,
-      49.037444
-    ]
-  },
-  {
     "name": "Kodiak Court",
     "total_m": 33,
     "flooded_m": 0,
-    "no_data_m": 33,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3724,38 +5418,10 @@
     ]
   },
   {
-    "name": "Kristin Court",
-    "total_m": 51,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.243605,
-      49.072496,
-      -122.242913,
-      49.072538
-    ]
-  },
-  {
-    "name": "Laburnum Avenue",
-    "total_m": 2539,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.273524,
-      49.060145,
-      -122.249408,
-      49.071841
-    ]
-  },
-  {
     "name": "Lacey Greene Way",
     "total_m": 289,
     "flooded_m": 0,
-    "no_data_m": 289,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3763,62 +5429,6 @@
       49.050114,
       -122.23653,
       49.050378
-    ]
-  },
-  {
-    "name": "Lakemount Road",
-    "total_m": 1045,
-    "flooded_m": 0,
-    "no_data_m": 1045,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.164552,
-      49.074851,
-      -122.157224,
-      49.080615
-    ]
-  },
-  {
-    "name": "Lakeview Drive",
-    "total_m": 433,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.188511,
-      49.056077,
-      -122.183373,
-      49.056862
-    ]
-  },
-  {
-    "name": "Lamson Road",
-    "total_m": 3034,
-    "flooded_m": 0,
-    "no_data_m": 3034,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.194737,
-      49.004091,
-      -122.194615,
-      49.031636
-    ]
-  },
-  {
-    "name": "Larch Street",
-    "total_m": 440,
-    "flooded_m": 0,
-    "no_data_m": 440,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.279737,
-      49.050542,
-      -122.273761,
-      49.050975
     ]
   },
   {
@@ -3839,7 +5449,7 @@
     "name": "Larkspur Court",
     "total_m": 70,
     "flooded_m": 0,
-    "no_data_m": 70,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3850,38 +5460,10 @@
     ]
   },
   {
-    "name": "Latimer Street",
-    "total_m": 1148,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.261014,
-      49.065999,
-      -122.255986,
-      49.074765
-    ]
-  },
-  {
-    "name": "Lauren Court",
-    "total_m": 116,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.239852,
-      49.070627,
-      -122.239506,
-      49.071609
-    ]
-  },
-  {
     "name": "Lavender Court",
     "total_m": 61,
     "flooded_m": 0,
-    "no_data_m": 61,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3889,34 +5471,6 @@
       49.048441,
       -122.240583,
       49.048753
-    ]
-  },
-  {
-    "name": "Lawson Street",
-    "total_m": 169,
-    "flooded_m": 0,
-    "no_data_m": 169,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260367,
-      49.000048,
-      -122.26035,
-      49.001566
-    ]
-  },
-  {
-    "name": "Ledgeview Drive",
-    "total_m": 238,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.236655,
-      49.068906,
-      -122.23381,
-      49.069809
     ]
   },
   {
@@ -3948,24 +5502,10 @@
     ]
   },
   {
-    "name": "Lion Court",
-    "total_m": 46,
-    "flooded_m": 0,
-    "no_data_m": 46,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.233227,
-      49.039844,
-      -122.23321,
-      49.040257
-    ]
-  },
-  {
     "name": "Locarno Court",
     "total_m": 109,
     "flooded_m": 0,
-    "no_data_m": 109,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -3976,38 +5516,10 @@
     ]
   },
   {
-    "name": "Lonzo Road",
-    "total_m": 372,
-    "flooded_m": 0,
-    "no_data_m": 372,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.271117,
-      49.033844,
-      -122.266923,
-      49.035016
-    ]
-  },
-  {
-    "name": "Lower Sumas Mountain Road",
-    "total_m": 2246,
-    "flooded_m": 0,
-    "no_data_m": 1595,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.224035,
-      49.045521,
-      -122.194439,
-      49.057187
-    ]
-  },
-  {
     "name": "Lucern Crescent",
     "total_m": 420,
     "flooded_m": 0,
-    "no_data_m": 420,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4035,7 +5547,7 @@
     "name": "Lumar Place",
     "total_m": 120,
     "flooded_m": 0,
-    "no_data_m": 120,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4049,7 +5561,7 @@
     "name": "Macbeth Crescent",
     "total_m": 395,
     "flooded_m": 0,
-    "no_data_m": 395,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4074,38 +5586,10 @@
     ]
   },
   {
-    "name": "Maclure Road",
-    "total_m": 343,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.276224,
-      49.059371,
-      -122.272029,
-      49.06024
-    ]
-  },
-  {
-    "name": "Maher Road",
-    "total_m": 1869,
-    "flooded_m": 0,
-    "no_data_m": 1869,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.20883,
-      49.00971,
-      -122.172474,
-      49.010922
-    ]
-  },
-  {
     "name": "Mahogany Drive",
     "total_m": 474,
     "flooded_m": 0,
-    "no_data_m": 474,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4119,7 +5603,7 @@
     "name": "Manufacturers Way",
     "total_m": 240,
     "flooded_m": 0,
-    "no_data_m": 240,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4130,66 +5614,10 @@
     ]
   },
   {
-    "name": "Marble Hill Drive",
-    "total_m": 571,
-    "flooded_m": 0,
-    "no_data_m": 571,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.257405,
-      49.049969,
-      -122.255018,
-      49.052272
-    ]
-  },
-  {
-    "name": "Marcet Court",
-    "total_m": 147,
-    "flooded_m": 0,
-    "no_data_m": 147,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260291,
-      49.04716,
-      -122.259169,
-      49.047849
-    ]
-  },
-  {
-    "name": "Marcliffe Place",
-    "total_m": 112,
-    "flooded_m": 0,
-    "no_data_m": 112,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.270111,
-      49.053355,
-      -122.268591,
-      49.053422
-    ]
-  },
-  {
-    "name": "Marion Road",
-    "total_m": 8069,
-    "flooded_m": 0,
-    "no_data_m": 8069,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.140857,
-      49.007638,
-      -122.139285,
-      49.079808
-    ]
-  },
-  {
     "name": "Marquis Court",
     "total_m": 40,
     "flooded_m": 0,
-    "no_data_m": 40,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4197,34 +5625,6 @@
       49.051498,
       -122.226044,
       49.051802
-    ]
-  },
-  {
-    "name": "Marshall Road",
-    "total_m": 5500,
-    "flooded_m": 0,
-    "no_data_m": 5500,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.27958,
-      49.03807,
-      -122.223551,
-      49.049552
-    ]
-  },
-  {
-    "name": "Marvern Way",
-    "total_m": 254,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.259976,
-      49.060757,
-      -122.25983,
-      49.063039
     ]
   },
   {
@@ -4245,7 +5645,7 @@
     "name": "Maywood Court",
     "total_m": 108,
     "flooded_m": 0,
-    "no_data_m": 108,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4256,80 +5656,10 @@
     ]
   },
   {
-    "name": "McAdam Road",
-    "total_m": 301,
-    "flooded_m": 0,
-    "no_data_m": 301,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.26506,
-      49.048756,
-      -122.264805,
-      49.051448
-    ]
-  },
-  {
-    "name": "McBride Street",
-    "total_m": 289,
-    "flooded_m": 0,
-    "no_data_m": 165,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.257669,
-      49.053095,
-      -122.256547,
-      49.05559
-    ]
-  },
-  {
-    "name": "McCabe Place",
-    "total_m": 200,
-    "flooded_m": 0,
-    "no_data_m": 200,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260524,
-      49.053035,
-      -122.257786,
-      49.053092
-    ]
-  },
-  {
-    "name": "McClary Avenue",
-    "total_m": 324,
-    "flooded_m": 0,
-    "no_data_m": 324,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.269895,
-      49.030163,
-      -122.265465,
-      49.030298
-    ]
-  },
-  {
-    "name": "McColl Court",
-    "total_m": 61,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.259804,
-      49.054455,
-      -122.259786,
-      49.055002
-    ]
-  },
-  {
     "name": "McConnell Road",
     "total_m": 520,
     "flooded_m": 0,
-    "no_data_m": 520,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4354,20 +5684,6 @@
     ]
   },
   {
-    "name": "McCorkell Drive",
-    "total_m": 484,
-    "flooded_m": 0,
-    "no_data_m": 484,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.249276,
-      49.03819,
-      -122.245203,
-      49.039963
-    ]
-  },
-  {
     "name": "McCrae Street",
     "total_m": 196,
     "flooded_m": 0,
@@ -4379,34 +5695,6 @@
       49.056848,
       -122.252591,
       49.058454
-    ]
-  },
-  {
-    "name": "McDermott Road",
-    "total_m": 6399,
-    "flooded_m": 0,
-    "no_data_m": 6399,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.162478,
-      49.009039,
-      -122.160666,
-      49.074851
-    ]
-  },
-  {
-    "name": "McKee Connector",
-    "total_m": 317,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.264873,
-      49.05489,
-      -122.260665,
-      49.055504
     ]
   },
   {
@@ -4424,34 +5712,6 @@
     ]
   },
   {
-    "name": "McKee Place",
-    "total_m": 297,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.248901,
-      49.062794,
-      -122.246898,
-      49.064173
-    ]
-  },
-  {
-    "name": "McKee Road",
-    "total_m": 6276,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260665,
-      49.055504,
-      -122.205474,
-      49.079831
-    ]
-  },
-  {
     "name": "McKinley Court",
     "total_m": 42,
     "flooded_m": 0,
@@ -4466,20 +5726,6 @@
     ]
   },
   {
-    "name": "McKinley Drive",
-    "total_m": 2212,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.24957,
-      49.060157,
-      -122.240845,
-      49.073299
-    ]
-  },
-  {
     "name": "McKinley Place",
     "total_m": 114,
     "flooded_m": 0,
@@ -4491,76 +5737,6 @@
       49.06552,
       -122.245275,
       49.065573
-    ]
-  },
-  {
-    "name": "McLeod Avenue",
-    "total_m": 270,
-    "flooded_m": 0,
-    "no_data_m": 270,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260574,
-      49.05374,
-      -122.256878,
-      49.053802
-    ]
-  },
-  {
-    "name": "McMillan Court",
-    "total_m": 113,
-    "flooded_m": 0,
-    "no_data_m": 113,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.261658,
-      49.045486,
-      -122.260243,
-      49.045889
-    ]
-  },
-  {
-    "name": "McMillan Place",
-    "total_m": 110,
-    "flooded_m": 0,
-    "no_data_m": 110,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260391,
-      49.050767,
-      -122.258887,
-      49.050769
-    ]
-  },
-  {
-    "name": "McMillan Road",
-    "total_m": 2523,
-    "flooded_m": 0,
-    "no_data_m": 1810,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.261816,
-      49.03835,
-      -122.260225,
-      49.06015
-    ]
-  },
-  {
-    "name": "McNab Avenue",
-    "total_m": 250,
-    "flooded_m": 0,
-    "no_data_m": 250,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260609,
-      49.054441,
-      -122.257189,
-      49.054517
     ]
   },
   {
@@ -4592,38 +5768,10 @@
     ]
   },
   {
-    "name": "Melan Court",
-    "total_m": 56,
-    "flooded_m": 0,
-    "no_data_m": 56,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.25878,
-      49.003734,
-      -122.258675,
-      49.004219
-    ]
-  },
-  {
-    "name": "Mendham Street",
-    "total_m": 293,
-    "flooded_m": 0,
-    "no_data_m": 293,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.273481,
-      49.047038,
-      -122.272873,
-      49.049268
-    ]
-  },
-  {
     "name": "Merlin Drive",
     "total_m": 315,
     "flooded_m": 0,
-    "no_data_m": 315,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4637,7 +5785,7 @@
     "name": "Merlin Place",
     "total_m": 109,
     "flooded_m": 0,
-    "no_data_m": 109,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4645,20 +5793,6 @@
       49.045055,
       -122.26478,
       49.045063
-    ]
-  },
-  {
-    "name": "Midas Street",
-    "total_m": 296,
-    "flooded_m": 0,
-    "no_data_m": 296,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.27024,
-      49.043358,
-      -122.269648,
-      49.045958
     ]
   },
   {
@@ -4676,24 +5810,10 @@
     ]
   },
   {
-    "name": "Mierau Street",
-    "total_m": 822,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.266542,
-      49.062385,
-      -122.260907,
-      49.066391
-    ]
-  },
-  {
     "name": "Mila Street",
     "total_m": 344,
     "flooded_m": 0,
-    "no_data_m": 344,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4701,34 +5821,6 @@
       49.040663,
       -122.260541,
       49.040735
-    ]
-  },
-  {
-    "name": "Millar Court",
-    "total_m": 42,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.257158,
-      49.069735,
-      -122.257064,
-      49.070108
-    ]
-  },
-  {
-    "name": "Millar Crescent",
-    "total_m": 494,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.259573,
-      49.068809,
-      -122.255932,
-      49.070124
     ]
   },
   {
@@ -4760,24 +5852,10 @@
     ]
   },
   {
-    "name": "Miraun Crescent",
-    "total_m": 280,
-    "flooded_m": 0,
-    "no_data_m": 280,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.268284,
-      49.044,
-      -122.266236,
-      49.045069
-    ]
-  },
-  {
     "name": "Mirus Drive",
     "total_m": 141,
     "flooded_m": 0,
-    "no_data_m": 141,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4788,24 +5866,10 @@
     ]
   },
   {
-    "name": "Monashee Street",
-    "total_m": 373,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.25094,
-      49.064006,
-      -122.249972,
-      49.06715
-    ]
-  },
-  {
     "name": "Montana Place",
     "total_m": 246,
     "flooded_m": 0,
-    "no_data_m": 246,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4819,7 +5883,7 @@
     "name": "Monteray Place",
     "total_m": 33,
     "flooded_m": 0,
-    "no_data_m": 33,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4847,7 +5911,7 @@
     "name": "Moss Court",
     "total_m": 96,
     "flooded_m": 0,
-    "no_data_m": 96,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4872,38 +5936,10 @@
     ]
   },
   {
-    "name": "Mount Blanchard Drive",
-    "total_m": 925,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.261314,
-      49.062315,
-      -122.25133,
-      49.064573
-    ]
-  },
-  {
-    "name": "Mount Blanchard Place",
-    "total_m": 148,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.254759,
-      49.064559,
-      -122.253977,
-      49.065628
-    ]
-  },
-  {
     "name": "Mountain Drive",
     "total_m": 1652,
     "flooded_m": 0,
-    "no_data_m": 1652,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4917,7 +5953,7 @@
     "name": "Mowbray Court",
     "total_m": 101,
     "flooded_m": 0,
-    "no_data_m": 101,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4931,7 +5967,7 @@
     "name": "Munroe Avenue",
     "total_m": 372,
     "flooded_m": 0,
-    "no_data_m": 372,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4956,24 +5992,10 @@
     ]
   },
   {
-    "name": "Nelles Road",
-    "total_m": 1007,
-    "flooded_m": 0,
-    "no_data_m": 1007,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.218976,
-      49.023953,
-      -122.205232,
-      49.024014
-    ]
-  },
-  {
     "name": "Nickel Court",
     "total_m": 34,
     "flooded_m": 0,
-    "no_data_m": 34,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -4998,108 +6020,10 @@
     ]
   },
   {
-    "name": "No 5 Road",
-    "total_m": 5885,
-    "flooded_m": 0,
-    "no_data_m": 5885,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.16113,
-      49.060294,
-      -122.080358,
-      49.060703
-    ]
-  },
-  {
-    "name": "No. 3 Road",
-    "total_m": 4064,
-    "flooded_m": 0,
-    "no_data_m": 4064,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.136898,
-      49.089321,
-      -122.080397,
-      49.09096
-    ]
-  },
-  {
-    "name": "No. 4 Road",
-    "total_m": 5834,
-    "flooded_m": 0,
-    "no_data_m": 5834,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.162478,
-      49.074851,
-      -122.080438,
-      49.075252
-    ]
-  },
-  {
-    "name": "North Parallel Road",
-    "total_m": 10546,
-    "flooded_m": 0,
-    "no_data_m": 10181,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.23329,
-      49.035504,
-      -122.124166,
-      49.091193
-    ]
-  },
-  {
-    "name": "Oakhill Drive",
-    "total_m": 398,
-    "flooded_m": 0,
-    "no_data_m": 398,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260274,
-      49.044493,
-      -122.254844,
-      49.044563
-    ]
-  },
-  {
-    "name": "Old Clayburn Road",
-    "total_m": 4549,
-    "flooded_m": 0,
-    "no_data_m": 169,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.277224,
-      49.053717,
-      -122.249318,
-      49.082452
-    ]
-  },
-  {
-    "name": "Old Yale Road",
-    "total_m": 10879,
-    "flooded_m": 0,
-    "no_data_m": 10879,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.279272,
-      49.004709,
-      -122.080016,
-      49.053499
-    ]
-  },
-  {
     "name": "Olympia Place",
     "total_m": 325,
     "flooded_m": 0,
-    "no_data_m": 325,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5110,38 +6034,10 @@
     ]
   },
   {
-    "name": "Omineca Court",
-    "total_m": 82,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.24511,
-      49.062114,
-      -122.244798,
-      49.062798
-    ]
-  },
-  {
-    "name": "Orchard Drive",
-    "total_m": 1280,
-    "flooded_m": 0,
-    "no_data_m": 1280,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260254,
-      49.038468,
-      -122.252258,
-      49.046132
-    ]
-  },
-  {
     "name": "Orchard Place",
     "total_m": 99,
     "flooded_m": 0,
-    "no_data_m": 99,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5155,7 +6051,7 @@
     "name": "Orion Place",
     "total_m": 122,
     "flooded_m": 0,
-    "no_data_m": 122,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5169,7 +6065,7 @@
     "name": "Palace Court",
     "total_m": 161,
     "flooded_m": 0,
-    "no_data_m": 161,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5183,7 +6079,7 @@
     "name": "Panorama Drive",
     "total_m": 720,
     "flooded_m": 0,
-    "no_data_m": 720,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5236,34 +6132,6 @@
     ]
   },
   {
-    "name": "Picton Street",
-    "total_m": 491,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.271287,
-      49.064529,
-      -122.268764,
-      49.06821
-    ]
-  },
-  {
-    "name": "Pierce Terrace",
-    "total_m": 112,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.250873,
-      49.068584,
-      -122.249387,
-      49.068752
-    ]
-  },
-  {
     "name": "Pioneer Court",
     "total_m": 64,
     "flooded_m": 0,
@@ -5281,7 +6149,7 @@
     "name": "Platinum Lane",
     "total_m": 150,
     "flooded_m": 0,
-    "no_data_m": 150,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5306,80 +6174,10 @@
     ]
   },
   {
-    "name": "Potter Road",
-    "total_m": 240,
-    "flooded_m": 0,
-    "no_data_m": 240,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260797,
-      49.016935,
-      -122.260764,
-      49.019092
-    ]
-  },
-  {
-    "name": "Powerhouse Road",
-    "total_m": 1635,
-    "flooded_m": 0,
-    "no_data_m": 1635,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.129318,
-      49.016898,
-      -122.128305,
-      49.031424
-    ]
-  },
-  {
-    "name": "Prior Avenue",
-    "total_m": 200,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.264949,
-      49.070712,
-      -122.260693,
-      49.070832
-    ]
-  },
-  {
-    "name": "Purcell Avenue",
-    "total_m": 469,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.246569,
-      49.060436,
-      -122.243636,
-      49.06314
-    ]
-  },
-  {
-    "name": "Quarry Avenue",
-    "total_m": 511,
-    "flooded_m": 0,
-    "no_data_m": 511,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.2675,
-      49.053015,
-      -122.260524,
-      49.053085
-    ]
-  },
-  {
     "name": "Railroad Street",
     "total_m": 45,
     "flooded_m": 0,
-    "no_data_m": 45,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5387,20 +6185,6 @@
       49.000371,
       -122.266414,
       49.000772
-    ]
-  },
-  {
-    "name": "Railway Avenue",
-    "total_m": 411,
-    "flooded_m": 0,
-    "no_data_m": 411,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.2677,
-      49.002457,
-      -122.26703,
-      49.006024
     ]
   },
   {
@@ -5421,7 +6205,7 @@
     "name": "Raven Court",
     "total_m": 73,
     "flooded_m": 0,
-    "no_data_m": 73,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5435,7 +6219,7 @@
     "name": "Redwood Avenue",
     "total_m": 413,
     "flooded_m": 0,
-    "no_data_m": 413,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5446,52 +6230,10 @@
     ]
   },
   {
-    "name": "Regal Park Way",
-    "total_m": 929,
-    "flooded_m": 0,
-    "no_data_m": 929,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.236316,
-      49.050977,
-      -122.225119,
-      49.053085
-    ]
-  },
-  {
-    "name": "Renton Street",
-    "total_m": 364,
-    "flooded_m": 0,
-    "no_data_m": 364,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.277719,
-      49.044571,
-      -122.272787,
-      49.044874
-    ]
-  },
-  {
-    "name": "Riverside Road",
-    "total_m": 4320,
-    "flooded_m": 0,
-    "no_data_m": 4320,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.279918,
-      49.006195,
-      -122.271457,
-      49.042852
-    ]
-  },
-  {
     "name": "Riverside Roundabout",
     "total_m": 100,
     "flooded_m": 0,
-    "no_data_m": 100,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5499,48 +6241,6 @@
       49.016792,
       -122.271656,
       49.017078
-    ]
-  },
-  {
-    "name": "Robson Drive",
-    "total_m": 464,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.267628,
-      49.068622,
-      -122.264949,
-      49.070717
-    ]
-  },
-  {
-    "name": "Rockwell Drive",
-    "total_m": 529,
-    "flooded_m": 0,
-    "no_data_m": 529,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.249717,
-      49.036503,
-      -122.243308,
-      49.037598
-    ]
-  },
-  {
-    "name": "Roscoe Road",
-    "total_m": 76,
-    "flooded_m": 0,
-    "no_data_m": 76,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.219362,
-      49.040306,
-      -122.219347,
-      49.04099
     ]
   },
   {
@@ -5561,7 +6261,7 @@
     "name": "Russet Place",
     "total_m": 109,
     "flooded_m": 0,
-    "no_data_m": 109,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5603,7 +6303,7 @@
     "name": "Sand Road",
     "total_m": 17,
     "flooded_m": 0,
-    "no_data_m": 17,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5614,24 +6314,10 @@
     ]
   },
   {
-    "name": "Sandon Drive",
-    "total_m": 520,
-    "flooded_m": 0,
-    "no_data_m": 520,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.26748,
-      49.051398,
-      -122.260405,
-      49.051505
-    ]
-  },
-  {
     "name": "Sandon Place",
     "total_m": 219,
     "flooded_m": 0,
-    "no_data_m": 219,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5642,66 +6328,10 @@
     ]
   },
   {
-    "name": "Sandringham Drive",
-    "total_m": 1354,
-    "flooded_m": 0,
-    "no_data_m": 833,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.225871,
-      49.053045,
-      -122.218009,
-      49.055483
-    ]
-  },
-  {
-    "name": "Sandstone Drive",
-    "total_m": 336,
-    "flooded_m": 0,
-    "no_data_m": 336,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.250195,
-      49.038505,
-      -122.249774,
-      49.041351
-    ]
-  },
-  {
-    "name": "Sandy Hill Crescent",
-    "total_m": 318,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.248209,
-      49.069299,
-      -122.245954,
-      49.070824
-    ]
-  },
-  {
-    "name": "Sandy Hill Road",
-    "total_m": 915,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.249408,
-      49.067843,
-      -122.241427,
-      49.071672
-    ]
-  },
-  {
     "name": "Saran Way",
     "total_m": 107,
     "flooded_m": 0,
-    "no_data_m": 107,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5715,7 +6345,7 @@
     "name": "Saxbee Court",
     "total_m": 56,
     "flooded_m": 0,
-    "no_data_m": 56,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5723,48 +6353,6 @@
       49.038416,
       -122.255884,
       49.038919
-    ]
-  },
-  {
-    "name": "Schneider Road",
-    "total_m": 603,
-    "flooded_m": 0,
-    "no_data_m": 603,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.179213,
-      49.005303,
-      -122.177907,
-      49.010426
-    ]
-  },
-  {
-    "name": "Selkirk Avenue",
-    "total_m": 370,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.247508,
-      49.061336,
-      -122.243643,
-      49.062794
-    ]
-  },
-  {
-    "name": "Semath Road",
-    "total_m": 93,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.187415,
-      49.056371,
-      -122.187319,
-      49.057206
     ]
   },
   {
@@ -5799,7 +6387,7 @@
     "name": "Sentinel Drive",
     "total_m": 517,
     "flooded_m": 0,
-    "no_data_m": 517,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5810,24 +6398,10 @@
     ]
   },
   {
-    "name": "Serendipity Street",
-    "total_m": 196,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.263714,
-      49.055228,
-      -122.263247,
-      49.056945
-    ]
-  },
-  {
     "name": "Serl Road",
     "total_m": 76,
     "flooded_m": 0,
-    "no_data_m": 76,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5835,20 +6409,6 @@
       49.042472,
       -122.27654,
       49.043135
-    ]
-  },
-  {
-    "name": "Shadbolt Avenue",
-    "total_m": 572,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.226147,
-      49.079762,
-      -122.222112,
-      49.082471
     ]
   },
   {
@@ -5863,20 +6423,6 @@
       49.078704,
       -122.247851,
       49.080049
-    ]
-  },
-  {
-    "name": "Sheena Place",
-    "total_m": 57,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.241638,
-      49.072115,
-      -122.240869,
-      49.072172
     ]
   },
   {
@@ -5897,7 +6443,7 @@
     "name": "Sierra Place",
     "total_m": 157,
     "flooded_m": 0,
-    "no_data_m": 157,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5905,20 +6451,6 @@
       49.038386,
       -122.257706,
       49.03977
-    ]
-  },
-  {
-    "name": "Silver Way",
-    "total_m": 192,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.192599,
-      49.059075,
-      -122.192553,
-      49.060798
     ]
   },
   {
@@ -5933,34 +6465,6 @@
       49.066678,
       -122.249408,
       49.067696
-    ]
-  },
-  {
-    "name": "Skyline Drive",
-    "total_m": 805,
-    "flooded_m": 0,
-    "no_data_m": 805,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.26433,
-      49.03621,
-      -122.254502,
-      49.037156
-    ]
-  },
-  {
-    "name": "Smith Line Road",
-    "total_m": 1110,
-    "flooded_m": 0,
-    "no_data_m": 1110,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.200398,
-      49.031625,
-      -122.198744,
-      49.041123
     ]
   },
   {
@@ -5981,7 +6485,7 @@
     "name": "South Fraser Way",
     "total_m": 905,
     "flooded_m": 0,
-    "no_data_m": 905,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -5992,52 +6496,10 @@
     ]
   },
   {
-    "name": "South Parallel Road",
-    "total_m": 13420,
-    "flooded_m": 0,
-    "no_data_m": 12838,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.265457,
-      49.030225,
-      -122.121118,
-      49.091895
-    ]
-  },
-  {
-    "name": "Southridge Place",
-    "total_m": 185,
-    "flooded_m": 0,
-    "no_data_m": 185,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.227202,
-      49.042168,
-      -122.2259,
-      49.043306
-    ]
-  },
-  {
-    "name": "Spencer Street",
-    "total_m": 345,
-    "flooded_m": 0,
-    "no_data_m": 345,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.254513,
-      49.0345,
-      -122.251142,
-      49.035364
-    ]
-  },
-  {
     "name": "Spruce Street",
     "total_m": 88,
     "flooded_m": 0,
-    "no_data_m": 88,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6051,7 +6513,7 @@
     "name": "Spyglass Court",
     "total_m": 143,
     "flooded_m": 0,
-    "no_data_m": 143,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6065,7 +6527,7 @@
     "name": "Spyglass Lane",
     "total_m": 106,
     "flooded_m": 0,
-    "no_data_m": 106,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6076,24 +6538,10 @@
     ]
   },
   {
-    "name": "St Andrews Court",
-    "total_m": 89,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.235662,
-      49.068331,
-      -122.23458,
-      49.06865
-    ]
-  },
-  {
     "name": "St Gallen Way",
     "total_m": 208,
     "flooded_m": 0,
-    "no_data_m": 208,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6107,7 +6555,7 @@
     "name": "St Matthews Way",
     "total_m": 190,
     "flooded_m": 0,
-    "no_data_m": 190,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6121,7 +6569,7 @@
     "name": "St Moritz Way",
     "total_m": 1845,
     "flooded_m": 0,
-    "no_data_m": 1845,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6135,7 +6583,7 @@
     "name": "Stafford Place",
     "total_m": 163,
     "flooded_m": 0,
-    "no_data_m": 163,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6143,34 +6591,6 @@
       49.038515,
       -122.241212,
       49.038899
-    ]
-  },
-  {
-    "name": "Stephen Leacock Drive",
-    "total_m": 1091,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.225503,
-      49.079705,
-      -122.217026,
-      49.084074
-    ]
-  },
-  {
-    "name": "Stewart Crescent",
-    "total_m": 112,
-    "flooded_m": 0,
-    "no_data_m": 112,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.273903,
-      49.049499,
-      -122.272891,
-      49.050017
     ]
   },
   {
@@ -6188,24 +6608,10 @@
     ]
   },
   {
-    "name": "Stockton Crescent",
-    "total_m": 61,
-    "flooded_m": 0,
-    "no_data_m": 61,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.273791,
-      49.050547,
-      -122.273742,
-      49.051093
-    ]
-  },
-  {
     "name": "Stonecroft Drive",
     "total_m": 300,
     "flooded_m": 0,
-    "no_data_m": 300,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6219,7 +6625,7 @@
     "name": "Stonecroft Place",
     "total_m": 60,
     "flooded_m": 0,
-    "no_data_m": 60,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6230,24 +6636,10 @@
     ]
   },
   {
-    "name": "Stoneleigh Avenue",
-    "total_m": 304,
-    "flooded_m": 0,
-    "no_data_m": 265,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.271704,
-      49.054124,
-      -122.26811,
-      49.054887
-    ]
-  },
-  {
     "name": "Stoneridge Place",
     "total_m": 147,
     "flooded_m": 0,
-    "no_data_m": 147,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6255,20 +6647,6 @@
       49.049244,
       -122.228599,
       49.05021
-    ]
-  },
-  {
-    "name": "Straiton Road",
-    "total_m": 3483,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.252796,
-      49.077939,
-      -122.218917,
-      49.089262
     ]
   },
   {
@@ -6289,7 +6667,7 @@
     "name": "Stromberg Road",
     "total_m": 279,
     "flooded_m": 0,
-    "no_data_m": 279,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6297,48 +6675,6 @@
       49.035095,
       -122.10575,
       49.035101
-    ]
-  },
-  {
-    "name": "Sumas Avenue",
-    "total_m": 276,
-    "flooded_m": 0,
-    "no_data_m": 276,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.263739,
-      49.000017,
-      -122.263412,
-      49.00241
-    ]
-  },
-  {
-    "name": "Sumas Mountain Road",
-    "total_m": 6091,
-    "flooded_m": 0,
-    "no_data_m": 60,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.205593,
-      49.053531,
-      -122.191429,
-      49.09993
-    ]
-  },
-  {
-    "name": "Sumas Way",
-    "total_m": 10117,
-    "flooded_m": 0,
-    "no_data_m": 8654,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.279892,
-      49.004193,
-      -122.265177,
-      49.058448
     ]
   },
   {
@@ -6359,7 +6695,7 @@
     "name": "Sundew Place",
     "total_m": 117,
     "flooded_m": 0,
-    "no_data_m": 117,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6373,7 +6709,7 @@
     "name": "Sunridge Place",
     "total_m": 234,
     "flooded_m": 0,
-    "no_data_m": 234,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6395,34 +6731,6 @@
       49.06408,
       -122.262986,
       49.06541
-    ]
-  },
-  {
-    "name": "Terrace Court",
-    "total_m": 130,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.260724,
-      49.065045,
-      -122.258946,
-      49.065117
-    ]
-  },
-  {
-    "name": "Terravista Place",
-    "total_m": 127,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.238236,
-      49.064754,
-      -122.237176,
-      49.065429
     ]
   },
   {
@@ -6468,20 +6776,6 @@
     ]
   },
   {
-    "name": "Timberlane Drive",
-    "total_m": 1239,
-    "flooded_m": 0,
-    "no_data_m": 1239,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.240343,
-      49.040184,
-      -122.228223,
-      49.043841
-    ]
-  },
-  {
     "name": "Todd Court",
     "total_m": 62,
     "flooded_m": 0,
@@ -6496,20 +6790,6 @@
     ]
   },
   {
-    "name": "Tolmie Road",
-    "total_m": 6083,
-    "flooded_m": 0,
-    "no_data_m": 6083,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.098247,
-      49.042193,
-      -122.095104,
-      49.096327
-    ]
-  },
-  {
     "name": "Tom Thomson Court",
     "total_m": 113,
     "flooded_m": 0,
@@ -6521,48 +6801,6 @@
       49.079654,
       -122.227489,
       49.079808
-    ]
-  },
-  {
-    "name": "Towne Road",
-    "total_m": 1701,
-    "flooded_m": 0,
-    "no_data_m": 1701,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.093306,
-      49.045967,
-      -122.08035,
-      49.058255
-    ]
-  },
-  {
-    "name": "Townshipline Road",
-    "total_m": 1680,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.277283,
-      49.089226,
-      -122.254269,
-      49.089285
-    ]
-  },
-  {
-    "name": "Trans-Canada Highway",
-    "total_m": 27513,
-    "flooded_m": 0,
-    "no_data_m": 26544,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.278966,
-      49.033237,
-      -122.119877,
-      49.096404
     ]
   },
   {
@@ -6611,7 +6849,7 @@
     "name": "Tylney Lane",
     "total_m": 274,
     "flooded_m": 0,
-    "no_data_m": 274,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6622,38 +6860,10 @@
     ]
   },
   {
-    "name": "Udy Road",
-    "total_m": 981,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.191312,
-      49.082478,
-      -122.186662,
-      49.089609
-    ]
-  },
-  {
-    "name": "Vedder Way",
-    "total_m": 460,
-    "flooded_m": 0,
-    "no_data_m": 460,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.27247,
-      49.034182,
-      -122.271117,
-      49.038208
-    ]
-  },
-  {
     "name": "Verado Court",
     "total_m": 150,
     "flooded_m": 0,
-    "no_data_m": 150,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6664,24 +6874,10 @@
     ]
   },
   {
-    "name": "Vernon Terrace",
-    "total_m": 285,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.258758,
-      49.060993,
-      -122.2585,
-      49.063537
-    ]
-  },
-  {
     "name": "View Grove Place",
     "total_m": 64,
     "flooded_m": 0,
-    "no_data_m": 64,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6695,7 +6891,7 @@
     "name": "Village Glen",
     "total_m": 40,
     "flooded_m": 0,
-    "no_data_m": 40,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6709,7 +6905,7 @@
     "name": "Village Knoll",
     "total_m": 90,
     "flooded_m": 0,
-    "no_data_m": 90,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6720,38 +6916,10 @@
     ]
   },
   {
-    "name": "Vye Road",
-    "total_m": 11171,
-    "flooded_m": 0,
-    "no_data_m": 11171,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.276955,
-      49.01685,
-      -122.128102,
-      49.017111
-    ]
-  },
-  {
-    "name": "Walden Street",
-    "total_m": 236,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.268145,
-      49.065713,
-      -122.268026,
-      49.06783
-    ]
-  },
-  {
     "name": "Walker Crescent",
     "total_m": 412,
     "flooded_m": 0,
-    "no_data_m": 412,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6765,7 +6933,7 @@
     "name": "Walnut Avenue",
     "total_m": 392,
     "flooded_m": 0,
-    "no_data_m": 392,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6773,34 +6941,6 @@
       49.006051,
       -122.271792,
       49.052938
-    ]
-  },
-  {
-    "name": "Walter Road",
-    "total_m": 526,
-    "flooded_m": 0,
-    "no_data_m": 526,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.225119,
-      49.051472,
-      -122.218908,
-      49.052275
-    ]
-  },
-  {
-    "name": "Walterleaf Place",
-    "total_m": 151,
-    "flooded_m": 0,
-    "no_data_m": 151,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.225348,
-      49.041917,
-      -122.224297,
-      49.043008
     ]
   },
   {
@@ -6815,20 +6955,6 @@
       49.073015,
       -122.2456,
       49.074334
-    ]
-  },
-  {
-    "name": "Webb Court",
-    "total_m": 88,
-    "flooded_m": 0,
-    "no_data_m": 88,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.255988,
-      49.045269,
-      -122.254805,
-      49.045336
     ]
   },
   {
@@ -6874,24 +7000,10 @@
     ]
   },
   {
-    "name": "Wells Line Road",
-    "total_m": 6816,
-    "flooded_m": 0,
-    "no_data_m": 6816,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.205074,
-      49.031371,
-      -122.111679,
-      49.031642
-    ]
-  },
-  {
     "name": "West Cleveland Street",
     "total_m": 110,
     "flooded_m": 0,
-    "no_data_m": 110,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6905,7 +7017,7 @@
     "name": "West Garfield Street",
     "total_m": 57,
     "flooded_m": 0,
-    "no_data_m": 57,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6919,7 +7031,7 @@
     "name": "West Railway Street",
     "total_m": 135,
     "flooded_m": 0,
-    "no_data_m": 135,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -6944,48 +7056,6 @@
     ]
   },
   {
-    "name": "Westview Boulevard",
-    "total_m": 1150,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.238513,
-      49.061783,
-      -122.230757,
-      49.066162
-    ]
-  },
-  {
-    "name": "Whatcom Place",
-    "total_m": 17,
-    "flooded_m": 0,
-    "no_data_m": 17,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.228208,
-      49.048781,
-      -122.227974,
-      49.048783
-    ]
-  },
-  {
-    "name": "Whatcom Road",
-    "total_m": 10228,
-    "flooded_m": 0,
-    "no_data_m": 8054,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.241818,
-      49.002458,
-      -122.216363,
-      49.065896
-    ]
-  },
-  {
     "name": "Willet Road",
     "total_m": 1308,
     "flooded_m": 0,
@@ -7000,38 +7070,10 @@
     ]
   },
   {
-    "name": "Winfield Drive",
-    "total_m": 642,
-    "flooded_m": 0,
-    "no_data_m": 642,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.230179,
-      49.038297,
-      -122.226643,
-      49.040656
-    ]
-  },
-  {
-    "name": "Winson Road",
-    "total_m": 192,
-    "flooded_m": 0,
-    "no_data_m": 192,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.277456,
-      49.004287,
-      -122.277372,
-      49.006003
-    ]
-  },
-  {
     "name": "Woodbine Crescent",
     "total_m": 530,
     "flooded_m": 0,
-    "no_data_m": 530,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7045,7 +7087,7 @@
     "name": "Woodbine Street",
     "total_m": 118,
     "flooded_m": 0,
-    "no_data_m": 118,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7059,7 +7101,7 @@
     "name": "Woodland Street",
     "total_m": 239,
     "flooded_m": 0,
-    "no_data_m": 199,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7073,7 +7115,7 @@
     "name": "Woodpark Place",
     "total_m": 103,
     "flooded_m": 0,
-    "no_data_m": 103,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7087,7 +7129,7 @@
     "name": "Woodridge Crescent",
     "total_m": 180,
     "flooded_m": 0,
-    "no_data_m": 180,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7101,7 +7143,7 @@
     "name": "Woodstock Drive",
     "total_m": 627,
     "flooded_m": 0,
-    "no_data_m": 627,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7112,24 +7154,10 @@
     ]
   },
   {
-    "name": "Wright Street",
-    "total_m": 924,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.261014,
-      49.064136,
-      -122.260724,
-      49.081947
-    ]
-  },
-  {
     "name": "Yale Court",
     "total_m": 119,
     "flooded_m": 0,
-    "no_data_m": 119,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7143,7 +7171,7 @@
     "name": "Yarrow Central Road",
     "total_m": 10,
     "flooded_m": 0,
-    "no_data_m": 10,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7154,38 +7182,10 @@
     ]
   },
   {
-    "name": "York Avenue",
-    "total_m": 480,
-    "flooded_m": 0,
-    "no_data_m": 0,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.271181,
-      49.056807,
-      -122.264784,
-      49.057198
-    ]
-  },
-  {
-    "name": "York Road",
-    "total_m": 999,
-    "flooded_m": 0,
-    "no_data_m": 999,
-    "pct": 0.0,
-    "observed_utc": "2021-11-28T14:20:31.361448Z",
-    "bbox": [
-      -122.227906,
-      49.017015,
-      -122.22776,
-      49.025998
-    ]
-  },
-  {
     "name": "Zanatta Lane",
     "total_m": 138,
     "flooded_m": 0,
-    "no_data_m": 138,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7199,7 +7199,7 @@
     "name": "Zanatta Place",
     "total_m": 283,
     "flooded_m": 0,
-    "no_data_m": 283,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7213,7 +7213,7 @@
     "name": "Zomar Street",
     "total_m": 172,
     "flooded_m": 0,
-    "no_data_m": 172,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [
@@ -7227,7 +7227,7 @@
     "name": "Zurich Drive",
     "total_m": 371,
     "flooded_m": 0,
-    "no_data_m": 371,
+    "no_data_m": 0,
     "pct": 0.0,
     "observed_utc": "2021-11-28T14:20:31.361448Z",
     "bbox": [

@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.utils.http import urlencode
 
 from pipeline.detect_flood import fetch_sentinel_radar
+from pipeline.regions import REGIONS
 
 from . import data
 from .utils import get_10km_range
@@ -34,16 +35,14 @@ def index(request):
     if search_query:
         result = get_10km_range(search_query)
         if isinstance(result, list):
-            coordinates = tuple(result)
+            bbox = result
             safe_slug = search_query.strip().lower().replace(", ", "-").replace(" ", "-")
-            
-            print(f"Triggering pipeline for {safe_slug} at {coordinates}...")
-            
-            # 3. Trigger the pipeline with both arguments
-            radar_file = fetch_sentinel_radar(
-                bbox=coordinates,
-                region_slug=safe_slug
-            )
+
+            # pipeline only knows the regions in pipeline/regions.py;
+            # other searches just move the map.
+            if safe_slug in REGIONS:
+                print(f"Triggering pipeline for {safe_slug}...")
+                radar_file = fetch_sentinel_radar(region_slug=safe_slug)
     other_theme = "dark" if theme == "light" else "light"
 
     locations = data.locations()
