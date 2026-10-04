@@ -54,7 +54,7 @@ Two loosely coupled halves:
 | Basemap | OpenFreeMap **Positron** (light) / **Dark** (dark), URLs in `settings.BASEMAP_STYLES` | No API key or limits; muted, grey water, so blue flood lines stand out |
 | Icons | lucide (`{% lucide "name" %}`, inline SVG) | Bundled in the package: no CDN or icon font; colour follows `currentColor` |
 | Search | Photon (autocomplete) or Nominatim | Nominatim forbids autocomplete and allows ~1 req/s; call geocoders from the backend with an identifying User-Agent and cache results |
-| Stretch | Valhalla, self-hosted | Routing that excludes flooded segments (`exclude_locations` / `exclude_polygons`) |
+| Routing | NetworkX on the OSMnx road graph (`graph.json`) | Free, no service or key; uses exactly our flood scoring. Hosted engines can't take our flooded-road count (research on issue #34) |
 
 **Cost rule:** everything must stay free. No paid APIs, no billing accounts, no Google Maps Platform.
 
@@ -99,11 +99,20 @@ the line (`shape: "line"`) for dykes. Properties: `osm_id` (`way/123`), `kind`, 
 `flooded_fraction` / `confidence` (as for roads, over the building outline or a 25 m circle),
 `length_m` (lines), `observed_utc`, `osm_date` (OSM queried as of the observation; today if that fails).
 
+**Road graph (output, `graph.json`):** the window's directed drivable network for routing, in
+NetworkX node-link JSON. Nodes: `id` (OSM node), `x`/`y` (lon/lat). Edges: `source`, `target`, `key`,
+`name`, `length_m`, `travel_time_s` (OSM speed limits, missing ones imputed per road type), `status`
+(`flooded` | `no_data` | `clear`, the worst along the road; `bridge` = not scored, never flooded),
+`runs` (`[from, to, status, water share]`, positions as fractions of the edge from `source`; lets a
+picked point split a road correctly) and `geometry` (lon/lat). One-way streets and bridges kept.
+
 **API** (also `GET /api/locations` — demo locations with data):
 - `GET /api/geocode?q=` — proxy to Photon/Nominatim, cached
 - `GET /api/flood?bbox=minx,miny,maxx,maxy` — road segments in view
 - `GET /api/streets?bbox=` — per-street summaries
 - `GET /api/facilities?bbox=` — critical buildings in view
+- `GET /api/route?location=&start=lon,lat&end=lon,lat` — route between two points (`flood/routing.py`);
+  errors carry a user-facing message in `detail`
 - `GET /api/meta?location=` — pass time, coverage
 - `POST /api/analyze?name=&lon=&lat=` — starts a background analysis (`flood/jobs.py`, one at a
   time, status in memory) of a 10 km square around a searched place on the newest pass, written to
@@ -126,6 +135,8 @@ the line (`shape: "line"`) for dykes. Properties: `osm_id` (`way/123`), `kind`, 
   `--mask`. Use `--out` for experiments so the committed data isn't overwritten.
 - `map_mask.py <slug> --speckle 0.3` writes a noisy `<slug>_synthetic_speckle.tif` for testing step 5.
 - Run e.g. `uv run python -m pipeline.build_location sumas-prairie` (~40 s). OSMnx caches to `cache/`.
+- `build_graph.py <slug> [--mask] [--out]` — road graph for routing (`graph.json`); runs at the end of
+  `build_location` (same mask), or alone (~20 s with the OSM cache). Failures are logged and skipped.
 - `build_facilities.py <slug> [--mask] [--out]` — critical buildings; runs at the end of `build_location`
   (same mask), or alone. The dated Overpass query takes ~2 min uncached.
 - `overpass.py` — `use_reachable_server()` before OSMnx downloads: overpass-api.de is two machines
@@ -157,6 +168,8 @@ the line (`shape: "line"`) for dykes. Properties: `osm_id` (`way/123`), `kind`, 
 6. Merge consecutive same-status segments of each road into one line (`merge_runs`), total by street
    name, reproject to lon/lat, write the three files.
 All thresholds (`SEGMENT_M`, `BUFFER_M`, `FLOODED_AT`) are tunable constants — tune on the demo event.
+Routing has its own in `flood/routing.py`: `FLOOD_PENALTY_S_PER_M` (0.6: cutting 500 m of fully
+flooded road is worth 5 extra minutes), `MAX_SNAP_M`, `AT_JUNCTION_M`.
 Too wide a corridor picks up water in fields beside raised roads and marks dry roads flooded.
 
 ## Interface requirements
@@ -190,7 +203,8 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - **Colours come from the basemap:** every UI colour is a token in `flood/static/flood/app.css` derived
   from Positron (light) / Dark (dark) — Positron's greys for text and borders, its slate water-label
   blue `#495E91` as the UI accent. Don't introduce colours that aren't in the map's palette, except
-  `--flood`.
+  `--flood`, and the team-approved `--go` (green: Enter button, Find Path, clear routes) and
+  `--danger` (red: cautionary routes).
 - **Type:** Roboto (the Google Maps face) with a system-font fallback. Icons: lucide, 20 px, stroke in
   `currentColor`.
 - Quality floor: works at phone width, visible keyboard focus, honours `prefers-reduced-motion`.
@@ -212,6 +226,18 @@ Too wide a corridor picks up water in fields beside raised roads and marks dry r
 - **Critical buildings:** lucide glyph on a round badge, on top of all layers; the badge ring follows
   the three states (`--flood` ring, plain, dashed/faded). Click → popup with name, address, contacts
   and "Water detected on N% of the site". The settings menu's toggle hides them.
+- **Pathfinding (Find Path):** green pill left of the gear toggles pathfinding mode (outlined while on;
+  Escape leaves; icon only on phones). In the mode, window streets get an `--accent` casing and icons
+  a ring (stronger on hover); streets are only pickable in this mode, and icons pick instead of
+  opening their popup. Pick A, then B (icon or street, any mix) → `/api/route` → the map fits the
+  route. A card under the button gives each step and any error; a third pick starts over. Leaving
+  the mode keeps the route; switching window clears it.
+- **Routes:** green (`--go`) only if every road was observed clear. Otherwise red (`--danger`) with
+  lucide `triangle-alert` badges along it: cautionary because it crosses flooded roads (fallback:
+  least-flooded fast route), uses unobserved roads (allowed, no penalty, but always red with a
+  "no satellite data" message), or starts/ends in water. Clicking a route: "Estimated travel time",
+  distance, one line per reason, a note that times come from speed limits only, the observation
+  time. Never "safe".
 - Optional faint flood-extent raster under the traces.
 
 ## Radar (SAR) pitfalls — always account for these

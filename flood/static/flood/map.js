@@ -13,6 +13,8 @@ const themeLinks = [...document.querySelectorAll(".theme-option")];
 const settingsToggle = document.querySelector(".settings-toggle");
 const settingsMenu = document.getElementById("settings-menu");
 const facilitiesToggle = document.querySelector(".facilities-toggle");
+const pathToggle = document.querySelector(".path-toggle");
+const pathCard = document.getElementById("path-card");
 // One lucide glyph per kind of critical building, rendered by the template.
 const facilityKinds = Object.fromEntries(
   [...(document.getElementById("facility-icons")?.content.children ?? [])].map((el) => [
@@ -69,6 +71,13 @@ const metas = Object.fromEntries(
 );
 let current = mapEl.dataset.location; // the observation window the map opened on
 const facilityImages = await makeFacilityImages();
+const cautionImage = await makeCautionImage();
+
+// Pathfinding mode (see "Pathfinding" below): two picks, then the route between them.
+let pathMode = false;
+let picks = []; // [{ point: [lon, lat], label, marker }]
+let routePopup;
+let pathRequest = 0;
 
 const map = new maplibregl.Map({
   container: mapEl,
@@ -116,7 +125,7 @@ map.on("load", () => {
     },
   });
 
-  map.addSource("segments", { type: "geojson", data: emptyCollection() });
+  map.addSource("segments", { type: "geojson", data: emptyCollection(), generateId: true });
   const roads = [
     // Flooded is added last so it draws on top where segments meet.
     { status: "clear", color: token("--road-clear"), width: 1.5 },
@@ -164,6 +173,7 @@ map.on("load", () => {
   map.on("mouseleave", ["window-hit", "window-pending-hit"], () => (map.getCanvas().style.cursor = ""));
 
   addFacilityLayers();
+  addPathLayers();
   addRoadClicks();
   addRoadLabels(style);
   // Listen before framing: an unanimated fit fires "moveend" immediately.
@@ -188,6 +198,7 @@ function shownMetas() {
 // Move the window to another location; the previous one stops being drawn.
 function showWindow(slug) {
   current = slug;
+  clearPath(); // a route belongs to one window
   map.getSource("windows").setData(footprints(shownMetas()));
   map.getSource("unobserved").setData(unobservedArea(shownMetas()));
   map.getSource("approaches").setData(emptyCollection());
@@ -297,7 +308,7 @@ function addFacilityLayers() {
     },
   });
 
-  map.on("click", "facilities", (event) => openFacility(event.features[0]));
+  map.on("click", "facilities", (event) => pathMode || openFacility(event.features[0])); // picks in path mode
   map.on("mouseenter", "facilities", () => (map.getCanvas().style.cursor = "pointer"));
   map.on("mouseleave", "facilities", () => (map.getCanvas().style.cursor = ""));
 }
@@ -357,7 +368,8 @@ function addRoadClicks() {
   map.on("click", (event) => {
     const { x, y } = event.point;
     const box = [[x - CLICK_PX, y - CLICK_PX], [x + CLICK_PX, y + CLICK_PX]];
-    if (map.queryRenderedFeatures(box, { layers: ["facilities"] }).length) return; // its own popup
+    if (pathMode) return; // streets are picked instead
+    if (map.queryRenderedFeatures(box, { layers: ["facilities", "route-line"] }).length) return; // own popups
     const hits = map.queryRenderedFeatures(box, { layers: ROAD_LAYERS });
     if (!hits.length) return;
     hits.sort((a, b) => ROAD_LAYERS.indexOf(a.layer.id) - ROAD_LAYERS.indexOf(b.layer.id));
@@ -505,6 +517,11 @@ settingsToggle?.addEventListener("click", () => {
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape" || event.target.closest?.(".search")) return; // the search box has its own
   if (facilityPopup?.isOpen()) facilityPopup.remove();
+  else if (routePopup?.isOpen()) routePopup.remove();
+  else if (pathMode) {
+    setPathMode(false);
+    pathToggle.focus();
+  }
   else if (settingsMenu && !settingsMenu.hidden) {
     setSettingsOpen(false);
     settingsToggle.focus();
@@ -896,6 +913,7 @@ function hideLoading() {
 // Clicking a window's outline says how big it is (searches analyse a 10 km square).
 let windowPopup;
 function showWindowSize(event) {
+  if (pathMode) return;
   if (map.queryRenderedFeatures(event.point, { layers: ["facilities"] }).length) return; // icon wins
   // Not the clicked feature's geometry: that's cut to the map tile it was drawn in.
   const pending = event.features[0].layer.id === "window-pending-hit";
@@ -1100,3 +1118,273 @@ document.addEventListener("click", (event) => {
   closeRecent();
   closeSuggestions();
 });
+
+// --- Pathfinding: pick two points (building icons or streets), route between them ---
+// The server finds the fastest route that avoids roads where water was detected (green). A route
+// through flooding, or over roads the satellite didn't see, is "cautionary" (red, caution icons).
+
+const ROUTE_TIMEOUT_MS = 15000;
+const SAME_POINT_M = 5;
+
+// The caution icon repeated along a red route: a white triangle on a red badge.
+async function makeCautionImage() {
+  const svg = document.getElementById("route-icons")?.content.querySelector("svg");
+  if (!svg) return null;
+  const glyph = await svgImage(svg, "#ffffff", 28);
+  const size = 48;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2 - 3, 0, 2 * Math.PI);
+  ctx.fillStyle = token("--danger");
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#ffffff";
+  ctx.stroke();
+  ctx.drawImage(glyph, (size - glyph.width) / 2, (size - glyph.height) / 2 - 1);
+  return ctx.getImageData(0, 0, size, size);
+}
+
+function addPathLayers() {
+  // Highlights of what can be picked, shown only in pathfinding mode; stronger under the pointer.
+  const hovered = ["boolean", ["feature-state", "hover"], false];
+  map.addLayer(
+    {
+      id: "pick-streets",
+      type: "line",
+      source: "segments",
+      layout: { visibility: "none", "line-cap": "round", "line-join": "round" },
+      paint: {
+        "line-color": token("--accent"),
+        "line-width": width(5),
+        "line-opacity": ["case", hovered, 0.8, 0.3],
+      },
+    },
+    "road-clear", // under the roads, so it reads as a casing
+  );
+  map.addLayer(
+    {
+      id: "pick-icons",
+      type: "circle",
+      source: "facilities",
+      filter: ["==", ["get", "shape"], "point"],
+      layout: { visibility: "none" },
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 14, 14, 19],
+        "circle-color": "rgba(0, 0, 0, 0)",
+        "circle-stroke-color": token("--accent"),
+        "circle-stroke-width": 3,
+      },
+    },
+    "facilities",
+  );
+
+  // The route: above the flood traces, below the building icons.
+  if (cautionImage) map.addImage("route-caution", cautionImage, { pixelRatio: 2 });
+  map.addSource("route", { type: "geojson", data: emptyCollection() });
+  map.addLayer(
+    {
+      id: "route-line",
+      type: "line",
+      source: "route",
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: {
+        "line-color": ["match", ["get", "kind"], "clear", token("--go"), token("--danger")],
+        "line-width": width(3.5),
+      },
+    },
+    "facility-line",
+  );
+  map.addLayer(
+    {
+      id: "route-caution",
+      type: "symbol",
+      source: "route",
+      filter: ["==", ["get", "kind"], "cautionary"],
+      layout: {
+        "symbol-placement": "line",
+        "symbol-spacing": 160,
+        "icon-image": "route-caution",
+        "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.7, 15, 1],
+        "icon-allow-overlap": true,
+        "icon-rotation-alignment": "viewport", // the triangle stays upright along the line
+      },
+    },
+    "facility-line",
+  );
+
+  map.on("click", onPathClick);
+  map.on("click", "route-line", (event) => pathMode || openRoute(event.features[0], event.lngLat));
+  map.on("mouseenter", "route-line", () => (map.getCanvas().style.cursor = "pointer"));
+  map.on("mouseleave", "route-line", () => (map.getCanvas().style.cursor = ""));
+  trackHover("segments", ROAD_LAYERS);
+  trackHover("facilities", ["facilities"]);
+}
+
+// Strengthen the highlight of the street or icon under the pointer, in pathfinding mode only.
+function trackHover(source, layers) {
+  let hoverId = null;
+  const clear = () => {
+    if (hoverId !== null) map.setFeatureState({ source, id: hoverId }, { hover: false });
+    hoverId = null;
+  };
+  map.on("mousemove", layers, (event) => {
+    if (!pathMode) return;
+    const id = event.features[0]?.id;
+    if (id === hoverId) return;
+    clear();
+    if (id !== undefined) {
+      hoverId = id;
+      map.setFeatureState({ source, id }, { hover: true });
+    }
+  });
+  map.on("mouseleave", layers, clear);
+}
+
+function setPathMode(on) {
+  pathMode = on;
+  pathToggle.setAttribute("aria-pressed", String(on));
+  const iconsShown = facilitiesToggle?.getAttribute("aria-pressed") !== "false"; // unless hidden in settings
+  map.setLayoutProperty("pick-streets", "visibility", on ? "visible" : "none");
+  map.setLayoutProperty("pick-icons", "visibility", on && iconsShown ? "visible" : "none");
+  pathCard.hidden = !on;
+  facilityPopup?.remove();
+  roadPopup?.remove();
+  if (on) {
+    setSettingsOpen(false);
+    showPathStep(picks.length === 1 ? "Choose a destination: a building or a street." : "Choose a start: a building or a street.");
+  }
+}
+
+pathToggle?.addEventListener("click", () => setPathMode(!pathMode));
+
+// In pathfinding mode a click picks a building icon or a street; the route keeps its popup.
+function onPathClick(event) {
+  if (!pathMode) return;
+  const { x, y } = event.point;
+  const box = [[x - CLICK_PX, y - CLICK_PX], [x + CLICK_PX, y + CLICK_PX]];
+  const route = map.queryRenderedFeatures(box, { layers: ["route-line"] });
+  if (route.length) return openRoute(route[0], event.lngLat);
+  const icon = map.queryRenderedFeatures(box, { layers: ["facilities"] })[0];
+  if (icon) {
+    const kind = facilityKinds[icon.properties.kind]?.label ?? "Building";
+    return pick(icon.geometry.coordinates, icon.properties.name ?? `Unnamed ${kind.toLowerCase()}`);
+  }
+  const road = map.queryRenderedFeatures(box, { layers: ROAD_LAYERS })[0];
+  if (road) pick([event.lngLat.lng, event.lngLat.lat], road.properties.name ?? "Unnamed road");
+}
+
+function pick(point, label) {
+  if (picks.length === 2) clearPath(); // a third pick starts a new route
+  if (picks.length === 1 && metres(picks[0].point, point) < SAME_POINT_M) {
+    showPathStep("That's the start. Choose a different destination.", true);
+    return;
+  }
+  const marker = new maplibregl.Marker({ element: el("div", "path-marker", picks.length ? "B" : "A") })
+    .setLngLat(point)
+    .addTo(map);
+  picks.push({ point, label, marker });
+  if (picks.length === 1) showPathStep(`From ${label}. Choose a destination: a building or a street.`);
+  else findRoute();
+}
+
+async function findRoute() {
+  const [a, b] = picks;
+  const request = ++pathRequest;
+  showPathStep(`Finding a route from ${a.label} to ${b.label}…`);
+  const params = new URLSearchParams({ location: current, start: a.point.join(","), end: b.point.join(",") });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ROUTE_TIMEOUT_MS);
+  let response;
+  try {
+    response = await fetch(`/api/route?${params}`, { signal: controller.signal });
+  } catch {
+    if (request === pathRequest) showPathStep("Couldn't reach the routing service. Try again.", true, findRoute);
+    return;
+  } finally {
+    clearTimeout(timer);
+  }
+  if (request !== pathRequest) return; // cleared or replaced meanwhile
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = typeof body.detail === "string" ? body.detail : "Couldn't find a route. Try again.";
+    showPathStep(`${message} Choose a new start to try again.`, true);
+    return;
+  }
+  map.getSource("route").setData(body);
+  const coords = body.geometry.coordinates;
+  const bounds = coords.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(coords[0], coords[0]));
+  map.fitBounds(bounds, { padding: WINDOW_PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 600 });
+  const p = body.properties;
+  const caution = p.kind === "clear" ? "" : " Cautionary route: click it to see why.";
+  showPathStep(`Route found: about ${duration(p.duration_s)} (estimated).${caution} Click a building or street to start a new route.`);
+}
+
+// The instruction card: one step at a time. Errors are red; `retry` adds a "Try again" button.
+function showPathStep(text, isError = false, retry = null) {
+  const line = el("p", isError ? "path-error" : "", text);
+  pathCard.replaceChildren(line);
+  if (retry) {
+    const button = pathCard.appendChild(el("button", "", "Try again"));
+    button.type = "button";
+    button.addEventListener("click", retry);
+  }
+}
+
+// Remove the route and both markers, e.g. when the window changes.
+function clearPath() {
+  pathRequest++;
+  for (const p of picks) p.marker.remove();
+  picks = [];
+  routePopup?.remove();
+  map.getSource("route")?.setData(emptyCollection());
+  if (pathMode) showPathStep("Choose a start: a building or a street.");
+}
+
+// Travel time is an estimate from speed limits, never a promise: said in the popup.
+function openRoute(feature, lngLat) {
+  routePopup?.remove();
+  routePopup = new maplibregl.Popup({ className: "facility-popup", maxWidth: "320px" })
+    .setLngLat(lngLat)
+    .setDOMContent(routeCard(feature.properties))
+    .addTo(map);
+}
+
+function routeCard(p) {
+  // Properties of rendered features come back as strings for arrays.
+  const reasons = typeof p.reasons === "string" ? JSON.parse(p.reasons) : (p.reasons ?? []);
+  const card = el("div", "facility");
+  if (p.kind === "clear") {
+    card.appendChild(el("p", "facility-kind", "Clear route: no water detected on it"));
+  } else {
+    const head = card.appendChild(el("p", "route-caution-head"));
+    const svg = document.getElementById("route-icons")?.content.querySelector("svg");
+    if (svg) head.appendChild(svg.cloneNode(true));
+    head.append("Cautionary route — potentially dangerous");
+  }
+  card.appendChild(el("h2", "facility-name", `Estimated travel time: ${duration(p.duration_s)}`));
+  card.appendChild(el("p", "", `${km(p.distance_m)} by road`));
+  if (reasons.length) {
+    const list = card.appendChild(el("ul", "route-reasons"));
+    const pct = Math.round((p.avg_flooded_fraction ?? 0) * 100);
+    const lines = {
+      flooded: `Crosses ${km(p.flooded_m)} of flooded road. On average, water covers ${pct}% of the observed road on this route.`,
+      unobserved: `No satellite data for part of this route. ${km(p.unobserved_m)} of it wasn't observed, so we can't tell whether it's flooded. Check before relying on it.`,
+      flooded_endpoint: "Starts or ends where water was detected.",
+    };
+    for (const reason of reasons) if (lines[reason]) list.appendChild(el("li", "", lines[reason]));
+  }
+  card.appendChild(el("p", "route-note", "Time estimated from speed limits only: no traffic or road closures. Radar sees water, not depth."));
+  card.appendChild(el("p", "facility-source", `Satellite: ${localTime(p.observed_utc)}`));
+  return card;
+}
+
+function duration(seconds) {
+  const minutes = Math.max(1, Math.round(seconds / 60));
+  return minutes < 60 ? `${minutes} min` : `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
+}
+
+function km(m) {
+  return m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${Math.round(m)} m`;
+}

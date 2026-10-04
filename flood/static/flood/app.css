@@ -17,9 +17,12 @@
   --shadow: 0 1px 2px rgb(60 64 67 / 0.3), 0 2px 6px 2px rgb(60 64 67 / 0.15);
   --toggle-on: #000000; /* outline of a switched-on setting: black on light, white on dark */
   --go: #188038; /* the search box's Enter button; white glyph on it passes contrast in both themes */
+  --danger: #c5221f; /* cautionary routes (team-approved); white glyph on it passes contrast */
+  --path-button-w: 132px; /* Find Path, left of the gear; the search box leaves room for it */
 }
 
 [data-theme="dark"] {
+  --danger: #e8453c; /* lifted so the red route reads on the near-black map */
   --map-bg: #0c0c0c; /* Dark background, shown while tiles load */
   --surface: 44 44 47; /* lifted above the map so solid controls read on near-black */
   --surface-hover: 58 58 62;
@@ -125,7 +128,7 @@ body {
     display: flex;
     align-items: center;
     /* Updated calculation so it doesn't overflow off the right side of mobile screens */
-    width: min(392px, calc(100% - 140px - 16px - 48px - 12px)); 
+    width: min(392px, calc(100% - 140px - 16px - 48px - 12px - var(--path-button-w) - 8px));
     padding-left: 20px;
   }
 
@@ -623,5 +626,155 @@ body {
 
   .search-button {
     transition: none;
+  }
+}
+
+/* --- Pathfinding: Find Path button, instruction card, A/B markers, route popup --- */
+
+/* Green pill left of the gear. Solid like the search box's Enter button: it's an action. */
+.path-toggle {
+  position: fixed;
+  top: 16px;
+  right: 72px;
+  z-index: 1;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  width: var(--path-button-w);
+  height: 48px;
+  justify-content: center;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--go);
+  color: #ffffff;
+  font: 500 15px/1 inherit;
+  font-family: inherit;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.path-toggle:hover {
+  filter: brightness(1.1);
+}
+
+/* On while in pathfinding mode: the same thick outline as the critical-buildings toggle. */
+.path-toggle[aria-pressed="true"] {
+  outline: 3px solid var(--toggle-on);
+  outline-offset: 2px;
+}
+
+.path-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.path-toggle[aria-pressed="true"]:focus-visible {
+  outline: 3px solid var(--toggle-on);
+  box-shadow: 0 0 0 7px var(--accent);
+}
+
+/* Step-by-step instructions and errors, under the button. */
+.path-card {
+  position: fixed;
+  top: 72px;
+  right: 72px;
+  z-index: 1;
+  width: min(300px, calc(100% - 88px));
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgb(var(--surface) / 1);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.path-card[hidden] {
+  display: none;
+}
+
+.path-card p {
+  margin: 0;
+}
+
+.path-card .path-error {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+.path-card button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: 1px solid rgb(var(--surface-hover));
+  border-radius: 16px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Start (A) and destination (B) of a route. */
+.path-marker {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: var(--shadow);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Route popup: a red heading with the caution icon for a cautionary route. */
+.route-caution-head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+  color: var(--danger);
+  font-weight: 500;
+}
+
+.route-caution-head svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+
+.route-reasons {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.route-reasons li + li {
+  margin-top: 4px;
+}
+
+.route-note {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* Narrow screens: the button shrinks to its icon. */
+@media (max-width: 640px) {
+  :root {
+    --path-button-w: 48px;
+  }
+
+  .path-toggle {
+    padding: 0;
+  }
+
+  .path-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
