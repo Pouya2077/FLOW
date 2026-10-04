@@ -7,6 +7,7 @@ from geopy.geocoders import Nominatim
 def get_10km_range(address):
     # Nominatim allows ~1 request/s and requires an identifying User-Agent (CLAUDE.md), so cache
     # lookups for a day and identify the app.
+    print("flag")
     key = "nominatim:" + address.strip().lower()
     if (cached := cache.get(key)) is not None:
         return cached
