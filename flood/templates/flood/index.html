@@ -24,7 +24,7 @@
   {# Search box (Google Maps style). Focusing it while empty opens "Recent": a listbox of past searches. #}
   <form class="search overlay" role="search" autocomplete="off">
     <label class="visually-hidden" for="q">Search a street or area</label>
-    <input id="q" name="q" type="search" placeholder="Search a street or area" value="{{ query }}" role="combobox" aria-autocomplete="none" aria-expanded="false" aria-controls="recent-list">
+    <input id="q" name="q" type="search" placeholder="Search a street or area" value="{{ query }}" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="{% if recent %}recent-list{% else %}suggestion-list{% endif %}">
     {# A magnifying glass while empty; a green Enter button once there's text to search. #}
     <button class="search-button" type="submit" aria-label="Search">
       {% lucide "search" size=20 class="icon-search" aria_hidden="true" %}
@@ -46,6 +46,11 @@
       </ul>
     </div>
     {% endif %}
+    {# Places matching the text while typing; map.js fills it from /api/geocode. #}
+    <div id="suggestions" class="recent" hidden>
+      <ul id="suggestion-list" role="listbox" aria-label="Suggestions"></ul>
+    </div>
+    <template id="suggestion-icon">{% lucide "map-pin" size=20 aria_hidden="true" %}</template>
   </form>
 
   {# Settings: a gear top-right that unrolls the theme toggle and the critical-buildings toggle. #}
