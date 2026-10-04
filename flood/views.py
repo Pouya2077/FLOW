@@ -5,11 +5,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.utils.http import urlencode
 
-from pipeline.detect_flood import fetch_sentinel_radar
-from pipeline.regions import REGIONS
-
 from . import data
-from .utils import get_10km_range
 
 THEMES = ("light", "dark")
 
@@ -28,21 +24,8 @@ def index(request):
     else:
         theme = "light"
 
-    search_query = request.GET.get("q")
-    bbox = None
-    radar_file = None
-
-    if search_query:
-        result = get_10km_range(search_query)
-        if isinstance(result, list):
-            bbox = result
-            safe_slug = search_query.strip().lower().replace(", ", "-").replace(" ", "-")
-
-            # pipeline only knows the regions in pipeline/regions.py;
-            # other searches just move the map.
-            if safe_slug in REGIONS:
-                print(f"Triggering pipeline for {safe_slug}...")
-                radar_file = fetch_sentinel_radar(safe_slug)
+    # A ?q= search is handled in the browser: map.js geocodes it and starts a background analysis
+    # (/api/analyze), so the page never waits on the pipeline.
     other_theme = "dark" if theme == "light" else "light"
 
     locations = data.locations()
@@ -71,8 +54,6 @@ def index(request):
             "location": location,
             "query": query,
             "recent": recent,
-            "bbox": bbox,
-            "radar_file": radar_file,
         },
     )
     if requested in THEMES:

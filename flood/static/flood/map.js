@@ -36,8 +36,8 @@ const LABEL_TIERS = [
 // Line widths grow with zoom so roads stay visible over the basemap's own roads at any scale.
 const width = (base) => ["interpolate", ["linear"], ["zoom"], 10, base, 14, base * 2.5, 17, base * 6];
 
-async function getJSON(url) {
-  const response = await fetch(url);
+async function getJSON(url, options) {
+  const response = await fetch(url, options);
   if (!response.ok) throw new Error(`${url} returned ${response.status}`);
   return response.json();
 }
@@ -124,6 +124,15 @@ map.on("load", () => {
     type: "line",
     source: "windows",
     paint: { "line-color": token("--accent"), "line-width": 3 },
+  });
+
+  // The area a search is analysing, dashed until its result arrives.
+  map.addSource("pending", { type: "geojson", data: emptyCollection() });
+  add({
+    id: "window-pending",
+    type: "line",
+    source: "pending",
+    paint: { "line-color": token("--accent"), "line-width": 3, "line-dasharray": [2, 2] },
   });
 
   addRoadLabels(style);
@@ -410,6 +419,77 @@ async function search(query) {
   }
   keepInUrl({ q: query });
   map.fitBounds(results[0].bbox, { padding: PADDING, maxZoom: 16, duration: reduceMotion ? 0 : 800 });
+  analyze(results[0]);
+}
+
+// --- Analysing a searched place: a background job on the newest satellite pass ---
+
+const POLL_MS = 3000;
+let analysisRun = 0; // a newer search abandons the older one's polling
+
+async function analyze(place) {
+  const run = ++analysisRun;
+  const [lon, lat] = place.center;
+  const params = new URLSearchParams({ name: place.name, lon, lat });
+  let job;
+  try {
+    job = await getJSON(`/api/analyze?${params}`, { method: "POST" });
+  } catch {
+    showSearchMessage("Satellite analysis isn't available right now. Try again in a moment.");
+    return;
+  }
+  // The window moves to the searched area straight away; the old one is no longer drawn.
+  showWindow(null);
+  showPending(job.bbox);
+  while (run === analysisRun) {
+    if (job.status === "done") return finishAnalysis(job);
+    if (job.status === "failed") {
+      showPending(null);
+      showSearchMessage(`No satellite result for ${job.name}: ${job.message}`);
+      return;
+    }
+    showSearchMessage(`Analysing the latest satellite pass for ${job.name}. This may take a minute.`);
+    await new Promise((resolve) => setTimeout(resolve, POLL_MS));
+    try {
+      job = await getJSON(`/api/analyze/${encodeURIComponent(job.slug)}`);
+    } catch {
+      // A failed poll is retried on the next tick.
+    }
+  }
+}
+
+async function finishAnalysis(job) {
+  const meta = await getJSON(`/api/meta?location=${encodeURIComponent(job.slug)}`);
+  metas[job.slug] = meta;
+  showPending(null);
+  showWindow(job.slug);
+  keepInUrl({ q: input.value.trim(), location: job.slug });
+  frame(job.slug, true);
+  const when = observedLocal(meta);
+  showSearchMessage(when ? `Satellite pass of ${when}. Blue = water detected.` : "");
+}
+
+function showPending(bbox) {
+  map.getSource("pending").setData(bbox ? bboxOutline(bbox) : emptyCollection());
+}
+
+function bboxOutline([w, s, e, n]) {
+  const ring = [[w, s], [e, s], [e, n], [w, n], [w, s]];
+  return { type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: ring } };
+}
+
+// Observation time in the location's own time zone, e.g. "Sep 28, 2026, 7:20 AM PDT"
+function observedLocal(meta) {
+  if (!meta.observed_utc) return "";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: meta.timezone || "UTC",
+    timeZoneName: "short", // can't be combined with dateStyle/timeStyle
+  }).format(new Date(meta.observed_utc));
 }
 
 function chooseRecent(index) {
@@ -418,6 +498,8 @@ function chooseRecent(index) {
   input.value = option.querySelector(".recent-place").textContent;
   closeRecent();
   showSearchMessage("");
+  analysisRun++; // stop following a search that's still being analysed
+  showPending(null);
   showWindow(option.dataset.slug);
   keepInUrl({ location: current });
   frame(current, true);

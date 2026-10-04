@@ -75,22 +75,18 @@ class ApiSmokeTest(SimpleTestCase):
         response = self.client.get("/", {"location": "test-area"})
         self.assertContains(response, 'href="?theme=dark&amp;location=test-area"')
 
-    # A ?q= page load geocodes with Nominatim and downloads radar; stand in for both so tests stay
-    # offline and don't need CDSE credentials.
-    @patch("flood.views.fetch_sentinel_radar", return_value=None)
-    @patch("flood.views.get_10km_range", return_value=[-122.4, 48.9, -122.1, 49.1])
-    def test_search_query_prefilled_and_kept(self, geocode, fetch_radar):
+    def test_search_query_prefilled_and_kept(self):
         response = self.client.get("/", {"q": "Abbotsford"})
         self.assertContains(response, 'value="Abbotsford"')
         self.assertContains(response, "q=Abbotsford")
-        geocode.assert_called_once_with("Abbotsford")
-        fetch_radar.assert_not_called()  # not a region in pipeline/regions.py
 
-    @patch("flood.views.fetch_sentinel_radar", return_value=None)
-    @patch("flood.views.get_10km_range", return_value=[-122.4, 48.9, -122.1, 49.1])
-    def test_search_for_region_runs_pipeline_on_region(self, geocode, fetch_radar):
+    # Searches are analysed in the background (/api/analyze); the page load never waits on it.
+    @patch("pipeline.detect_flood.fetch_sentinel_radar")
+    @patch("flood.jobs.fetch_sentinel_radar")
+    def test_search_page_load_does_not_run_pipeline(self, job_run, direct_run):
         self.client.get("/", {"q": "Sumas Prairie"})
-        fetch_radar.assert_called_once_with("sumas-prairie")
+        job_run.assert_not_called()
+        direct_run.assert_not_called()
 
 
 class DataFoldersTest(SimpleTestCase):
@@ -197,6 +193,12 @@ class AnalysisJobTest(SimpleTestCase):
             self.analyze()
             data.reload()
             jobs._jobs.clear()  # e.g. after a runserver restart
+            self.assertEqual(self.analyze().json()["status"], "done")
+        run.assert_called_once()
+
+    def test_finished_search_not_rerun_in_same_process(self, _submit):
+        with patch("flood.jobs.fetch_sentinel_radar", side_effect=self.fake_pipeline) as run:
+            self.analyze()
             self.assertEqual(self.analyze().json()["status"], "done")
         run.assert_called_once()
 
