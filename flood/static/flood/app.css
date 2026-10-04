@@ -19,6 +19,12 @@
   --go: #188038; /* the search box's Enter button; white glyph on it passes contrast in both themes */
   --danger: #c5221f; /* cautionary routes (team-approved); white glyph on it passes contrast */
   --path-button-w: 132px; /* Find Path, left of the gear; the search box leaves room for it */
+  --logo: #55acee; /* the wave in the logo; "flow" on the About page (team-approved) */
+  /* About page highlights (team-approved), from the Okabe–Ito colour-blind-safe palette and
+     kept apart from the logo blue; darkened in light mode so they pass text contrast on white. */
+  --keyword: #a85200; /* orange: key ideas */
+  --kw-tool: #007a5a; /* bluish green: tools and data we used */
+  --kw-place: #a63d7f; /* reddish purple: places and dates */
 }
 
 [data-theme="dark"] {
@@ -34,6 +40,9 @@
   --road-nodata: #9a9a9a;
   --unobserved: rgb(154 154 154 / 0.16);
   --toggle-on: #ffffff;
+  --keyword: #e69f00; /* Okabe–Ito colours as they are: high contrast on near-black */
+  --kw-tool: #009e73;
+  --kw-place: #cc79a7;
   --shadow:
     0 0 0 1px rgb(255 255 255 / 0.08), 0 1px 2px rgb(0 0 0 / 0.6), 0 2px 6px 2px rgb(0 0 0 / 0.35);
 }
@@ -851,6 +860,27 @@ body {
 .about a {
   color: var(--accent);
 }
+
+/* The name, in the logo's blue. */
+.flow-name {
+  color: var(--logo);
+  font-weight: 500;
+}
+
+/* Highlights: colour plus weight, so they don't rely on colour alone. */
+.about strong {
+  color: var(--keyword);
+  font-weight: 500;
+}
+
+.about strong.kw-tool {
+  color: var(--kw-tool);
+}
+
+.about strong.kw-place {
+  color: var(--kw-place);
+}
+
 
 .about-list {
   margin: 0 0 12px;
