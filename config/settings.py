@@ -15,6 +15,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").sp
 
 INSTALLED_APPS = [
     "django.contrib.staticfiles",
+    "lucide",
     "flood",
 ]
 
@@ -55,3 +56,13 @@ FLOOD_DATA_DIR = BASE_DIR / "data" / "locations"
 # Photon allows autocomplete; Nominatim does not. Identify ourselves either way.
 GEOCODER_URL = "https://photon.komoot.io/api/"
 GEOCODER_USER_AGENT = "FLOW-StormHacks2026/0.1 (flood-obstructed roads demo)"
+
+# Page theme: ?theme= in the URL wins and is saved to this cookie; otherwise the cookie, else light.
+THEME_COOKIE = "theme"
+THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365  # browsers cap cookie lifetime (~400 days in Chrome)
+
+# OpenFreeMap basemap style per page theme. Both are muted so blue flood lines stand out.
+BASEMAP_STYLES = {
+    "light": "https://tiles.openfreemap.org/styles/positron",
+    "dark": "https://tiles.openfreemap.org/styles/dark",
+}

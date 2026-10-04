@@ -70,9 +70,9 @@ Put it in `flood/api.py` on the existing `api` object. Do not create a second `N
 @api.get("/something")
 def something(request, bbox: str):
     """One-line docstring — it becomes the description in /api/docs."""
-    view = _parse_bbox(bbox)          # reuse the helper; it raises 400 on bad input
+    view = _parse_bbox(bbox)  # reuse the helper; it raises 400 on bad input
     ...
-    return {...}                      # plain dicts/lists are fine; Ninja serialises them
+    return {...}  # plain dicts/lists are fine; Ninja serialises them
 ```
 
 Rules:

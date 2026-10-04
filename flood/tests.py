@@ -56,3 +56,48 @@ class ApiSmokeTest(SimpleTestCase):
 
     def test_bad_bbox(self):
         self.assertEqual(self.client.get("/api/flood", {"bbox": "nope"}).status_code, 400)
+
+
+class ThemeTest(SimpleTestCase):
+    def get(self, **params):
+        return self.client.get("/", params)
+
+    def assertTheme(self, response, theme, icon):
+        self.assertEqual(response.context["theme"], theme)
+        self.assertContains(response, f'data-theme="{theme}"')
+        self.assertContains(response, f'class="icon-{icon}"')
+
+    def test_default_is_light(self):
+        response = self.get()
+        self.assertTheme(response, "light", "moon")
+        self.assertNotIn("theme", response.cookies)
+
+    def test_param_dark_sets_cookie(self):
+        response = self.get(theme="dark")
+        self.assertTheme(response, "dark", "sun")
+        self.assertEqual(response.cookies["theme"].value, "dark")
+        self.assertContains(response, 'href="?theme=light"')
+
+    def test_cookie_used_without_param(self):
+        self.client.cookies["theme"] = "dark"
+        self.assertTheme(self.get(), "dark", "sun")
+
+    def test_param_overrides_cookie(self):
+        self.client.cookies["theme"] = "dark"
+        response = self.get(theme="light")
+        self.assertTheme(response, "light", "moon")
+        self.assertEqual(response.cookies["theme"].value, "light")
+
+    def test_invalid_param_falls_back_to_light(self):
+        response = self.get(theme="purple")
+        self.assertTheme(response, "light", "moon")
+        self.assertNotIn("theme", response.cookies)
+
+    def test_search_box(self):
+        response = self.get(q="Sumas Prairie")
+        self.assertContains(response, 'role="search"')
+        self.assertContains(response, 'value="Sumas Prairie"')
+
+    def test_invalid_cookie_falls_back_to_light(self):
+        self.client.cookies["theme"] = "purple"
+        self.assertTheme(self.get(), "light", "moon")

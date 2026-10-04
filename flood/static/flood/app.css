@@ -1,0 +1,209 @@
+/* Colours come from the OpenFreeMap basemap the page sits on: Positron in light mode,
+   Dark in dark mode. Controls float over the map Google Maps–style; they stay
+   translucent (the map can't be dragged, so it should show through) and turn solid
+   on hover, focus or while typing. */
+:root,
+[data-theme="light"] {
+  --map-bg: #f2f3f0; /* Positron background */
+  --map-road: #ffffff; /* Positron major road */
+  --map-casing: #d5d5d5; /* Positron road casing */
+  --map-minor: #e0e0e0; /* Positron minor road */
+  --map-water: #c2c8ca; /* Positron water */
+  --map-park: #e6e9e5; /* Positron park */
+  --surface: 255 255 255; /* control background, as RGB channels for alpha */
+  --text: #333333; /* Positron state labels */
+  --text-muted: #666666; /* Positron road labels */
+  --accent: #495e91; /* Positron water labels, its one non-grey colour */
+  --flood: #1f6feb; /* water detected; stronger than --accent so it never reads as UI */
+  --shadow: 0 1px 2px rgb(60 64 67 / 0.3), 0 2px 6px 2px rgb(60 64 67 / 0.15);
+}
+
+[data-theme="dark"] {
+  --map-bg: #0c0c0c; /* Dark background */
+  --map-road: #121212; /* Dark major road */
+  --map-casing: #3c3c3c; /* Dark road casing */
+  --map-minor: #1c1c1c; /* Dark minor road */
+  --map-water: #1b1b1d; /* Dark water */
+  --map-park: #202020; /* Dark park */
+  --surface: 44 44 47; /* lifted above the map so solid controls read on near-black */
+  --text: #e3e3e3;
+  --text-muted: #9a9a9a;
+  --accent: #8fa3d1; /* Positron's slate blue, lifted for dark backgrounds */
+  --flood: #4c9aff;
+  --shadow:
+    0 0 0 1px rgb(255 255 255 / 0.08), 0 1px 2px rgb(0 0 0 / 0.6), 0 2px 6px 2px rgb(0 0 0 / 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: var(--map-bg);
+  color: var(--text);
+  font: 400 15px/1.4 Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Map. Until MapLibre lands, an inline SVG sketch drawn in the basemap's own
+   colours stands in, so the translucent controls have something to show through. */
+.map {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--map-bg);
+}
+
+.map-sketch {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.map-sketch .park {
+  fill: var(--map-park);
+}
+
+.map-sketch .minor {
+  stroke: var(--map-minor);
+  stroke-width: 4;
+}
+
+.map-sketch .water {
+  stroke: var(--map-water);
+  stroke-width: 44;
+}
+
+.map-sketch .casing {
+  stroke: var(--map-casing);
+  stroke-width: 12;
+}
+
+.map-sketch .inner {
+  stroke: var(--map-road);
+  stroke-width: 8;
+}
+
+.map-placeholder {
+  position: relative;
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgb(var(--surface) / 0.85);
+  color: var(--text-muted);
+  box-shadow: var(--shadow);
+}
+
+/* Floating controls: translucent at rest, solid when in use. */
+.overlay {
+  position: fixed;
+  top: 16px;
+  z-index: 1;
+  height: 48px;
+  border-radius: 24px;
+  background: rgb(var(--surface) / 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: none;
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.overlay:hover,
+.overlay:focus-within,
+.overlay:focus-visible {
+  background: rgb(var(--surface) / 1);
+  box-shadow: var(--shadow);
+}
+
+.search {
+  left: 16px;
+  display: flex;
+  align-items: center;
+  width: min(392px, calc(100% - 16px - 16px - 48px - 12px));
+  padding-left: 20px;
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
+.search input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* Hide WebKit's built-in clear button; it clashes with the search icon. */
+.search input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.search-button,
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted); /* lucide icons stroke with currentColor */
+}
+
+.search-button {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.search-button:hover,
+.theme-toggle:hover {
+  color: var(--accent);
+}
+
+.theme-toggle {
+  right: 16px;
+  width: 48px;
+}
+
+.search-button:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    transition: none;
+  }
+}
