@@ -60,13 +60,14 @@ def flood(request, bbox: str, location: str | None = None):
 
 
 @api.get("/facilities")
-def facilities(request, bbox: str):
+def facilities(request, bbox: str, location: str | None = None):
     """Critical buildings (hospitals, police, fire stations, ...) in view, with how flooded each
-    site is, as a FeatureCollection. Dykes come as a point (the icon) plus a line."""
+    site is, as a FeatureCollection. Dykes come as a point (the icon) plus a line.
+    With location=, only that location's."""
     view = _parse_bbox(bbox)
     features = [
         f
-        for slug in data.locations_in(view)
+        for slug in _slugs_in(view, location)
         for f in data.facilities(slug)
         if data.intersects(view, f["bbox"])
     ]

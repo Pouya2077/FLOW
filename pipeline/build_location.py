@@ -313,14 +313,18 @@ def build(region: Region, mask_path: Path, out_dir: Path = OUT_DIR) -> Path:
     footprint = observed_area(mask, transform, crs)
     out = write_location(region, runs, tags, footprint, out_dir)
     print(f"wrote {len(runs)} road stretches to {out}")
-    return out
 
-    # Critical buildings, scored against the same mask so they never disagree with the roads
+    # Critical buildings, scored against the same mask so they never disagree with the roads.
+    # Optional extra: if OSM can't be reached the roads above are still written and served.
     from pipeline.build_facilities import build_facilities  # imports this module
 
-    build_facilities(
-        region, mask, transform, crs, water, footprint, tags.get("observed_utc"), args.out
-    )
+    try:
+        build_facilities(
+            region, mask, transform, crs, water, footprint, tags.get("observed_utc"), out_dir
+        )
+    except Exception as e:
+        print(f"critical buildings skipped: {e}")
+    return out
 
 
 if __name__ == "__main__":

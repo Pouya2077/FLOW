@@ -5,6 +5,8 @@ from django.conf import settings
 from django.shortcuts import render
 from django.utils.http import urlencode
 
+from pipeline.facility_kinds import KINDS
+
 from . import data
 
 THEMES = ("light", "dark")
@@ -60,6 +62,7 @@ def index(request):
         {
             "theme": theme,
             "theme_toggle": theme_toggle,
+            "facility_kinds": KINDS,
             "basemap_style": settings.BASEMAP_STYLES[theme],
             "location": location,
             "query": query,

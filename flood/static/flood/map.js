@@ -156,6 +156,7 @@ map.on("load", () => {
     paint: { "line-color": token("--accent"), "line-width": 3, "line-dasharray": [2, 2] },
   });
 
+  addFacilityLayers();
   addRoadLabels(style);
   // Listen before framing: an unanimated fit fires "moveend" immediately.
   map.on("moveend", loadView);
@@ -192,11 +193,15 @@ async function loadView() {
   const request = ++latestRequest;
   if (!metas[current]) {
     map.getSource("segments").setData(emptyCollection());
+    map.getSource("facilities").setData(emptyCollection());
     return;
   }
   const view = map.getBounds().toArray().flat(); // [west, south, east, north]
   const params = new URLSearchParams({ bbox: view.join(","), location: current });
-  const segments = await getJSON(`/api/flood?${params}`);
+  const [segments, facilities] = await Promise.all([
+    getJSON(`/api/flood?${params}`),
+    getJSON(`/api/facilities?${params}`),
+  ]);
   if (request !== latestRequest) return; // a newer move or window change already started
   map.getSource("segments").setData(segments);
   map.getSource("facilities").setData(facilities);

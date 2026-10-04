@@ -4,6 +4,7 @@ Each location is a folder:
     <dir>/<slug>/meta.json         name, bbox, observed_utc, sensor, footprint
     <dir>/<slug>/segments.geojson  road segments (see CLAUDE.md "Road segment")
     <dir>/<slug>/streets.json      per-street summaries (see CLAUDE.md "Street summary")
+    <dir>/<slug>/facilities.geojson critical buildings (see CLAUDE.md "Critical building"); optional
 
 Files are read once per process; reload() picks up a finished search. Restart runserver after
 regenerating the committed demo data.
@@ -53,9 +54,20 @@ def streets(slug: str) -> list[dict]:
     return json.loads(path.read_text())
 
 
+@cache
+def facilities(slug: str) -> list[dict]:
+    path = _folders()[slug] / "facilities.geojson"
+    if not path.exists():  # built before critical buildings existed, or their query failed
+        return []
+    features = json.loads(path.read_text())["features"]
+    for f in features:
+        f["bbox"] = _geometry_bbox(f["geometry"])
+    return features
+
+
 # Forget cached files, e.g. after a search wrote a new folder
 def reload() -> None:
-    for cached in (_folders, locations, segments, streets):
+    for cached in (_folders, locations, segments, streets, facilities):
         cached.cache_clear()
 
 
