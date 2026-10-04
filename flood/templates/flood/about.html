@@ -1,0 +1,73 @@
+{% load static lucide %}<!doctype html>
+<html lang="en" data-theme="{{ theme }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About flow</title>
+  <meta name="description" content="Why we built flow, what it is for, and how it finds flooded roads from satellite radar.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+  <link rel="stylesheet" href="{% static 'flood/app.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'flood/favicon-32x32.png' %}">
+</head>
+<body class="about-page">
+  {# Same brand as the map page; it leads back to the map. #}
+  <a href="{% url 'index' %}" class="brand-header overlay" aria-label="flow: back to the map">
+    <img src="{% static 'flood/favicon-32x32.png' %}" alt="" class="brand-icon">
+    <span class="brand-name">flow</span>
+  </a>
+
+  {# The theme toggle takes the gear's place: it's the only setting here. Sun = light, moon = dark; it links to the other. #}
+  <div class="settings">
+    <a class="theme-option overlay" href="{{ theme_toggle.href }}" aria-label="{{ theme_toggle.label }}" title="{{ theme_toggle.label }}">
+      {% lucide theme_toggle.icon size=20 class=theme_toggle.icon_class aria_hidden="true" %}
+    </a>
+  </div>
+
+  <main class="about">
+    <h1>About <span class="flow-name">flow</span></h1>
+    <p class="about-lede"><span class="flow-name">flow</span> (First-responder Logistics Over Water) shows <strong>first responders</strong> and <strong>residents</strong> which streets have water on them, and how much of each, from free <strong>satellite radar</strong>.</p>
+
+    <section aria-labelledby="inspiration">
+      <h2 id="inspiration">{% lucide "lightbulb" size=20 aria_hidden="true" %} Inspiration</h2>
+      <p>In <strong class="kw-place">November 2021</strong>, atmospheric rivers flooded <strong class="kw-place">Abbotsford</strong> and the <strong class="kw-place">Sumas Prairie</strong> in British Columbia's <strong class="kw-place">Fraser Valley</strong>. We remember the damage to farms, homes and roads there, and how far it spread: with highways and rail lines cut, <strong>food deliveries</strong> across the province lagged for weeks.</p>
+      <p>If it was hard for the rest of us, it must have been far harder for the <strong>first responders</strong> working inside the flooded area, deciding which roads they could still use.</p>
+      <p>Floods like this happen <strong>around the world</strong>, and <strong>radar satellites</strong> pass over them, seeing through clouds day and night. That data is <strong>free and public</strong>, and could tell residents and first responders about the dangers in front of them. So we set out to build something for them with it.</p>
+    </section>
+
+    <section aria-labelledby="goal">
+      <h2 id="goal">{% lucide "target" size=20 aria_hidden="true" %} Our goal</h2>
+      <p>An app that lets first responders and residents see where <strong>water has been detected</strong> on the roads they use, and around the <strong>critical buildings</strong> in their area: hospitals, fire and police stations, schools, power substations and dykes.</p>
+      <p>And to <strong>find a path</strong> between those places that keeps the <strong>risk as low as possible</strong>: avoiding roads where water was seen, and flagging any route that uses roads the satellite didn't observe.</p>
+    </section>
+
+    <section aria-labelledby="how">
+      <h2 id="how">{% lucide "layers" size=20 aria_hidden="true" %} How we built it</h2>
+      <p>The core idea is an <strong>overlay</strong>: a map of where the satellite saw water, laid over the road map. Each road is cut into short pieces and each piece is checked against the water beneath it, so a 10&nbsp;km street flooded for 8&nbsp;km shows exactly those 8&nbsp;km in blue.</p>
+      <ul class="about-list">
+        <li><strong class="kw-tool">Sentinel-1 radar</strong> (<strong class="kw-tool">Copernicus</strong>, free): it sees through cloud and at night. We compare a pass during the flood with an earlier one, because smooth dry pavement can look like water on its own.</li>
+        <li><strong class="kw-tool">OpenStreetMap</strong> via <strong class="kw-tool">OSMnx</strong>: free, worldwide roads and buildings with the street names needed for per-street totals.</li>
+        <li><strong class="kw-tool">rasterio</strong>, <strong class="kw-tool">GeoPandas</strong> and <strong class="kw-tool">Shapely</strong>: open Python libraries that read the radar data and measure roads in metres.</li>
+        <li><strong class="kw-tool">NetworkX</strong>: routing on the same road network, so routes use exactly our flood scoring.</li>
+        <li><strong class="kw-tool">Django</strong> and <strong class="kw-tool">Django Ninja</strong>: one small server for the page and its data.</li>
+        <li><strong class="kw-tool">MapLibre GL</strong> and <strong class="kw-tool">OpenFreeMap</strong>: an open map with no API keys or limits, and muted basemaps so the blue water traces stand out.</li>
+      </ul>
+      <p>Every road has one of <strong>three states</strong>: water detected, observed clear, or not observed. A road the satellite didn't see is flagged for cautionary use.</p>
+      <p class="about-note">{% lucide "info" size=20 aria_hidden="true" %} <span>Radar shows where water is, not how deep it is, and the map is only as fresh as the latest satellite pass. During local development, the latest satellite data we have access to is three days old. In a real environment we can expect quicker satellite responses.</span></p>
+    </section>
+
+    <section aria-labelledby="team">
+      <h2 id="team">{% lucide "users" size=20 aria_hidden="true" %} Contributors</h2>
+      <ul class="about-team">
+        {% for person in contributors %}
+        <li><a href="https://github.com/{{ person.github }}" target="_blank" rel="noopener noreferrer">{{ person.name }}</a></li>
+        {% endfor %}
+      </ul>
+      <p class="about-footnote">Built at StormHacks 2026.</p>
+    </section>
+
+    <p><a class="about-back" href="{% url 'index' %}">{% lucide "map" size=20 aria_hidden="true" %} Back to the map</a></p>
+  </main>
+</body>
+</html>

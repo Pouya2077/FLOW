@@ -73,6 +73,14 @@ class ApiSmokeTest(SimpleTestCase):
     def test_index(self):
         self.assertEqual(self.client.get("/").status_code, 200)
 
+    def test_about(self):
+        response = self.client.get("/about/?theme=dark")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-theme="dark"')
+        self.assertContains(response, "https://github.com/Pouya2077")
+        self.assertNotContains(response, "facilities-toggle")
+        self.assertEqual(response.cookies["theme"].value, "dark")
+
     def test_locations(self):
         body = self.client.get("/api/locations").json()
         self.assertEqual([loc["slug"] for loc in body], ["test-area"])
