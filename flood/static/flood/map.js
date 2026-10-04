@@ -1,6 +1,6 @@
 // Flood map: draws the pipeline's road segments over the OpenFreeMap basemap with MapLibre.
-// The map can't be dragged or zoomed out past the observation window (CLAUDE.md); users pick an
-// observation from the dropdown and can zoom in within it.
+// The view is locked to the observation window (CLAUDE.md): users pick an observation from the
+// dropdown, then can zoom in and drag around inside the window, but never zoom out or drag past it.
 import * as maplibregl from "https://cdn.jsdelivr.net/npm/maplibre-gl@6.12.0/dist/maplibre-gl.mjs";
 
 const mapEl = document.getElementById("map");
@@ -46,22 +46,25 @@ const metas = Object.fromEntries(
   ),
 );
 let current = pickerOptions.find((o) => o.getAttribute("aria-selected") === "true")?.dataset.slug;
+// [west, south, east, north] the view is held inside once framed. Declared before the map, whose
+// constructor already calls constrainToWindow.
+let lockedWindow = null;
 
 const map = new maplibregl.Map({
   container: mapEl,
   style: mapEl.dataset.basemapStyle,
   bounds: metas[current]?.bbox ?? [-123.3, 48.9, -122.0, 49.4], // fall back to the Lower Mainland
   fitBoundsOptions: { padding: PADDING },
-  // Zoom only: no panning, rotating or tilting.
-  dragPan: false,
+  // Zoom and pan within the window (see constrainToWindow); no rotating or tilting.
   dragRotate: false,
-  keyboard: false,
   boxZoom: false,
   touchPitch: false,
   pitchWithRotate: false,
   attributionControl: { compact: true },
+  transformConstrain: constrainToWindow,
 });
 map.touchZoomRotate.disableRotation();
+map.keyboard.disableRotation();
 map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
 
 let basemapSource;
@@ -132,18 +135,44 @@ map.on("load", () => {
   frame(current, false);
 });
 
-// Fit the map to a location and lock it there: zooming out stops at this view and the view can't
-// leave it, but zooming in is free.
+// Fit the map to a location and lock it there: zooming out stops at this view, while zooming in
+// and dragging are free inside the window.
 function frame(slug, animate) {
   const bbox = metas[slug]?.bbox;
   if (!bbox) return;
-  map.setMaxBounds(null);
+  lockedWindow = null; // let the fit (or the animation to a new location) move freely
   map.setMinZoom(null);
   map.once("moveend", () => {
-    map.setMaxBounds(map.getBounds());
     map.setMinZoom(map.getZoom());
+    lockedWindow = bbox;
   });
   map.fitBounds(bbox, { padding: PADDING, duration: animate && !reduceMotion ? 600 : 0 });
+}
+
+// MapLibre calls this for every camera change. Along each axis: if the window is bigger than the
+// visible area (zoomed in), keep the visible area inside it, so dragging stops at its edge; if it's
+// smaller (the zoomed-out overview), keep it centred as fitBounds placed it. "Visible area" excludes
+// PADDING, which is where the dropdown and controls sit.
+function constrainToWindow(center, zoom) {
+  if (!lockedWindow) return { center, zoom };
+  const [west, south, east, north] = lockedWindow;
+  const world = 512 * 2 ** zoom; // Web Mercator size in pixels at this zoom
+  const toX = (lng) => ((lng + 180) / 360) * world;
+  const toY = (lat) => {
+    const s = Math.sin((lat * Math.PI) / 180);
+    return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * world;
+  };
+  // The visible area spans [c - size/2 + padLow, c + size/2 - padHigh]; its middle is offset from
+  // the camera centre c by (padLow - padHigh) / 2.
+  const clampAxis = (c, low, high, size, padLow, padHigh) => {
+    if (high - low <= size - padLow - padHigh) return (low + high) / 2 - (padLow - padHigh) / 2;
+    return Math.min(Math.max(c, low + size / 2 - padLow), high - size / 2 + padHigh);
+  };
+  const x = clampAxis(toX(center.lng), toX(west), toX(east), mapEl.clientWidth, PADDING.left, PADDING.right);
+  const y = clampAxis(toY(center.lat), toY(north), toY(south), mapEl.clientHeight, PADDING.top, PADDING.bottom);
+  const lng = (x / world) * 360 - 180;
+  const lat = (Math.atan(Math.sinh(Math.PI * (1 - (2 * y) / world))) * 180) / Math.PI;
+  return { center: new maplibregl.LngLat(lng, lat), zoom };
 }
 
 // Fetch the segments for what's on screen.
