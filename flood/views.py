@@ -5,9 +5,10 @@ from django.conf import settings
 from django.shortcuts import render
 from django.utils.http import urlencode
 
+from pipeline.fetch_data import fetch_sentinel_radar
+
 from . import data
 from .utils import get_10km_range
-from pipeline.fetch_data import fetch_sentinel_radar
 
 THEMES = ("light", "dark")
 
@@ -25,7 +26,7 @@ def index(request):
         theme = request.COOKIES[settings.THEME_COOKIE]
     else:
         theme = "light"
-    
+
     search_query = request.GET.get("q")
     bbox = None
     radar_file = None

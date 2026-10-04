@@ -1,6 +1,7 @@
 import json
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 from django.test import SimpleTestCase, override_settings
 
@@ -62,10 +63,16 @@ class ApiSmokeTest(SimpleTestCase):
         response = self.client.get("/", {"location": "test-area"})
         self.assertContains(response, 'href="?theme=dark&amp;location=test-area"')
 
-    def test_search_query_prefilled_and_kept(self):
+    # A ?q= page load geocodes with Nominatim and downloads radar; stand in for both so tests stay
+    # offline and don't need CDSE credentials.
+    @patch("flood.views.fetch_sentinel_radar", return_value=None)
+    @patch("flood.views.get_10km_range", return_value=[-122.4, 48.9, -122.1, 49.1])
+    def test_search_query_prefilled_and_kept(self, geocode, fetch_radar):
         response = self.client.get("/", {"q": "Abbotsford"})
         self.assertContains(response, 'value="Abbotsford"')
         self.assertContains(response, "q=Abbotsford")
+        geocode.assert_called_once_with("Abbotsford")
+        fetch_radar.assert_called_once_with(bbox=[-122.4, 48.9, -122.1, 49.1])
 
 
 class RecentSearchTest(SimpleTestCase):
