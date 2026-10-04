@@ -100,8 +100,10 @@ data" notice when true), `footprint` (GeoJSON Polygon of observed pixels, for sh
   hardcoded; may later move to a data file or DB, so scripts must only go through `get_region`.
 - `map_mask.py <slug>` — rasterizes `test_floods/<slug>.geojson` (hand-drawn test water) into
   `data/masks/<slug>_synthetic.tif` (gitignored), with an unobserved strip and `synthetic=true` tag.
-- `build_location.py <slug> [--mask path]` — the overlay below; writes `data/locations/<slug>/`.
-  Defaults to the synthetic mask; the data team's mask is passed with `--mask`.
+- `build_location.py <slug> [--mask path] [--out dir]` — the overlay below; writes
+  `data/locations/<slug>/`. Defaults to the synthetic mask; the data team's mask is passed with
+  `--mask`. Use `--out` for experiments so the committed data isn't overwritten.
+- `map_mask.py <slug> --speckle 0.3` writes a noisy `<slug>_synthetic_speckle.tif` for testing step 5.
 - Run e.g. `uv run python -m pipeline.build_location sumas-prairie` (~40 s). OSMnx caches to `cache/`.
 - **Output in `data/locations/` is committed** so the UI and demo work without running the pipeline.
   Only the pipeline owner regenerates it, in its own commit; on a conflict, rerun rather than merge.
@@ -111,16 +113,22 @@ data" notice when true), `footprint` (GeoJSON Polygon of observed pixels, for sh
 1. Fetch drivable roads for the area with OSMnx; reproject to the **mask's CRS**. Masks use the UTM
    zone of the region's centre (EPSG:32610 for the Lower Mainland), so any region gets metre units.
 2. Remove permanent water bodies and OSM `bridge=yes` segments (they always read as flooded).
-   Fetch with `simplify=False`, then `ox.simplify_graph(edge_attrs_differ=["bridge"])`: OSMnx's
-   default merge makes a whole stretch inherit `bridge=yes` from a short bridge (dropped 55 km, not
-   1.8 km, at Sumas). Permanent water = OSM water polygons; their pixels are ignored when scoring.
+   Fetch with `simplify=False`, then `ox.simplify_graph(edge_attrs_differ=["bridge", "name"])`:
+   OSMnx's default merge makes a whole stretch inherit `bridge=yes` from a short bridge (dropped 55 km,
+   not 1.8 km, at Sumas), and merging across a name change gave stretches a list of names in random
+   order, so street labels changed between runs. Output must be identical on rerun.
+   Permanent water = OSM water polygons; their pixels are ignored when scoring.
 3. Split each road into **~20 m** segments (equal pieces per stretch, keeping `road_id` + `seq`
    order); buffer **~5 m** each side (~10 m corridor).
 4. Score each segment (`score_segments`): count mask pixels touching its corridor (rasterstats,
    `all_touched`), with permanent-water pixels relabelled so they count as neither wet nor dry.
    More unobserved than observed pixels → `no_data` (never guess clear).
-5. Flooded if fraction **≥ 0.5**; drop isolated flooded runs shorter than **~40 m** (speckle).
-   **Speckle filter not built yet** — the synthetic mask has no speckle; add it before real data.
+5. Flooded if fraction **≥ 0.5**; `remove_speckle` resets flooded runs shorter than **~40 m** to
+   clear, but only when clear road lies on both sides within the same stretch (runs at a stretch end
+   or beside `no_data` are kept). It is a backstop, not a speckle filter: on a mask with 30% random
+   pixel noise it removed ~30 km of false flooding but ~40 km remained. **The data team must
+   despeckle the mask itself** (speckle filter on the radar image, then e.g. a morphological opening /
+   minimum patch size on the water mask). Test with `map_mask --speckle 0.3` and `build_location --out`.
 6. Merge consecutive same-status segments of each road into one line (`merge_runs`), total by street
    name, reproject to lon/lat, write the three files.
 All thresholds (`SEGMENT_M`, `BUFFER_M`, `FLOODED_AT`) are tunable constants — tune on the demo event.
