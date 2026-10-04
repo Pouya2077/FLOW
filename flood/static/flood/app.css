@@ -6,6 +6,7 @@
 [data-theme="light"] {
   --map-bg: #f2f3f0; /* Positron background, shown while tiles load */
   --surface: 255 255 255; /* control background, as RGB channels for alpha */
+  --surface-hover: 236 238 234; /* option hover, between Positron's background and park */
   --text: #333333; /* Positron state labels */
   --text-muted: #666666; /* Positron road labels */
   --accent: #495e91; /* Positron water labels, its one non-grey colour */
@@ -19,6 +20,7 @@
 [data-theme="dark"] {
   --map-bg: #0c0c0c; /* Dark background, shown while tiles load */
   --surface: 44 44 47; /* lifted above the map so solid controls read on near-black */
+  --surface-hover: 58 58 62;
   --text: #e3e3e3;
   --text-muted: #9a9a9a;
   --accent: #8fa3d1; /* Positron's slate blue, lifted for dark backgrounds */
@@ -63,41 +65,6 @@ body {
   background: var(--map-bg);
 }
 
-/* Status chips: a search message under the search box, and a notice at the bottom
-   (simulated data / no data here). Solid, since they carry information. */
-.search-message,
-.map-notice {
-  position: fixed;
-  z-index: 1;
-  margin: 0;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: rgb(var(--surface) / 1);
-  color: var(--text);
-  box-shadow: var(--shadow);
-}
-
-.search-message {
-  top: 72px;
-  left: 16px;
-  max-width: min(392px, calc(100% - 32px));
-}
-
-.map-notice {
-  right: 16px;
-  bottom: 40px; /* clear of the map attribution */
-  left: 16px;
-  width: fit-content;
-  margin-inline: auto;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-.search-message[hidden],
-.map-notice[hidden] {
-  display: none;
-}
-
 /* Floating controls: translucent at rest, solid when in use. */
 .overlay {
   position: fixed;
@@ -121,73 +88,126 @@ body {
   box-shadow: var(--shadow);
 }
 
-.search {
+/* Observation picker: pill button top-left, list drops below it. */
+.picker {
   left: 16px;
-  display: flex;
-  align-items: center;
-  width: min(392px, calc(100% - 16px - 16px - 48px - 12px));
-  padding-left: 20px;
+  width: min(460px, calc(100% - 16px - 16px - 48px - 12px));
 }
 
-.search input {
-  flex: 1;
-  min-width: 0;
+.picker-button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
   height: 100%;
-  padding: 0;
+  padding: 0 14px 0 20px;
   border: 0;
-  outline: 0;
+  border-radius: inherit;
   background: transparent;
   color: var(--text);
   font: inherit;
-}
-
-.search input::placeholder {
-  color: var(--text-muted);
-  opacity: 1;
-}
-
-/* Hide WebKit's built-in clear button; it clashes with the search icon. */
-.search input::-webkit-search-cancel-button {
-  appearance: none;
-}
-
-.search-button,
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted); /* lucide icons stroke with currentColor */
-}
-
-.search-button {
-  flex: none;
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
+  text-align: left;
   cursor: pointer;
 }
 
-.search-button:hover,
-.theme-toggle:hover {
-  color: var(--accent);
+.picker-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-button svg {
+  flex: none;
+  color: var(--text-muted); /* lucide icons stroke with currentColor */
+  transition: transform 150ms ease;
+}
+
+.picker-button[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.picker-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: max-content; /* fit the full label; the button may truncate it */
+  min-width: 100%;
+  max-width: calc(100vw - 32px);
+  margin: 0;
+  padding: 8px;
+  border-radius: 16px;
+  background: rgb(var(--surface) / 1);
+  box-shadow: var(--shadow);
+  list-style: none;
+  outline: 0;
+}
+
+.picker-list[hidden] {
+  display: none;
+}
+
+.picker-list [role="option"] {
+  padding: 10px 12px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.picker-list [role="option"]:hover,
+.picker-list [role="option"].active {
+  background: rgb(var(--surface-hover));
+}
+
+/* The observation on the map is marked with the accent border, like the window outline. */
+.picker-list [role="option"][aria-selected="true"] {
+  border-color: var(--accent);
 }
 
 .theme-toggle {
   right: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 48px;
+  color: var(--text-muted); /* lucide icons stroke with currentColor */
 }
 
-.search-button:focus-visible,
+.theme-toggle:hover {
+  color: var(--accent);
+}
+
+.picker-button:focus-visible,
 .theme-toggle:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
+/* Zoom buttons (MapLibre's NavigationControl), bottom-right like Google Maps. */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgb(var(--surface) / 1);
+  box-shadow: var(--shadow);
+}
+
+.maplibregl-ctrl-group button + button {
+  border-top-color: rgb(var(--surface-hover));
+}
+
+.maplibregl-ctrl-group button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+[data-theme="dark"] .maplibregl-ctrl-group .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .overlay {
+  .overlay,
+  .picker-button svg {
     transition: none;
   }
 }

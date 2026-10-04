@@ -8,6 +8,7 @@ class Region:
     slug: str
     name: str  # name appearing in the UI
     bbox: tuple[float, float, float, float]  # W, S, E, N in lon/lat
+    timezone: str  # IANA name; the UI shows the observation time in the region's local time
 
 
 REGIONS = {
@@ -17,6 +18,7 @@ REGIONS = {
             slug="sumas-prairie",
             name="Sumas Prairie, Abbotsford",
             bbox=(-122.28, 49.00, -122.08, 49.10),
+            timezone="America/Vancouver",
         )
     ]
 }
