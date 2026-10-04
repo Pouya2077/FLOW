@@ -14,19 +14,21 @@
 <body>
   <div id="map" class="map" data-basemap-style="{{ basemap_style }}"></div>
 
-  <form class="search overlay" role="search" autocomplete="off">
-    <label class="visually-hidden" for="q">Search a street or area</label>
-    <input id="q" name="q" type="search" placeholder="Search a street or area" value="{{ request.GET.q }}">
-    <button class="search-button" type="submit" aria-label="Search">
-      {% lucide "search" size=20 aria_hidden="true" %}
+  {# Observation picker: a custom listbox (not <select>) so the selected option can carry a border. #}
+  <div class="picker overlay">
+    <button id="picker-button" class="picker-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="picker-list">
+      <span class="picker-value">{{ selected.label|default:"No flood observations yet" }}</span>
+      {% lucide "chevron-down" size=20 aria_hidden="true" %}
     </button>
-  </form>
-  <p id="search-message" class="search-message" role="status" hidden></p>
+    <ul id="picker-list" class="picker-list" role="listbox" tabindex="-1" aria-label="Flood observation" hidden>
+      {% for location in locations %}
+      <li id="option-{{ location.slug }}" role="option" data-slug="{{ location.slug }}" aria-selected="{% if location.slug == selected.slug %}true{% else %}false{% endif %}">{{ location.label }}</li>
+      {% endfor %}
+    </ul>
+  </div>
 
-  <a class="theme-toggle overlay" href="?theme={{ other_theme }}" aria-label="Switch to {{ other_theme }} mode" title="Switch to {{ other_theme }} mode">
+  <a class="theme-toggle overlay" href="?theme={{ other_theme }}{% if selected %}&amp;location={{ selected.slug }}{% endif %}" aria-label="Switch to {{ other_theme }} mode" title="Switch to {{ other_theme }} mode">
     {% if theme == "light" %}{% lucide "moon" size=20 class="icon-moon" aria_hidden="true" %}{% else %}{% lucide "sun" size=20 class="icon-sun" aria_hidden="true" %}{% endif %}
   </a>
-
-  <p id="map-notice" class="map-notice" role="status" hidden></p>
 </body>
 </html>

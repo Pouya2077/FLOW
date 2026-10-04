@@ -5,6 +5,7 @@ from pathlib import Path
 from django.test import SimpleTestCase, override_settings
 
 from . import data
+from .views import location_label
 
 FIXTURE_META = {"name": "Test Area", "bbox": [-122.3, 49.0, -122.1, 49.1]}
 FIXTURE_SEGMENTS = {
@@ -57,6 +58,34 @@ class ApiSmokeTest(SimpleTestCase):
     def test_bad_bbox(self):
         self.assertEqual(self.client.get("/api/flood", {"bbox": "nope"}).status_code, 400)
 
+    def test_picker_lists_locations(self):
+        response = self.client.get("/")
+        self.assertContains(response, 'role="listbox"')
+        self.assertContains(response, 'data-slug="test-area" aria-selected="true"')
+
+    def test_theme_link_keeps_location(self):
+        response = self.client.get("/", {"location": "test-area"})
+        self.assertContains(response, 'href="?theme=dark&amp;location=test-area"')
+
+
+class LocationLabelTest(SimpleTestCase):
+    def test_local_time_and_zone(self):
+        meta = {
+            "name": "Sumas Prairie, Abbotsford",
+            "observed_utc": "2021-11-16T14:25:00Z",
+            "timezone": "America/Vancouver",
+        }
+        self.assertEqual(
+            location_label(meta), "Sumas Prairie, Abbotsford | Nov 16, 2021, 6:25 AM PST"
+        )
+
+    def test_utc_without_timezone(self):
+        meta = {"name": "Somewhere", "observed_utc": "2021-11-16T14:25:00Z"}
+        self.assertEqual(location_label(meta), "Somewhere | Nov 16, 2021, 2:25 PM UTC")
+
+    def test_name_only_without_time(self):
+        self.assertEqual(location_label({"name": "Somewhere"}), "Somewhere")
+
 
 class ThemeTest(SimpleTestCase):
     def get(self, **params):
@@ -76,7 +105,7 @@ class ThemeTest(SimpleTestCase):
         response = self.get(theme="dark")
         self.assertTheme(response, "dark", "sun")
         self.assertEqual(response.cookies["theme"].value, "dark")
-        self.assertContains(response, 'href="?theme=light"')
+        self.assertContains(response, 'href="?theme=light&amp;location=')
 
     def test_cookie_used_without_param(self):
         self.client.cookies["theme"] = "dark"
@@ -92,11 +121,6 @@ class ThemeTest(SimpleTestCase):
         response = self.get(theme="purple")
         self.assertTheme(response, "light", "moon")
         self.assertNotIn("theme", response.cookies)
-
-    def test_search_box(self):
-        response = self.get(q="Sumas Prairie")
-        self.assertContains(response, 'role="search"')
-        self.assertContains(response, 'value="Sumas Prairie"')
 
     def test_invalid_cookie_falls_back_to_light(self):
         self.client.cookies["theme"] = "purple"
