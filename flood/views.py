@@ -5,7 +5,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.utils.http import urlencode
 
-from pipeline.fetch_data import fetch_sentinel_radar
+from pipeline.detect_flood import fetch_sentinel_radar
 
 from . import data
 from .utils import get_10km_range
